@@ -1,0 +1,406 @@
+{% extends 'store/base.html' %}
+{% load static %}
+  {% block content %}
+      <main>
+        <section class="uk-section uk-section-small">
+          <div class="uk-container">
+            <div class="uk-grid-medium uk-child-width-1-1" uk-grid>
+              <div class="uk-text-center">
+                <ul class="uk-breadcrumb uk-flex-center uk-margin-remove">
+                  <li><a href="index-2.html">Home</a></li>
+                  <li><a href="catalog.html">Catalog</a></li>
+                  <li><a href="subcategory.html">{{ item.category }}</a></li>
+                  <li><span>{{ item.title }}</span></li>
+                </ul>
+                <h1 class="uk-margin-small-top uk-margin-remove-bottom">{{ item.title }}</h1>
+              </div>
+              <div>
+                <div class="uk-grid-medium uk-child-width-1-1" uk-grid>
+                  <div>
+                    <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
+                      <div class="uk-grid-small uk-grid-collapse uk-grid-match" uk-grid>
+                        <div class="uk-width-1-1 uk-width-expand@m">
+                          <div class="uk-grid-collapse uk-child-width-1-1" uk-slideshow="finite: true; ratio: 4:3;" uk-grid>
+                            <div>
+                              <ul class="uk-slideshow-items" uk-lightbox>
+                                <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="{{ item.image_main.url }}">
+                                    <figure class="tm-media-box-wrap"><img src="{{ item.image_main.url }}" alt="{{ item.title }}"></figure></a>
+                                </li>
+                                {% if item.image_2 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_2.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_3 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_3.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_4 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_4.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_5 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_5.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+                              </ul>
+                            </div>
+                            <div>
+                              <div class="uk-card-body uk-flex uk-flex-center">
+                                <div class="uk-width-1-2 uk-visible@s">
+                                  <div uk-slider="finite: true">
+                                    <div class="uk-position-relative">
+                                      <div class="uk-slider-container">
+                                        <ul class="tm-slider-items uk-slider-items uk-child-width-1-4 uk-grid uk-grid-small">
+                                          {% if item.image_main %}
+                                            <li uk-slideshow-item="0">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_main.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                          {% if item.image_2 %}
+                                            <li uk-slideshow-item="1">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame" href="#">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_2.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                          {% if item.image_3 %}
+                                            <li uk-slideshow-item="2">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame" href="#">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_3.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                          {% if item.image_4 %}
+                                            <li uk-slideshow-item="3">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame" href="#">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_4.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                          {% if item.image_5 %}
+                                            <li uk-slideshow-item="4">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame" href="#">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_5.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                        </ul>
+                                        <div><a class="uk-position-center-left-out uk-position-small" href="#" uk-slider-item="previous" uk-slidenav-previous></a><a class="uk-position-center-right-out uk-position-small" href="#" uk-slider-item="next" uk-slidenav-next></a></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <ul class="uk-slideshow-nav uk-dotnav uk-hidden@s"></ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="uk-width-1-1 uk-width-1-3@m tm-product-info">
+                          <div class="uk-card-body">
+                            {% if item.brand.image %}
+                              <div><img src="{{item.brand.brand_image.url}}" alt="{{item.brand.brand_name}}" style="height: 40px;"></div>
+                            {% else %}
+                                <div>
+                                  <span class="uk-label uk-label uk-margin-xsmall-right">{{item.brand.brand_name}}</span>
+                                </div>
+                            {% endif %}
+                            <div class="uk-margin">
+                              <div class="uk-grid-small" uk-grid>
+                                <div class="uk-flex uk-flex-middle">
+                                    <ul class="uk-iconnav uk-margin-bottom tm-rating" style="margin-left:3.2em;">
+                                      {% for x in ''|rjust:average_rating %}
+                                        <li><span class="uk-text-warning" uk-icon="star"></span></li>
+                                      {% endfor %}
+                                    </ul>
+                                  <div class="uk-margin-xsmall-left"><a class="uk-text-meta js-scroll-to-description" href="#description" onclick="UIkit.switcher('.js-product-switcher').show(3);">({{ number_of_reviews }})</a></div>
+                                </div>
+                                {% if item.label %}
+                                  <div>
+                                    <span class="uk-label uk-label-warning uk-margin-xsmall-right">{{item.label}}</span>
+                                  </div>
+                                {% endif %}
+                              </div>
+                            </div>
+
+                          <div class="uk-margin">
+                            <div class="uk-grid-medium" uk-grid>
+                              <div>
+                                {% if item.has_variation is True %}
+                                  <div class="uk-width-auto uk-width-expand@s uk-flex uk-flex-middle uk-text-meta">
+                                    {% for items in variations %}
+                                      {% if items != item %}
+                                        <span class="uk-text-bolder" style="margin-left:1.5em;">{{items.title}}</span>
+                                      {% endif %}
+                                    {% endfor %}
+                                  </div>
+
+                                  <div class="uk-width-auto uk-width-expand@s uk-flex-middle uk-flex uk-text-meta">
+                                    {% for items in variations %}
+                                      {% if items != item %}
+                                        <a href="{% url 'store:store-product' items.id %}"> <img src="{{items.image_main.url}}" style="width:7em; margin-left:0.5em;"> </a>
+                                      {% endif %}
+                                    {% endfor %}
+                                  </div>
+                                {% endif  %}
+                              </div>
+                            </div>
+                          </div>
+
+                            <div class="uk-margin">
+                              <div class="uk-padding-small uk-background-primary-lighten uk-border-rounded">
+                                <div class="uk-grid-small uk-child-width-1-1" uk-grid>
+                                  <div>
+                                    <del class="uk-text-meta">Rs.{{ item.price }}</del>
+                                    <div class="tm-product-price">Rs.{{ item.discount_price }}</div>
+                                  </div>
+                                </div>
+                              <div>
+
+
+
+                                    <div class="uk-width-auto uk-width-expand@s uk-flex uk-flex-middle uk-text-meta">
+
+                                        {% if item.stock_no == 0 %}
+                                          <a href="#">Out Of Stock</a>
+                                        {% else %}
+                                      <!--                                      js-add-to-cart -->
+                                      <a href="{{ item.get_add_to_cart_url }}" style="color:white; decoration:none;"><button class="uk-button uk-button-primary tm-product-add-button tm-shine">Add to cart</button></a>
+                                      {% endif %}
+
+                                            <a class="uk-margin-small-right js-add-to js-add-to-favorites tm-action-button-active js-added-to" uk-tooltip="Add to favorites" href="{{ item.get_add_to_favorite_url }}" style="margin-left:1em;"><span uk-icon="heart"></span></a>
+                                            <a class="js-add-to js-add-to-compare tm-action-button-active js-added-to" uk-tooltip="Add to compare" href="{{ item.get_add_to_compare_url }}"><span uk-icon="copy"></span></a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="uk-margin">
+                              <div class="uk-padding-small uk-background-muted uk-border-rounded">
+                                <div class="uk-grid-small uk-child-width-1-1 uk-text-small" uk-grid>
+                                  <div>
+                                    <div class="uk-grid-collapse" uk-grid><span class="uk-margin-xsmall-right" uk-icon="cart"></span>
+                                      <div>
+                                        <div class="uk-text-bolder">Delivery</div>
+                                        <div class="uk-text-xsmall uk-text-muted">In stock, free, tomorrow</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div class="uk-grid-collapse" uk-grid><span class="uk-margin-xsmall-right" uk-icon="location"></span>
+                                      <div>
+                                        <div class="uk-text-bolder">Pick up from store</div>
+                                        <div class="uk-text-xsmall uk-text-muted">In stock, free, tomorrow</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="uk-margin">
+                              {{item.short_description}}
+                              <div class="uk-margin-small-top"><a class="uk-link-heading js-scroll-to-description" href="#description" onclick="UIkit.switcher('.js-product-switcher').show(1);"><span class="tm-pseudo">Detailed specifications</span><span class="uk-margin-xsmall-left" uk-icon="icon: chevron-down; ratio: .75;"></span></a></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="uk-width-1-1 tm-product-description" id="description">
+                          <header>
+                            <nav class="tm-product-nav" uk-sticky="offset: 60; bottom: #description; cls-active: tm-product-nav-fixed;">
+                              <ul class="uk-subnav uk-subnav-pill js-product-switcher" uk-switcher="connect: .js-tabs">
+                                <li><a class="js-scroll-to-description" href="#description">Overview</a></li>
+                                <li><a class="js-scroll-to-description" href="#description">Key Benefits</a></li>
+                                <li><a class="js-scroll-to-description" href="#description">Direction for Use/Dosage</a></li>
+                                <li><a class="js-scroll-to-description" href="#description">Safety Information/Precaution</a></li>
+                                <li><a class="js-scroll-to-description" href="#description">Reviews<span>({{ number_of_reviews }})</span></a></li>
+                              </ul>
+                            </nav>
+                          </header>
+                          <div class="uk-card-body">
+                            <div class="uk-switcher js-product-switcher js-tabs">
+                              <section>
+                                   {{item.description}}
+                              </section>
+
+                              <section>
+                                {{item.key_benefits}}
+                              </section>
+
+                              <section>
+                                {{item.direction_for_use}}
+                              </section>
+
+                              <section>
+                                {{item.safety_information}}
+                              </section>
+
+                              <section>
+                                {% if number_of_reviews >= 1 %}
+                                  <div class="uk-grid-small uk-grid-divider" uk-grid>
+                                    <div class="uk-width-1-1 uk-width-1-5@s uk-text-center tm-reviews-column">
+                                      <div class="uk-text-meta uk-text-uppercase">average rating</div>
+                                      <div class="uk-heading-primary">{{average_rating}}</div>
+                                       <div>
+                                          <ul class="uk-iconnav uk-margin-bottom tm-rating" style="margin-left:3.2em;">
+                                            {% for x in ''|rjust:average_rating %}
+                                              <li><span class="uk-text-warning" uk-icon="star"></span></li>
+                                            {% endfor %}
+                                          </ul>
+                                        </div>
+
+
+                                      {% if number_of_reviews <= 1 %}
+                                          <div class="uk-margin-small-top uk-text-meta">Based on {{ number_of_reviews }} review</div>
+                                      {% else %}
+                                          <div class="uk-margin-small-top uk-text-meta">Based on {{ number_of_reviews }} reviews</div>
+                                      {% endif %}
+
+                                      {% if order_item %}
+                                        {% if not user_review %}
+                                          <button class="uk-button uk-button-primary uk-margin-top uk-width-1-1"><a href="{% url 'store:store-review' item.id %}" style="text-decoration:none;color:white;">write a review</a></button>
+                                        {% endif %}
+                                      {% endif %}
+                                    </div>
+                                    <div class="uk-width-1-1 uk-width-expand@s">
+                                      <div class="uk-grid-small uk-grid-divider uk-child-width-1-1" uk-grid>
+                                        {% if user_review %}
+                                          <article>
+                                            <section class="uk-grid-small uk-child-width-1-1" uk-grid>
+                                              <header>
+                                                <div class="uk-h4 uk-margin-remove">{{ user_review.user.first_name }}<span class="uk-text-meta" style="margin-left:5em;"><a href="{% url 'store:store-review' item.id %}">Edit</a></span></div>
+                                                <time class="uk-text-meta">{{ user_review.date }}</time>
+                                              </header>
+
+                                              <div>
+                                                <ul class="uk-iconnav uk-margin-bottom tm-rating">
+                                                  {% for x in ''|rjust:user_review.rating %}
+                                                    <li><span class="uk-text-warning"><i class="fas fa-star"></i></span></li>
+                                                  {% endfor %}
+                                                </ul>
+                                              </div>
+
+                                                <div class="uk-h4 uk-margin-remove">{{ user_review.title }}</div>
+                                                <p>{{ user_review.review_description }}</p>
+
+                                              </section>
+                                            </article>
+                                        {% endif %}
+
+                                        {% for review in reviews %}
+                                          {% if not user_review == review %}
+                                            <article>
+                                              <section class="uk-grid-small uk-child-width-1-1" uk-grid>
+                                                <header>
+                                                  <div class="uk-h4 uk-margin-remove">{{ review.user.first_name }}</div>
+                                                  <time class="uk-text-meta">{{ review.date }}</time>
+                                                </header>
+
+                                                <div>
+                                                  <ul class="uk-iconnav uk-margin-bottom tm-rating">
+                                                    {% for x in ''|rjust:review.rating %}
+                                                      <li><span class="uk-text-warning" uk-icon="star"></span></li>
+                                                    {% endfor %}
+                                                  </ul>
+                                                </div>
+                                                  <div class="uk-h4 uk-margin-remove">{{ review.title }}</div>
+                                                  <p>{{ review.review_description }}</p>
+                                                  <div class="uk-grid-small uk-flex-middle uk-margin-top" uk-grid>
+                                                    <div class="uk-text-meta">Hope this was review helpful to you!</div>
+
+                                                  </div>
+                                                </section>
+                                              </article>
+                                          {% endif %}
+                                        {% endfor %}
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% else %} <!-- if no reviews then -->
+                                <center><h3>Oops! No Review Yet, You need to Buy the product to review </h3></center>
+                                {% if order_item %}
+                                        {% if not user_review %}
+                                          <center>
+                                            <h3>Be The First One To Review </h3>
+                                            <button class="uk-button uk-button-primary uk-margin-top "><a href="{% url 'store:store-review' item.id %}" style="text-decoration:none;color:white;">write a review</a></button>
+                                          </center>
+                                            {% endif %}
+                                      {% endif %}
+                                {% endif %}
+                              </section>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+                  <!-- Related items-->
+                  <section>
+                    <div uk-slider="finite: true">
+                      <div class="uk-grid-small uk-flex-middle uk-margin-bottom" uk-grid>
+                        <h2 class="uk-width-expand uk-text-center uk-text-left@s">Related Products</h2>
+                        <div class="uk-visible@s"><a class="tm-slidenav" href="#" uk-slider-item="previous" uk-slidenav-previous></a><a class="tm-slidenav" href="#" uk-slider-item="next" uk-slidenav-next></a></div>
+                      </div>
+                      <div>
+                        <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
+                          <div class="uk-position-relative">
+                            <div class="uk-slider-container">
+                              <div class="uk-slider-items uk-grid-collapse uk-child-width-1-3 uk-child-width-1-4@m tm-products-grid">
+
+                                {% for r_item in related_item%}
+                                  {% if r_item != item %}
+
+                                    <article class="tm-product-card">
+                                      <div class="tm-product-card-media">
+                                        <div class="tm-ratio tm-ratio-4-3"><a class="tm-media-box" href="{% url 'store:store-product' r_item.id %}">
+                                            <div class="tm-product-card-labels"><span class="uk-label uk-label-warning">top selling</span><span class="uk-label uk-label-danger">trade-in</span>
+                                            </div>
+                                            <figure class="tm-media-box-wrap"><img src="{{r_item.image_main.url}}" alt="{{r_item.title}}"/>
+                                            </figure></a></div>
+                                      </div>
+
+                                      <div class="tm-product-card-body">
+                                        <div class="tm-product-card-info">
+                                          <div class="uk-text-meta uk-margin-xsmall-bottom">{{r_item.category}}</div>
+                                          <h3 class="tm-product-card-title"><a class="uk-link-heading" href="{% url 'store:store-product' r_item.id %}">{{r_item.title}}</a></h3>
+
+                                        </div>
+
+                                        <div class="tm-product-card-shop">
+                                          <div class="tm-product-card-prices">
+                                            <del class="uk-text-meta">Rs:{{r_item.discount_price}}</del>
+                                            <div class="tm-product-card-price">Rs:{{r_item.price}}</div>
+                                          </div>
+
+                                          <div class="tm-product-card-add">
+                                            <div class="uk-text-meta tm-product-card-actions">
+                                              <a class="tm-product-card-action js-add-to js-add-to-favorites tm-action-button-active js-added-to" title="Add to favorites" href="{{ item.get_add_to_favorite_url }}"><span uk-icon="icon: heart; ratio: .75;"></span><span class="tm-product-card-action-text">Add to favorites</span></a>
+                                              <a class="tm-product-card-action js-add-to js-add-to-compare tm-action-button-active js-added-to" title="Add to compare" href="{{ item.get_add_to_compare_url }}"><span uk-icon="icon: copy; ratio: .75;"></span><span class="tm-product-card-action-text">Add to compare</span></a></div>
+                                            <button class="uk-button uk-button-primary tm-product-card-add-button tm-shine js-add-to-cart" ><a href="{{ item.get_add_to_cart_url }}" style="color:white; decoration:none;"><span class="tm-product-card-add-button-icon" uk-icon="cart"></span> </a><span class="tm-product-card-add-button-text">Add to cart</span></button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </article>
+
+                                  {% endif %}
+                                {% endfor %}
+
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin-top uk-hidden@s"></ul>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+        </section>
+      </main>
+ {% endblock content %}

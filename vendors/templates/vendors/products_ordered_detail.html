@@ -1,0 +1,97 @@
+{% extends "store/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+     <main>
+        <section class="uk-section uk-section-small">
+          <div class="uk-container">
+            <div class="uk-grid-medium" uk-grid>
+              <div class="uk-width-1-1 uk-width-1-4@m tm-aside-column">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>
+                </div>
+              </div>
+              <div class="uk-width-1-1 uk-width-expand@m">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
+                  <header class="uk-card-header">
+                    <h1 class="uk-h2">Ordered Products</h1>
+                  </header>
+                        <div style="margin:2em">
+                            <hr>
+                                <table cellpadding="12px">
+                                    <tr> <th>Item Number</th> <th>Product</th> <th>Quantity</th>
+                                         <th>Price</th> <th>Order Total</th>  <th>Order Status</th>
+                                    </tr>
+
+                                        {% for product in order_item%}
+                                            <tr> <td>{{product.item.item_ref_number}}</td> <td>{{product.item.title}}</td>
+                                                <td>{{product.quantity}}</td>
+
+                                                {% if product.item.discount_price %}
+                                                    <td>{{product.item.discount_price}}</td>
+                                                {% else %}
+                                                    <td>{{product.item.price}}</td>
+                                                {% endif  %}
+
+                                                <td>{{product.get_final_price}}</td>
+<!--                                                <td><a href="{% url 'vendors-products-ordered-update' product.id %}"> {{order.order_status}} </a> </td>-->
+                                        {% endfor %}
+
+                                                <td>
+                                                    <form method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <fieldset class="form-group">
+                                                            {{ form|crispy }}
+                                                        </fieldset>
+                                                        <div class="form-group">
+                                                            <button class="btn btn-outline-info" type="submit">Submit</button>
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                </table>
+                            </div>
+
+                            <div style="margin:2em">
+                                 <hr>
+                                <table cellpadding="12px">
+                                    <tr> <th>Order Number</th> <th>Order Total</th> <th>Total Quantity</th>
+                                         <th>Taxes</th> <th>Order Status</th>  <th>Shipping</th>
+                                    </tr>
+
+                                    <tr>
+                                        <td>{{order.order_ref_number}}</td> <td>{{order.get_total}}</td>
+                                        <td>{{order.total_items}}</td> <td>{{order.taxes}}</td>
+                                        <td>{{order.order_status}}</td>
+                                    </tr>
+                                </table>
+                                <div>
+                                    <hr>
+                                    <h3>Order Details</h3>
+                                    <table style="margin-left:2em;">
+                                        <tr> <th> Order Number: {{order.order_ref_number}}</th> </tr>
+                                            <tr>  <td> <b>Contact Details</b> </td> </tr>
+                                            <tr>    <td>{{order.user.first_name}}&nbsp;{{order.user.last_name}}</td> </tr>
+                                            <tr>    <td>{{order.shipping_address.phone_number}}</td> </tr>
+                                            <tr> <td><br></td> </tr>
+
+                                            <tr>  <td> <b>Shipping Address</b> </td> </tr>
+                                            <tr>    <td>{{order.shipping_address.street_address}}</td>  </tr>
+                                            <tr>    <td>{{order.shipping_address.apartment_address}}</td>  </tr>
+                                            <tr>    <td>{{order.shipping_address.city}}&nbsp;{{order.shipping_address.postal_code}}</td>  </tr>
+                                            <tr> <td><br></td> </tr>
+
+                                            <tr>  <td> <b>Billing Address</b> </td> </tr>
+                                             <tr>    <td>{{order.billing_address.street_address}}</td>      </tr>
+                                            <tr>    <td>{{order.billing_address.apartment_address}}</td>   </tr>
+                                            <tr>    <td>{{order.billing_address.city}}&nbsp;{{order.billing_address.postal_code}}</td> </tr>
+                                            <tr> <td><br></td> </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+        </section>
+      </main>
+
+{% endblock content %}

@@ -1,0 +1,73 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+
+  <div class="uk-width-1-1 uk-width-expand@m">
+    <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
+      <header class="uk-card-header">
+        <h1 class="uk-h2">Orders</h1>
+      </header>
+      <section class="uk-card-body">
+          <h3>Order Details</h3>
+            <table style="margin-left:2em;">
+                <a href="#">Invoice</a>
+                <tr> <th> Order Number: {{order.order_ref_number}}</th> </tr>
+                    <tr>  <td> <b>Contact Details</b> </td> </tr>
+                    <tr>    <td>{{order.user.first_name}}&nbsp;{{order.user.last_name}}</td> </tr>
+                    <tr>    <td>{{order.shipping_address.phone_number}}</td> </tr>
+                    <tr> <td><br></td> </tr>
+
+                    <tr>  <td> <b>Shipping Address</b> </td> </tr>
+                    <tr>    <td>{{order.shipping_address.street_address}}</td>  </tr>
+                    <tr>    <td>{{order.shipping_address.apartment_address}}</td>  </tr>
+                    <tr>    <td>{{order.shipping_address.city}}&nbsp;{{order.shipping_address.postal_code}}</td>  </tr>
+                    <tr> <td><br></td> </tr>
+
+                    <tr>  <td> <b>Billing Address</b> </td> </tr>
+                     <tr>    <td>{{order.billing_address.street_address}}</td>      </tr>
+                    <tr>    <td>{{order.billing_address.apartment_address}}</td>   </tr>
+                    <tr>    <td>{{order.billing_address.city}}&nbsp;{{order.billing_address.postal_code}}</td> </tr>
+                    <tr> <td><br></td> </tr>
+
+                    <tr>  <td> <b>Payment Method</b> </td> </tr>
+                    <tr>    <td>{{order.payment_method}}</td>      </tr>
+            </table>
+          <hr>
+         <table class="uk-table uk-table-small uk-table-justify uk-table-responsive ">
+          <tbody>
+            <tr>
+              <th class="uk-width-small uk-text-muted uk-text-small">Order Placed On</th>
+              <th class="uk-width-small uk-text-muted uk-text-small">Total</th>
+              <th class="uk-width-small uk-text-muted uk-text-small">Ship to</th>
+              <th class="uk-width-large uk-text-muted uk-text-small">{{ order.order_ref_number }}</th>
+            </tr>
+
+            <tr>
+              <td class="uk-width-small uk-text-muted uk-text-small">{{order.ordered_date}}</td>
+              <td class="uk-width-small uk-text-muted uk-text-small">Rs:{{order.payment.amount}}</td>
+              <td class="uk-width-small uk-text-muted uk-text-small">{{order.user.first_name}}</td>
+              <td class="uk-width-large uk-text-muted uk-text-small">-</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        <table class="uk-table uk-table-small uk-table-justify uk-table-responsive uk-table-divider uk-margin-small-top uk-margin-remove-bottom">
+          <tbody>
+          {% for item in order.items.all %}
+            <tr>
+              <th><img src="{{item.item.image_main.url}}" style="width:8em;"></th>
+              <td>
+                <h4>{{item.item.title}}</h4>
+                <span class="uk-text-muted uk-text-small"> Sold by:{{item.item.sold_by.user.first_name}}</span><br>
+                <span class="uk-text-muted uk-text-small">Rs:{{item.get_final_price}}</span><br>
+                <h3 class="tm-product-card-title"><a class="uk-link-heading" href="{% url 'store:store-product' item.item.id %}">Buy it again?</a></h3>
+                <h3 class="tm-product-card-title"><a class="uk-link-heading" href="{% url 'store:store-review' item.item.id %}">Write a review</a></h3>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+{% endblock %}

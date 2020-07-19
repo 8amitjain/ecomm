@@ -1,0 +1,41 @@
+{% extends "store/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1 class="uk-h2">Orders</h1>
+        <div style="margin:2em">
+            <a class="btn btn-info" href="{% url 'vendors-products-add' %}">Add Products</a>
+            <hr>
+            <!--FILTER FORM-->
+                <form action="." method="get">
+                    <div class="row">
+                      {{ filters.form | crispy }}
+                      <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+                <hr>
+
+                <table border="2">
+
+                    <tr> <th>Item reference number</th> <th>Title</th> <th>price</th> <th>discount_price</th> <th>label</th>
+                         <th>stock_no</th> <th>is_active</th> <th>Image</th> <th>Add Variation</th>
+                    </tr>
+
+                        {% for product in products%}
+
+                            <tr> <td>{{product.item_ref_number}}</td> <td>{{product.title}}</td> <td>{{product.price}}</td>
+                                 <td>{{product.discount_price}}</td> <td>{{product.label}}</td>
+                                 <td>{{product.stock_no}}</td> <td>{{product.is_active}}</td>
+                                 <td><img src="{{product.image_main.url}}" width="300px"> </td>
+                                {% if product.has_variation is True %}
+                                     <td><a href="{% url 'vendors-products-add-varient' product.variation_id %}">Add Variation</a></td>
+                                {% endif %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                </table>
+
+        </div>
+<br>
+{% endblock content %}

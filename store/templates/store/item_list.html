@@ -1,0 +1,50 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+<h2>Here is the list of items</h2>
+{% for item in object_list %}
+
+    <p> {{ item.title}} product name</p>
+    <img src="{{ item.image.url }}" alt="IMG-PRODUCT" style="height: 360px;"> <p>product image</p>
+    <p> Rs:{{ item.price}} product price</p>
+
+  {% endfor %}
+
+
+<div class="uk-grid-collapse uk-child-width-1-3 tm-products-grid js-products-grid" uk-grid>
+                                {% for item in object_list %}
+                                  <article class="tm-product-card">
+                                    <div class="tm-product-card-media">
+                                      <div class="tm-ratio tm-ratio-4-3"><a class="tm-media-box" href="product.html">
+                                          <div class="tm-product-card-labels"><span class="uk-label uk-label-warning">top selling</span><span class="uk-label uk-label-danger">trade-in</span>
+                                          </div>
+                                          <figure class="tm-media-box-wrap"><img src="{{ item.image.url }}" alt="{{ item.title }}"/>
+                                          </figure></a></div>
+                                    </div>
+                                    <div class="tm-product-card-body">
+                                      <div class="tm-product-card-info">
+                                        <div class="uk-text-meta uk-margin-xsmall-bottom">{{ item.category }}</div>
+                                        <h3 class="tm-product-card-title"><a class="uk-link-heading" href="product.html">{{ item.title }}</a></h3>
+                                        <ul class="uk-list uk-text-small tm-product-card-properties">
+                                          <li><span class="uk-text-muted">Diagonal display: </span><span>15.4"</span></li>
+                                          <li><span class="uk-text-muted">CPU: </span><span>Intel®&nbsp;Core™ i7</span></li>
+                                          <li><span class="uk-text-muted">RAM: </span><span>16&nbsp;GB</span></li>
+                                          <li><span class="uk-text-muted">Video Card: </span><span>AMD Radeon Pro 555</span></li>
+                                        </ul>
+                                      </div>
+                                      <div class="tm-product-card-shop">
+                                        <div class="tm-product-card-prices">
+                                          <del class="uk-text-meta">Rs.{{ item.price }}</del>
+                                          <div class="tm-product-card-price">Rs.{{ item.discount_price }}</div>
+                                        </div>
+                                        <div class="tm-product-card-add">
+                                          <div class="uk-text-meta tm-product-card-actions"><a class="tm-product-card-action js-add-to js-add-to-favorites tm-action-button-active js-added-to" title="Add to favorites"><span uk-icon="icon: heart; ratio: .75;"></span><span class="tm-product-card-action-text">Add to favorites</span></a><a class="tm-product-card-action js-add-to js-add-to-compare tm-action-button-active js-added-to" title="Add to compare"><span uk-icon="icon: copy; ratio: .75;"></span><span class="tm-product-card-action-text">Add to compare</span></a></div>
+                                          <button class="uk-button uk-button-primary tm-product-card-add-button tm-shine js-add-to-cart"><span class="tm-product-card-add-button-icon" uk-icon="cart"></span><span class="tm-product-card-add-button-text">add to cart</span>
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </article>
+</div>
+{% endfor %}
+{% endblock content%}

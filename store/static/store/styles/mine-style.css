@@ -1,0 +1,17 @@
+.content-section{
+    margin: 5%;
+    padding: 2em;
+    border-radius: 2em;
+    border-style: solid;
+    border-color:#f8f8f8;
+}
+@media only screen and (min-width: 1250px) {
+  .content-section{
+    margin: 5em 15%;
+    padding: 2em;
+    border-radius: 2em;
+    border-style: solid;
+    border-color:#f8f8f8;
+    font-size: 1.2em;
+}
+}

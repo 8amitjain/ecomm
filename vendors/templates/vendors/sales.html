@@ -1,0 +1,33 @@
+{% extends "store/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1 class="uk-h2">Orders</h1>
+        <div style="margin:2em">
+            <a class="btn btn-info" href="{% url 'vendors-products-add' %}">Add Products</a>
+            <hr>
+<!--            &lt;!&ndash;FILTER FORM&ndash;&gt;-->
+<!--                <form action="." method="get">-->
+<!--                    <div class="row">-->
+<!--                      {{ filters.form | crispy }}-->
+<!--                      <button class="btn btn-primary" type="submit">Search</button>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--                <hr>-->
+
+                <table border="2">
+
+                    <tr> <th>Total Sales Amount</th> <th>Total Order</th>
+                         <th>Today Sales Amount</th> <th>Today Order</th> <th>Pending Order</th>
+                    </tr>
+
+
+                            <tr> <td>{{total_sales}}</td> <td>{{total_orders}}</td>
+                                 <td>{{today_total_sales}}</td> <td>{{today_total_orders}}</td>
+                                 <td>{{pending_order}}</td>
+                            </tr>
+
+                </table>
+
+        </div>
+<br>
+{% endblock content %}

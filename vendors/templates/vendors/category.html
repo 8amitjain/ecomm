@@ -1,0 +1,35 @@
+{% extends "store/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1 class="uk-h2">Orders</h1>
+        <div style="margin:2em">
+            <a class="btn btn-info" href="{% url 'vendors-category-add' %}">Add Category</a>
+            <hr>
+             <!--FILTER FORM-->
+                <form action="." method="get">
+                    <div class="row">
+                      {{ filters.form | crispy }}
+                      <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+                <hr>
+
+                <table border="2">
+                    <tr> <th>Title</th> <th>Description</th> <th>Image</th> </tr>
+
+                        {% for category in category%}
+                            <tr> <td>{{category.title}}</td> <td>{{category.description}}</td>
+
+                                {% if category.image %}
+                                    <td> <img src="{{category.image.url}}" width="300px"> </td>
+                                {% else %}
+                                    <td> <p>No Image</p> </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+
+                </table>
+
+        </div>
+<br>
+{% endblock content %}
