@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate
 from django.db import transaction
 
-from .models import User, Customer, Vendor  # , Address
+from .models import User, Customer  # , Address
+from vendors.models import Vendor, VendorAddress
 
 
 class AccountAuthenticationForm(forms.ModelForm):
@@ -47,9 +48,6 @@ class CustomerRegistrationForm(UserCreationForm):
         customer.customer_ref_number = f"VRN-{100000+int(customer.user_id)}"
         customer.save()
 
-        # address = Address.objects.create(user=user)
-        # address.phone_number = user.phone_number
-        # address.save()
         return user
 
 
@@ -75,7 +73,10 @@ class VendorRegistrationForm(UserCreationForm):
         user.email = user.username
         user.is_active = False
         user.save()
+        address = VendorAddress.objects.create(user=user)
+        address.save()
         vendor = Vendor.objects.create(user=user)
+        vendor.address = address
         vendor.phone_number = user.phone_number
         vendor.vendor_ref_number = f"VRN-{100000+int(vendor.user_id)}"
         vendor.save()
@@ -154,6 +155,8 @@ class VendorUpdateForm(forms.ModelForm):
         vendor.pin_code = self.cleaned_data.get('pin_code')
         vendor.save()
         return user
+
+
 
 
 # class AddressForm(forms.ModelForm):

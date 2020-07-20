@@ -1,10 +1,22 @@
 from django import forms
-from .models import Reviews
+from .models import Reviews, Location
+from mapwidgets.widgets import GooglePointFieldWidget
 
 PAYMENT_CHOICES = (
     ('S', 'Stripe'),
     ('P', 'PayPal')
 )
+
+
+class LocationForm(forms.ModelForm):
+
+    class Meta:
+        model = Location
+        fields = ("location",)
+        widgets = {
+            'location': GooglePointFieldWidget,
+            # 'name': GoogleStaticOverlayMapWidget,
+        }
 
 
 class CheckoutForm(forms.Form):

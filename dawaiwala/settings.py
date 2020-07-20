@@ -27,7 +27,9 @@ INSTALLED_APPS = [
     'django_filters',
     'django_countries',
     'widget_tweaks',
+    'mapwidgets',
     "django.contrib.gis",
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -123,6 +125,19 @@ USE_TZ = True
 AUTH_USER_MODEL = 'users.User'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
+
+GOOGLE_MAP_API_KEY = "AIzaSyBwRaz6Qcmyquj2GG5g4RChfBecOg641Qg"
+
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocation", [21.0064725, 75.5553983]),
+        ("markerFitZoom", 11),
+        ("GooglePlaceAutocompleteOptions", {'componentRestrictions': {'country': 'uk'}})
+    ),
+    "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY,
+}
+
 
 GDAL_LIBRARY_PATH = r'E:\Coding\Python\django\Dawaiwala-online\venv\Lib\site-packages\osgeo\gdal301.dll'
 

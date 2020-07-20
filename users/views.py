@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.views import View
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -11,10 +12,10 @@ from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeEr
 from .utils import account_activation_token
 from django.urls import reverse
 
-from store.models import Order, OrderItem
+from store.models import Order, OrderItem, Location
 from .models import User
 from .forms import UserUpdateForm, CustomerRegistrationForm, VendorRegistrationForm, CustomerUpdateForm,\
-                   VendorUpdateForm # , AddressForm
+                   VendorUpdateForm
 
 
 def register_user(request, data):
@@ -30,11 +31,10 @@ def register_user(request, data):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             phone_number = form.cleaned_data.get('phone_number ')
-            account = authenticate(username=username, phone_number=phone_number, password=password)
+            # account = authenticate(username=username, phone_number=phone_number, password=password)
 
             current_site = get_current_site(request)
             user = User.objects.get(username=username)
-            print(user)
             email_body = {
                 'user': user,
                 'domain': current_site.domain,
@@ -58,7 +58,7 @@ def register_user(request, data):
             )
             email.send(fail_silently=False)
             messages.success(request, 'Account successfully created Please click the link in your mail  and login to active your account. ')
-            login(request, account)
+            # login(request, account)
             return redirect('store:store')
         else:
             context['register_form'] = form
@@ -146,4 +146,5 @@ def order_detail(request, pk):
     orderr = Order.objects.get(id=pk)
     context['order'] = orderr
     return render(request, 'users/order_detail.html', context)
+
 

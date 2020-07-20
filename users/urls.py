@@ -17,7 +17,6 @@ urlpatterns = [
     path('order/', views.order, name="users-order"),
     path('order/<int:pk>/', views.order_detail, name="users-order-detail"),
 
-
     path('change-password/', auth_views.PasswordChangeView.as_view(template_name='users/password_change.html'),
          name='password_change'),
 

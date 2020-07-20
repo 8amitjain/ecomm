@@ -1,13 +1,17 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import slugify
 from django.utils import timezone
-from datetime import date
-from .forms import ItemForm, CategoryForm, OrderForm, ItemVariationsForm, BrandsForm
+from stripe.api_resources import order
+
+from .forms import ItemForm, CategoryForm, OrderForm, ItemVariationsForm, BrandsForm, VendorAddressForm, LocationForm
 from .filters import ProductOrderFilter, ItemFilter, CategoryFilter
-from .models import Item, Category
-from users.models import User, Vendor
+from .models import Item, Category, VendorLocation
+from users.models import User
 from store.models import Order, OrderItem
+from .models import Vendor
 
 
 @login_required
@@ -188,3 +192,38 @@ def brand_add(request):
         form = BrandsForm()
         context['form'] = form
     return render(request, 'vendors/form.html', context)
+
+
+@login_required
+def vendor_address(request):
+    if request.method == 'POST':
+        form = VendorAddressForm(request.POST, instance=request.user.vendor.address)
+        location_form = LocationForm(request.POST)
+        if location_form.is_valid():
+            try:
+                location_point = VendorLocation.objects.get(
+                    vendor_ref_id=f"{request.user.first_name}_{request.user.id}")
+            except ObjectDoesNotExist:
+                location_point = location_form.save(commit=False)
+                location_point.vendor_ref_id = f"{request.user.first_name}_{request.user.id}"
+                location_point.save()
+                location_point = VendorLocation.objects.get(vendor_ref_id=location_point.vendor_ref_id)
+
+        if form.is_valid():
+            address_form = form.save(commit=False)
+            address_form.user = request.user
+            address_form.phone_number = request.user.phone_number
+            address_form.location = location_point
+            address_form.save()
+            messages.success(request, f'Details Updated!')
+            return redirect('/')
+    else:
+        form = VendorAddressForm(instance=request.user.vendor.address)
+        location_form = LocationForm()
+
+    context = {
+        'form': form,
+        'location_form': location_form,
+    }
+    return render(request, 'vendors/form.html', context)
+

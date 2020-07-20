@@ -3,6 +3,8 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+
      <main>
         <section class="uk-section uk-section-small">
           <div class="uk-container">
@@ -21,6 +23,9 @@
                                 <div class="form-group">
                                     {% csrf_token %}
                                     {{form| crispy}}
+                                    {{location_form.media}}
+
+                                    {{location_form.as_p}}
                                     <button class="btn btn-outline-info" type="submit">Submit</button>
                                 </div>
                             </form>
@@ -32,7 +37,6 @@
 <!--                            </form>-->
 
 
-
                             </div>
 
                         </div>
@@ -40,5 +44,31 @@
                 </div>
         </section>
       </main>
+
+<script>
+window.onload=function(){
+
+$(document).on("google_point_map_widget:marker_create", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
+});
+
+$(document).on("google_point_map_widget:marker_change", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
+});
+
+$(document).on("google_point_map_widget:marker_delete", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
+})
+
+}
+
+
+</script>
 
 {% endblock content %}

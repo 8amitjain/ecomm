@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Item, Category, Brands
+from mapwidgets.widgets import GooglePointFieldWidget
+from django.contrib.gis.db import models as geo_model
+
+from .models import Item, Category, Brands, Vendor, VendorAddress, VendorLocation
 
 
 def copy_items(modeladmin, request, queryset):
@@ -32,6 +35,15 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
 
 
+class VendorLocationAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        geo_model.PointField: {"widget": GooglePointFieldWidget}
+    }
+
+
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Brands)
+admin.site.register(Vendor)
+admin.site.register(VendorAddress)
+admin.site.register(VendorLocation, VendorLocationAdmin)

@@ -18,6 +18,8 @@ urlpatterns = [
     path('category/add/', views.category_add, name='vendors-category-add'),
 
     path('brand/add/', views.brand_add, name='vendors-brand-add'),
+
+    path('address/add/', views.vendor_address, name='vendors-address-add'),
 ]
 
 if settings.DEBUG:

@@ -1,12 +1,16 @@
 from django.contrib import admin
 from django.db import models
-from django.forms import CheckboxSelectMultiple
+from mapwidgets.widgets import GooglePointFieldWidget
+from django.contrib.gis.db import models as geo_model
 
 from .models import OrderItem, FavoriteItem, CompareItem, Order, Payment, Coupon, Refund, Slide, UserProfile, Addresss,\
-                    Reviews
+                    Reviews, Location, MiniOrder
 
-from .filters import OrderFilter
-# Register your models here.
+
+class LocationAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        geo_model.PointField: {"widget": GooglePointFieldWidget}
+    }
 
 
 def make_refund_accepted(modeladmin, request, queryset):
@@ -69,6 +73,8 @@ admin.site.register(Coupon)
 admin.site.register(Refund)
 admin.site.register(Addresss)
 admin.site.register(Reviews)
+admin.site.register(Location, LocationAdmin)
+admin.site.register(MiniOrder)
 
 # admin.site.register(Address, AddressAdmin)
 

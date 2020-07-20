@@ -1,7 +1,8 @@
 from django import forms
-from django.db import transaction
+from .models import VendorLocation
+from mapwidgets.widgets import GooglePointFieldWidget
 
-from .models import Item, Category, Brands
+from .models import Item, Category, Brands, VendorAddress
 from store.models import Order
 
 
@@ -58,3 +59,19 @@ class BrandsForm(forms.ModelForm):
         model = Brands
         fields = ('brand_name', 'brand_image')
 
+
+class LocationForm(forms.ModelForm):
+
+    class Meta:
+        model = VendorLocation
+        fields = ("location",)
+        widgets = {
+            'location': GooglePointFieldWidget,
+            # 'name': GoogleStaticOverlayMapWidget,
+        }
+
+
+class VendorAddressForm(forms.ModelForm):
+    class Meta:
+        model = VendorAddress
+        fields = ('street_address', 'apartment_address', 'city', 'postal_code')

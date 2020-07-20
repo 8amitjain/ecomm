@@ -1,10 +1,11 @@
 from django.db import models
+from django.contrib.gis.db import models as geo_models
 from django.db.models.signals import post_save
 from django.core.validators import MaxValueValidator
 from django.utils import timezone
 
-from users.models import User, Vendor
-from vendors.models import Item, Category
+from users.models import User
+from vendors.models import Item, Category, Vendor
 
 
 # Create your models here.
@@ -47,12 +48,24 @@ def userprofile_receiver(sender, instance, created, *args, **kwargs):
     if created:
         userprofile = UserProfile.objects.create(user=instance)
 
-
 post_save.connect(userprofile_receiver, sender=User)
+
+
+class Location(geo_models.Model):
+    order_ref_number = models.CharField(unique=True, max_length=15, null=True)  # or vendor name here
+    location = geo_models.PointField(help_text="Use map widget for point the house location")
+
+    def __str__(self):
+        return f"{self.location} point location"
+
+    class Meta:
+        verbose_name_plural = 'Locations'
 
 
 class Addresss(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
+
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100)
 
@@ -168,14 +181,29 @@ class CompareItem(models.Model):
         return self.quantity
 
 
+class MiniOrder(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+
+    order_ref_number = models.CharField(default='ORD-100000', max_length=15)
+    mini_order_ref_number = models.CharField(unique=True, default='MORN-100000', max_length=15)
+
+    ordered_date = models.DateField()
+    ordered_time = models.TimeField()
+    ordered = models.BooleanField(default=False)
+    order_status = models.CharField(choices=ORDER_STATUS, max_length=50, default='Preparing Order')
+
+    def __str__(self):
+        return f"{self.order_item.user} Mini_Order"
+
+
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
-    # itemss = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
-
-    # ref_code = models.CharField(max_length=20, blank=True, null=True, unique=True)
-    order_ref_number = models.CharField(unique=True, default='ORD-100000', max_length=15)
+    # vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    mini_order = models.ManyToManyField(MiniOrder)
     items = models.ManyToManyField(OrderItem)
+
+    order_ref_number = models.CharField(unique=True, default='ORD-100000', max_length=15)
     ordered_date = models.DateField()
     ordered_time = models.TimeField()
     ordered = models.BooleanField(default=False)
@@ -188,8 +216,6 @@ class Order(models.Model):
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
-
-    # being_delivered = models.BooleanField(default=False, blank=True, null=True)
 
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)

@@ -1,7 +1,4 @@
-from django.http import HttpResponseRedirect
-from django.template.defaultfilters import slugify
-from django.urls import reverse
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import redirect
@@ -10,10 +7,11 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from stripe.api_resources.terminal import location
 
-from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm
-from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, Refund, UserProfile, Addresss, Slide,\
-                    Reviews
+from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm, LocationForm
+from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, Refund, UserProfile, Addresss, Slide, \
+    Reviews, Location, MiniOrder
 
 from vendors.models import Item, Category, Brands
 from users.models import User
@@ -136,24 +134,50 @@ def add_to_cart(request, slug):
             else:
                 order_item.quantity += 1
                 order_item.save()
+                # m_order = MiniOrder.objects.filter(order_ref_number=order.order_ref_number)
                 messages.info(request, "Item qty was updated.")
                 return redirect("store:store-cart")
         else:
             order.items.add(order_item)
-            order_item.save()
+            # order_item.save()
             order.save()
+
+            ordered_date = timezone.datetime.now().strftime('%Y-%m-%d')
+            ordered_time = timezone.datetime.now().strftime('%H:%M:%S')
+
+            m_order = MiniOrder.objects.create(
+                ordered_date=ordered_date, ordered_time=ordered_time, vendor=item.sold_by,
+                order_ref_number=order.order_ref_number, order_item=order_item)
+            m_order.mini_order_ref_number = f"MORN-{100000 + int(m_order.id)}"
+            m_order.save()
+
+            order.mini_order.add(m_order)
+            order.save()
+
     else:
         ordered_date = timezone.datetime.now().strftime('%Y-%m-%d')
-        ordered_time = timezone.datetime.now().strftime('%H:%M:%S')  # to set
+        ordered_time = timezone.datetime.now().strftime('%H:%M:%S')
         order = Order.objects.create(
-            user=request.user, ordered_date=ordered_date, ordered_time=ordered_time, vendor=item.sold_by)
-        order.order_ref_number = f"ORN-{100000 + int(order.id)}"
+            user=request.user, ordered_date=ordered_date, ordered_time=ordered_time)  # vendor=item.sold_by
+        ORN = f"ORN-{100000 + int(order.id)}"
+        order.order_ref_number = ORN
         order.items.add(order_item)
-        order_item.save()
+        # order_item.save()
         order.save()
+
+        m_order = MiniOrder.objects.create(
+            ordered_date=ordered_date, ordered_time=ordered_time, vendor=item.sold_by,
+            order_ref_number=ORN, order_item=order_item)
+        m_order.mini_order_ref_number = f"MORN-{100000 + int(m_order.id)}"
+        m_order.save()
+
+        order.mini_order.add(m_order)
+        order.save()
+
         messages.info(request, "Item was added to your cart.")
     return redirect('store:store-product', pk=item.id)
-##    return redirect("store:store-cart")
+
+#  return redirect("store:store-cart")
 
 
 @login_required
@@ -174,7 +198,11 @@ def remove_from_cart(request, slug):
             order_item.quantity = 1
             order_item.save()
             order.items.remove(order_item)
-
+            try:
+                mini_order = MiniOrder.objects.get(order_item=order_item, ordered=False)
+                mini_order.delete()
+            except ObjectDoesNotExist:
+                pass
             messages.info(request, "Item was removed from your cart.")
             return redirect("store:store-cart")
         else:
@@ -208,6 +236,11 @@ def remove_single_item_from_cart(request, slug):
                 order_item.save()
             else:
                 order.items.remove(order_item)
+                try:
+                    mini_order = MiniOrder.objects.get(order_item=order_item, ordered=False)
+                    mini_order.delete()
+                except ObjectDoesNotExist:
+                    pass
             messages.info(request, "This item quantity was updated.")
             return redirect("store:store-cart")
         else:
@@ -303,9 +336,11 @@ class CheckoutView(View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             form = CheckoutForm()
+            location_form = LocationForm()
             context = {
                 'form': form,
                 'couponform': CouponForm(),
+                'location_form': location_form,
                 'order': order,
                 'DISPLAY_COUPON_FORM': True
             }
@@ -335,14 +370,22 @@ class CheckoutView(View):
 
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
+        location_form = LocationForm(self.request.POST or None)
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
+            if location_form.is_valid():
+                try:
+                    location_point = Location.objects.get(order_ref_number=order.order_ref_number)
+                except ObjectDoesNotExist:
+                    location_point = location_form.save(commit=False)
+                    location_point.order_ref_number = order.order_ref_number
+                    location_point.save()
+                    location_point = Location.objects.get(order_ref_number=order.order_ref_number)
             if form.is_valid():
 
                 use_default_shipping = form.cleaned_data.get(
                     'use_default_shipping')
                 if use_default_shipping:
-                    print("Using the defualt shipping address")
                     address_qs = Addresss.objects.filter(
                         user=self.request.user,
                         address_type='S',
@@ -375,6 +418,7 @@ class CheckoutView(View):
                             city=shipping_city,
                             postal_code=shipping_postal_code,
                             phone_number=shipping_phone_number,
+                            location=location_point,
                             address_type='S'
                         )
                         shipping_address.save()
@@ -501,6 +545,7 @@ class PaymentView(View):
 
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
+        mini_orders = MiniOrder.objects.filter(order_ref_number=order.order_ref_number)
         form = PaymentForm(self.request.POST)
         userprofile = UserProfile.objects.get(user=self.request.user)
         if form.is_valid():
@@ -549,15 +594,6 @@ class PaymentView(View):
                 payment.amount = order.get_total()
                 payment.save()
 
-                # # assign the payment to the order
-                # # order = OrderItem.objects.get(user=self.request.user, ordered=False)
-                #
-                # # ITEMS = order.items.filter(ordered=False)
-                # ITEMS = order.items.filter(ordered=False)
-                # # for item in ITEMS:
-                # order.items.set(ITEMS)
-                # print('working')
-
                 order_items = order.items.all()
                 order_items.update(ordered=True)
 
@@ -571,6 +607,15 @@ class PaymentView(View):
                     order.item_url = order.item_url + item.item.get_absolute_url() + '  *  ' + str(item.quantity) + '\n'
                     total_qty += item.quantity
                     item.save()
+
+                ordered_date = timezone.datetime.now().strftime('%Y-%m-%d')
+                ordered_time = timezone.datetime.now().strftime('%H:%M:%S')
+
+                mini_order = order.mini_order.all()  #
+                mini_order.update(ordered=True)  #
+
+                order.ordered_date = ordered_date
+                order.ordered_time = ordered_time
 
                 order.total_items = total_qty
                 order.ordered = True

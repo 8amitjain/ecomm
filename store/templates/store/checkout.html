@@ -2,7 +2,10 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+
 <style>
+
   .center-designed-h2{
     font-family: 'Montserrat', sans-serif;
     font-weight:500;
@@ -24,6 +27,8 @@
             <form method="POST" class="card-body">
               {% csrf_token %}
 
+                 {{ location_form.media}}
+                 {{ location_form.as_p}}
               <h3 class="center-designed-h3">Shipping Address</h3>
 
               <div class='hideable_shipping_form'>
@@ -192,6 +197,25 @@ use_default_billing.addEventListener('change', function() {
   } else {
     hideable_billing_form.show();
   }
+})
+
+
+$(document).on("google_point_map_widget:marker_create", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
+});
+
+$(document).on("google_point_map_widget:marker_change", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
+});
+
+$(document).on("google_point_map_widget:marker_delete", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
 })
 
 }

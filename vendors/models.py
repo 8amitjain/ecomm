@@ -1,7 +1,8 @@
 from django.db import models
 from django.shortcuts import reverse
+from django.contrib.gis.db import models as geo_models
 
-from users.models import User, Vendor
+from users.models import User
 
 LABEL_CHOICES = (
     ('Sale', 'Sale'),
@@ -10,6 +11,47 @@ LABEL_CHOICES = (
     ('Trending', 'Trending'),
     ('Top Selling', 'Top Selling'),
 )
+
+
+class VendorLocation(geo_models.Model):
+    vendor_ref_id = models.CharField(unique=True, max_length=15)  # or vendor name here
+    location = geo_models.PointField(help_text="Use map widget for point the house location")
+
+    def __str__(self):
+        return f"{self.location} point location"
+
+    class Meta:
+        verbose_name_plural = 'Locations'
+
+
+class VendorAddress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    location = models.ForeignKey(VendorLocation, on_delete=models.CASCADE, null=True)
+
+    street_address = models.CharField(max_length=100, null=True)
+    apartment_address = models.CharField(max_length=100, null=True)
+
+    city = models.TextField(default='Jalgaon')
+    postal_code = models.IntegerField(null=True)
+
+    def __str__(self):
+        return f"{self.user} Address"
+
+    class Meta:
+        verbose_name_plural = 'Addresses'
+
+
+class Vendor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    address = models.ForeignKey(VendorAddress, on_delete=models.CASCADE, null=True)
+
+    # shop_name = models.CharField()
+    phone_number = models.IntegerField(null=True)
+    pin_code = models.IntegerField(null=True)
+    vendor_ref_number = models.CharField(unique=True, default='VRN-100000', max_length=15)
+
+    def __str__(self):
+        return self.user.username
 
 
 class Brands(models.Model):
@@ -100,7 +142,6 @@ class Item(models.Model):
         return reverse("store:add-to-compare", kwargs={
             'slug': self.slug
         })
-
 
 
 

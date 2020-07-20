@@ -3,9 +3,7 @@ from django.db import models
 from django.core.mail import send_mail
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django.core.validators import MaxValueValidator
 
 from .managers import UserManager
 
@@ -63,21 +61,6 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.user.username
-
-
-class Vendor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    # item = models.ForeignKey(Item, on_delete=models.CASCADE)
-
-    # shop_name = models.CharField()
-    phone_number = models.IntegerField(null=True)
-    pin_code = models.IntegerField(null=True)
-    vendor_ref_number = models.CharField(unique=True, default='VRN-100000', max_length=15)
-
-    def __str__(self):
-        return self.user.username
-
-
 
 
 # class Address(models.Model):
