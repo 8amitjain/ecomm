@@ -21,7 +21,7 @@ class VendorLocation(geo_models.Model):
         return f"{self.location} point location"
 
     class Meta:
-        verbose_name_plural = 'Locations'
+        verbose_name_plural = 'Vendor Locations'
 
 
 class VendorAddress(models.Model):
@@ -38,15 +38,16 @@ class VendorAddress(models.Model):
         return f"{self.user} Address"
 
     class Meta:
-        verbose_name_plural = 'Addresses'
+        verbose_name_plural = 'Vendor Addresses'
 
 
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     address = models.ForeignKey(VendorAddress, on_delete=models.CASCADE, null=True)
+    adding_product = models.BooleanField(default=False)
 
     # shop_name = models.CharField()
-    phone_number = models.IntegerField(null=True)
+    phone_number = models.BigIntegerField(null=True)
     pin_code = models.IntegerField(null=True)
     vendor_ref_number = models.CharField(unique=True, default='VRN-100000', max_length=15)
 
@@ -78,9 +79,26 @@ class Category(models.Model):
         })
 
 
+class SameItem(models.Model):
+    item_ref_number = models.CharField(default='IRN-100000', max_length=15)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    stock_no = models.IntegerField(null=True)  # number of products in stock
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['item_ref_number']
+        unique_together = ('item_ref_number', 'vendor')
+
+    def __str__(self):
+        return f"{self.vendor}_{self.item_ref_number}"
+
+
 class Item(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    sold_by = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    # sold_by = models.OneToOneField(Vendor, on_delete=models.CASCADE)
+    vendors = models.ManyToManyField(Vendor)
+    same_item = models.ManyToManyField(SameItem)
+
     brand = models.ForeignKey(Brands, on_delete=models.CASCADE)
 
     item_ref_number = models.CharField(unique=True, default='IRN-100000', max_length=15)
@@ -88,7 +106,7 @@ class Item(models.Model):
     price = models.FloatField(null=True)
     discount_price = models.FloatField(blank=True, null=True)
     label = models.CharField(choices=LABEL_CHOICES, max_length=11, null=True)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
 
     stock_no = models.IntegerField()  # number of products in stock
 
@@ -109,6 +127,9 @@ class Item(models.Model):
     has_variation = models.BooleanField(default=False,
                                         help_text='If this is ticked, You can add variation later to this product.')
     variation_id = models.CharField(null=True, max_length=20)
+
+    class Meta:
+        ordering = ['item_ref_number']
 
     def __str__(self):
         return self.title
@@ -142,6 +163,7 @@ class Item(models.Model):
         return reverse("store:add-to-compare", kwargs={
             'slug': self.slug
         })
+
 
 
 

@@ -36,6 +36,7 @@ urlpatterns = [
     path('order-summary/', views.OrderSummaryNewView.as_view(), name='order-summary'),
     path('category/<slug>/', views.category_view, name='store-category'),
     path('review/<int:pk>/', views.review, name='store-review'),
+    path('product/return/<str:status>/<int:pk>/', views.product_refund, name='store-product-return'),
 
 
 

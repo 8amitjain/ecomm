@@ -1,0 +1,59 @@
+{% extends 'store/base.html' %}
+{% load crispy_forms_tags %}
+  {% block content %}
+      <main>
+        <section class="uk-section uk-section-small">
+          <div class="uk-container">
+            <div class="uk-grid-medium" uk-grid>
+              <div class="uk-width-1-1 uk-width-1-4@m tm-aside-column">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>
+
+                </div>
+              </div>
+
+              <div class="uk-width-1-1 uk-width-expand@m">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
+                  <header class="uk-card-header">
+                    <h1 class="uk-h2">Ordered Products</h1>
+                  </header>
+                        <div style="margin:2em">
+                            <a class="btn btn-info" href="{% url 'vendors-products' %}">All Products</a>
+                            <hr>
+
+                                 <!--FILTER FORM-->
+                                    <form action="." method="get">
+                                        <div class="row">
+                                          {{ filters.form | crispy }}
+                                          <button class="btn btn-primary" type="submit">Search</button>
+                                        </div>
+                                    </form>
+                                    <hr>
+
+                                    <table border="2">
+
+                                        <tr> <th>Order Number</th> <th>Ordered by</th> <th>Ordered Date</th>
+                                            <th>Payment Method</th> <th>Order Total</th> <th>Order Status</th>
+                                            <th>Return Status</th>
+                                        </tr>
+
+                                            {% for product in orders%}
+                                                <tr> <td>{{product.mini_order_ref_number}}</td> <td>{{orderr.user.first_name}}</td>
+                                                    <td>{{product.ordered_date}}</td> <td>{{orderr.payment_method}}</td>
+                                                    <td>{{product.order_item.get_final_price}}</td>
+                                                    <td><a href="{% url 'vendors-products-ordered-update' product.id %}"> {{product.order_status}} </a> </td>
+                                                    <td><a href="{% url 'vendors-products-returned-update' product.id %}"> {{product.return_status}} </a> </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                    </table>
+                                 <hr>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+      </main>
+{% endblock content %}

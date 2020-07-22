@@ -55,17 +55,17 @@
                      <table class="uk-table uk-table-small uk-table-justify uk-table-responsive ">
                       <tbody>
                         <tr>
-                          <th class="uk-width-small uk-text-muted uk-text-small">Order Placed On</th>
-                          <th class="uk-width-small uk-text-muted uk-text-small">Total</th>
-                          <th class="uk-width-small uk-text-muted uk-text-small">Ship to</th>
-                          <th class="uk-width-large uk-text-muted uk-text-small">{{ order_item.order_ref_number }}</th>
+                          <th class="uk-text-muted uk-text-small">Order Placed On</th>
+                          <th class="uk-text-muted uk-text-small">Total</th>
+                          <th class="uk-text-muted uk-text-small">Ship to</th>
+                          <th class="uk-text-muted uk-text-small">{{ order_item.order_ref_number }}</th>
                         </tr>
 
                         <tr>
-                          <td class="uk-width-small uk-text-muted uk-text-small">{{order_item.ordered_date}}</td>
-                          <td class="uk-width-small uk-text-muted uk-text-small">Rs:{{order_item.payment.amount}}</td>
-                          <td class="uk-width-small uk-text-muted uk-text-small">{{order_item.user.first_name}}</td>
-                          <td class="uk-width-large uk-text-muted uk-text-small"><a href="{% url 'users-order-detail' order_item.id %}">Detailed Summary</a></td>
+                          <td class="uk-text-muted uk-text-small">{{order_item.ordered_date}}</td>
+                          <td class="uk-text-muted uk-text-small">Rs:{{order_item.payment.amount}}</td>
+                          <td class="uk-text-muted uk-text-small">{{order_item.user.first_name}}</td>
+                          <td class="uk-text-muted uk-text-small"><a href="{% url 'users-order-detail' order_item.id %}">Detailed Summary</a></td>
                         </tr>
                       </tbody>
                     </table>
@@ -74,22 +74,35 @@
                     <hr>
                     <table class="uk-table uk-table-small uk-table-justify uk-table-responsive uk-table-divider uk-margin-small-top uk-margin-remove-bottom">
                       <tbody>
-                      {% for item in order_item.items.all %}
-                        <tr>
-                          <th><img src="{{item.item.image_main.url}}" style="width:8em;"></th>
-                          <td>
-                            <h4>{{item.item.title}}</h4>
-                            <span class="uk-text-muted uk-text-small"> Sold by:{{item.item.sold_by.user.first_name}}</span><br>
-                            <span class="uk-text-muted uk-text-small">Rs:{{item.get_final_price}}</span><br>
-                            <h3 class="tm-product-card-title"><a class="uk-link-heading" href="{% url 'store:store-product' item.item.id %}">Buy it again?</a></h3>
-                            <h3 class="tm-product-card-title"><a class="uk-link-heading" href="{% url 'store:store-review' item.item.id %}">Write a review</a></h3>
-                          </td>
 
+                      {% for m_order in mini_order %}
+                        {% if m_order.order_ref_number == order_item.order_ref_number%}
+                        <tr>
+                          <th><img src="{{m_order.order_item.item.image_main.url}}" style="width:8em;"></th>
+                          <td>
+                            <h4>{{m_order.item.title}}</h4>
+                            <span class="uk-text-muted uk-text-small"> Sold by:{{m_order.vendor}}</span><br>
+                            <span class="uk-text-muted uk-text-small">Rs:{{m_order.order_item.get_final_price}}</span><br>
+                            <h3 class="tm-product-card-title"><a class="uk-link-heading" href="{% url 'store:store-product' m_order.order_item.item.id %}">Buy it again?</a></h3>
+                            <h3 class="tm-product-card-title"><a class="uk-link-heading" href="{% url 'store:store-review' m_order.order_item.item.id %}">Write a review</a></h3>
+                            {% if m_order.delivered %}
+                              {% if not m_order.return_requested %}
+                                  <h4 class="uk-text-muted uk-text-small"><a href="{% url 'store:store-product-return' 'return' m_order.id %}">Return/Refund</a></h4>
+                              {% else %}
+                                  <h4 class="uk-text-muted uk-text-small">Return Status: {{ m_order.return_status }}</h4>
+                                  <h4 class="uk-text-muted uk-text-small"><a href="{% url 'store:store-product-return' 'cancel' m_order.id %}">Cancel Return/Refund</a></h4>
+                              {% endif %}
+
+                            {% else %}
+                                <h4 class="uk-text-muted uk-text-small">Order Status: {{ m_order.order_status }}</h4>
+                            {% endif %}
+
+                            {% else %}
+                          </td>
                         </tr>
 
-
+                        {% endif %}
                       {% endfor %}
-
 
 
                       </tbody>

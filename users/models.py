@@ -19,7 +19,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     is_customer = models.BooleanField(_('customer'), default=False)
     is_vendor = models.BooleanField(_('vendor'), default=False)
-    phone_number = models.IntegerField(blank=True, null=True)
+    phone_number = models.BigIntegerField(blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     # profile_pic = models.ImageField(default='default.jpg', upload_to='profile_pics', blank=True)
 
@@ -55,7 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    phone_number = models.IntegerField(null=True)
+    phone_number = models.BigIntegerField(null=True)
     pin_code = models.IntegerField(null=True)
     customer_ref_number = models.CharField(unique=True, default='CRN-100000', max_length=15)
 

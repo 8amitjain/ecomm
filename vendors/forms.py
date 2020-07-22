@@ -2,8 +2,8 @@ from django import forms
 from .models import VendorLocation
 from mapwidgets.widgets import GooglePointFieldWidget
 
-from .models import Item, Category, Brands, VendorAddress
-from store.models import Order
+from .models import Item, Category, Brands, VendorAddress, SameItem
+from store.models import Order, MiniOrder
 
 
 class ItemForm(forms.ModelForm):
@@ -22,6 +22,13 @@ class ItemForm(forms.ModelForm):
         fields = ('category', 'brand', 'title', 'price', 'discount_price', 'label', 'stock_no', 'short_description',
                   'description', 'key_benefits', 'direction_for_use', 'safety_information', 'is_active', 'image_main',
                   'image_2', 'image_3', 'image_4', 'image_5', 'has_variation')
+
+
+class SameItemForm(forms.ModelForm):
+
+    class Meta:
+        model = SameItem
+        fields = ('stock_no', )
 
 
 class ItemVariationsForm(forms.ModelForm):
@@ -48,8 +55,15 @@ class CategoryForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
 
     class Meta:
-        model = Order
+        model = MiniOrder
         fields = ('order_status',)
+
+
+class ReturnForm(forms.ModelForm):
+
+    class Meta:
+        model = MiniOrder
+        fields = ('return_status', 'return_granted')
 
 
 class BrandsForm(forms.ModelForm):

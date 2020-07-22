@@ -28,8 +28,8 @@ INSTALLED_APPS = [
     'django_countries',
     'widget_tweaks',
     'mapwidgets',
-    "django.contrib.gis",
 
+    'django.contrib.gis',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'dawaiwala.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "NAME": "ecomm",
+        "NAME": "dawaiwala",
         "USER": "postgres",
         "PASSWORD": "amitjain",
         "HOST": "localhost",
@@ -126,19 +126,6 @@ AUTH_USER_MODEL = 'users.User'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-GOOGLE_MAP_API_KEY = "AIzaSyBwRaz6Qcmyquj2GG5g4RChfBecOg641Qg"
-
-MAP_WIDGETS = {
-    "GooglePointFieldWidget": (
-        ("zoom", 15),
-        ("mapCenterLocation", [21.0064725, 75.5553983]),
-        ("markerFitZoom", 11),
-        ("GooglePlaceAutocompleteOptions", {'componentRestrictions': {'country': 'uk'}})
-    ),
-    "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY,
-}
-
-
 GDAL_LIBRARY_PATH = r'E:\Coding\Python\django\Dawaiwala-online\venv\Lib\site-packages\osgeo\gdal301.dll'
 
 PROJ_DIR = r'E:\Coding\Python\django\Dawaiwala-online\venv\Lib\site-packages\osgeo\data\proj'
@@ -160,6 +147,19 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'visionboard.help@gmail.com'
 EMAIL_HOST_PASSWORD = 'edqvopggdzwivnlk'
 # os.environ.get('EMAIL_HOST_USER')
+
+GOOGLE_MAP_API_KEY = "AIzaSyBwRaz6Qcmyquj2GG5g4RChfBecOg641Qg"
+
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocation", [21.0064725, 75.5553983]),
+        ("markerFitZoom", 11),
+        ("GooglePlaceAutocompleteOptions", {'componentRestrictions': {'country': 'uk'}})
+    ),
+    "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY,
+}
+
 
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51GziiaEMM8ICDJpWkzDBSC4IRrZZiae23SdzYedj0uPaKdSYwf6jJui0VfF2RFgMa1looBaTq82qRrvsLe0wkFqm00llm82WLu'
 STRIPE_SECRET_KEY = 'sk_test_51GziiaEMM8ICDJpWgnWlUH3cBzh6IOrYqTPpB7SgD5ZCZWb4sHcoa6WWd5BU69IhngDN0igApImzgA9aiZZj9k0y006rsHOJiB'

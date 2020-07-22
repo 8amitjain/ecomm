@@ -8,11 +8,16 @@ urlpatterns = [
     path('sales/', views.sales, name='vendors-sales'),
 
     path('products/', views.products_display, name='vendors-products'),
-    path('products/add/', views.item_add, name='vendors-products-add'),
-    path('products/add/<str:var_id>', views.varient_item_add, name='vendors-products-add-varient'),
+    path('products/add/', views.products_add, name='vendors-products-add'),
+    path('products/add/<str:var_id>', views.varient_products_add, name='vendors-products-add-varient'),
+
+    path('product/<int:pk>/', views.product_sell, name='vendor-product-sell'),
 
     path('products/ordered/', views.products_ordered, name='vendors-products-ordered'),
     path('products/ordered/update/<int:pk>/', views.products_ordered_update, name='vendors-products-ordered-update'),
+
+    path('products/returned/', views.products_returned, name='vendors-products-returned'),
+    path('products/returned/update/<int:pk>/', views.products_ordered_update, name='vendors-products-returned-update'),
 
     path('category/', views.category_display, name='vendors-category'),
     path('category/add/', views.category_add, name='vendors-category-add'),

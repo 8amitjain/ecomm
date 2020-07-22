@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
@@ -7,11 +8,15 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.contrib.gis.geos import Point
+from django.contrib.gis.db.models.functions import Distance
 from stripe.api_resources.terminal import location
 
-from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm, LocationForm
-from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, Refund, UserProfile, Addresss, Slide, \
-    Reviews, Location, MiniOrder
+from vendors.models import VendorLocation, VendorAddress, Vendor
+
+from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm, LocationForm, ReturnForm
+from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, UserProfile, Addresss, Slide,\
+                    Reviews, CustomerLocation, MiniOrder
 
 from vendors.models import Item, Category, Brands
 from users.models import User
@@ -146,7 +151,7 @@ def add_to_cart(request, slug):
             ordered_time = timezone.datetime.now().strftime('%H:%M:%S')
 
             m_order = MiniOrder.objects.create(
-                ordered_date=ordered_date, ordered_time=ordered_time, vendor=item.sold_by,
+                ordered_date=ordered_date, ordered_time=ordered_time, vendor=item.vendors.first(), user=request.user,
                 order_ref_number=order.order_ref_number, order_item=order_item)
             m_order.mini_order_ref_number = f"MORN-{100000 + int(m_order.id)}"
             m_order.save()
@@ -166,7 +171,7 @@ def add_to_cart(request, slug):
         order.save()
 
         m_order = MiniOrder.objects.create(
-            ordered_date=ordered_date, ordered_time=ordered_time, vendor=item.sold_by,
+            ordered_date=ordered_date, ordered_time=ordered_time, vendor=item.vendors.first(), user=request.user,
             order_ref_number=ORN, order_item=order_item)
         m_order.mini_order_ref_number = f"MORN-{100000 + int(m_order.id)}"
         m_order.save()
@@ -375,12 +380,12 @@ class CheckoutView(View):
             order = Order.objects.get(user=self.request.user, ordered=False)
             if location_form.is_valid():
                 try:
-                    location_point = Location.objects.get(order_ref_number=order.order_ref_number)
+                    location_point = CustomerLocation.objects.get(order_ref_number=order.order_ref_number)
                 except ObjectDoesNotExist:
                     location_point = location_form.save(commit=False)
                     location_point.order_ref_number = order.order_ref_number
                     location_point.save()
-                    location_point = Location.objects.get(order_ref_number=order.order_ref_number)
+                    location_point = CustomerLocation.objects.get(order_ref_number=order.order_ref_number)
             if form.is_valid():
 
                 use_default_shipping = form.cleaned_data.get(
@@ -545,7 +550,6 @@ class PaymentView(View):
 
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
-        mini_orders = MiniOrder.objects.filter(order_ref_number=order.order_ref_number)
         form = PaymentForm(self.request.POST)
         userprofile = UserProfile.objects.get(user=self.request.user)
         if form.is_valid():
@@ -570,61 +574,91 @@ class PaymentView(View):
 
             amount = int(order.get_total() * 100)
 
-            try:
+            # try:
 
-                if use_default or save:
-                    # charge the customer because we cannot charge the token more than once
-                    charge = stripe.Charge.create(
-                        amount=amount,  # cents
-                        currency="inr",
-                        customer=userprofile.stripe_customer_id
-                    )
-                else:
-                    # charge once off on the token
-                    charge = stripe.Charge.create(
-                        amount=amount,  # cents
-                        currency="inr",
-                        source=token
-                    )
+            if use_default or save:
+                # charge the customer because we cannot charge the token more than once
+                charge = stripe.Charge.create(
+                    amount=amount,  # cents
+                    currency="inr",
+                    customer=userprofile.stripe_customer_id
+                )
+            else:
+                # charge once off on the token
+                charge = stripe.Charge.create(
+                    amount=amount,  # cents
+                    currency="inr",
+                    source=token
+                )
 
-                # create the payment
-                payment = Payment()
-                payment.stripe_charge_id = charge['id']
-                payment.user = self.request.user
-                payment.amount = order.get_total()
-                payment.save()
+            # create the payment
+            payment = Payment()
+            payment.stripe_charge_id = charge['id']
+            payment.user = self.request.user
+            payment.amount = order.get_total()
+            payment.save()
 
-                order_items = order.items.all()
-                order_items.update(ordered=True)
+            order_items = order.items.all()
 
-                for x in order_items:
-                    x.item.stock_no = int(x.item.stock_no) - x.quantity
-                    x.item.save()
+            for x in order_items:
+                x.item.stock_no = int(x.item.stock_no) - x.quantity
+                x.item.save()
 
-                order.item_url = ''
-                total_qty = 0
-                for item in order_items:
-                    order.item_url = order.item_url + item.item.get_absolute_url() + '  *  ' + str(item.quantity) + '\n'
-                    total_qty += item.quantity
-                    item.save()
+            order.item_url = ''
+            total_qty = 0
+            for item in order_items:
+                order.item_url = order.item_url + item.item.get_absolute_url() + '  *  ' + str(item.quantity) + '\n'
+                total_qty += item.quantity
+                item.save()
 
-                ordered_date = timezone.datetime.now().strftime('%Y-%m-%d')
-                ordered_time = timezone.datetime.now().strftime('%H:%M:%S')
+            ordered_date = timezone.datetime.now().strftime('%Y-%m-%d')
+            ordered_time = timezone.datetime.now().strftime('%H:%M:%S')
+            mini_order = order.mini_order.all()  #
 
-                mini_order = order.mini_order.all()  #
-                mini_order.update(ordered=True)  #
+            location_model = order.shipping_address.location
+            latitude = location_model.location.y
+            longitude = location_model.location.x
+            user_location = Point(longitude, latitude, srid=4326)
+            queryset = VendorLocation.objects.annotate(
+                distance=Distance("location", user_location)
+            ).order_by("distance")[0:]
 
-                order.ordered_date = ordered_date
-                order.ordered_time = ordered_time
+            for vendor_location in queryset:
+                mini_order = MiniOrder.objects.filter(order_ref_number=order.order_ref_number, ordered=False)
+                if mini_order:
+                    vendor_address = VendorAddress.objects.get(location=vendor_location)
 
-                order.total_items = total_qty
-                order.ordered = True
-                order.payment = payment
-                order.save()
+                    vendorr = Vendor.objects.get(address=vendor_address) # nearest vendor is this
+                    items = vendorr.item_set.all()
+                    # items = Item.objects.filter(vendors=vendorr)
 
-                messages.success(self.request, "Your order was successful!")
-                return redirect("users-order")
+                    for m_order in mini_order:
+                        item_title = m_order.order_item.item.title
 
+                        for item in items:
+                            if item_title == item.title:
+                                m_order.vendor = vendorr
+                                m_order.ordered = True
+                                m_order.save()
+                                break
+
+            order.ordered_date = ordered_date
+            order.ordered_time = ordered_time
+
+            order.total_items = total_qty
+            order.return_window = timezone.datetime.now() + timezone.timedelta(days=10)
+            order.payment = payment
+
+            order_items.update(ordered=True)
+            mini_order.update(ordered=True)  #
+
+            order.ordered = True
+
+            order.save()
+
+            messages.success(self.request, "Your order was successful!")
+            return redirect("users-order")
+'''
             except stripe.error.CardError as e:
                 body = e.json_body
                 err = body.get('error', {})
@@ -668,6 +702,7 @@ class PaymentView(View):
 
         messages.warning(self.request, "Invalid data received")
         return redirect("/payment/stripe/")
+# '''
 
 
 def home(request):
@@ -710,6 +745,46 @@ def review(request, pk):
         'form': form
     }
     return render(request, 'store/form.html', context)
+
+
+@login_required
+def product_refund(request, pk, status):
+    m_order = MiniOrder.objects.get(pk=pk)
+    if m_order.return_window >= timezone.now():
+        if m_order.received:
+            if status == 'cancel':
+                m_order.return_requested = False
+                m_order.return_status = 'Not as Describe'
+                m_order.save()
+                return HttpResponseRedirect("/")
+            elif status == 'return':
+                if request.method == 'POST':
+                    form = ReturnForm(request.POST)
+
+                    if form.is_valid():
+                        returnn = form.save(commit=False)
+                        returnn.user = request.user
+                        returnn.mini_order = m_order
+                        returnn.return_date = timezone.datetime.now()
+                        returnn.save()
+
+                        m_order.return_requested = True
+                        m_order.return_status = 'Processing Return Request'
+                        m_order.save()
+                        messages.success(request, f'Request Initiated!')
+                        return redirect('/')
+                else:
+                    form = ReturnForm()
+
+                context = {
+                    'form': form
+                }
+                return render(request, 'store/form.html', context)
+        else:
+            redirect("/")
+
+    else:
+        redirect("/")
 
 
 def blog(request):

@@ -2,7 +2,7 @@ from django.contrib import admin
 from mapwidgets.widgets import GooglePointFieldWidget
 from django.contrib.gis.db import models as geo_model
 
-from .models import Item, Category, Brands, Vendor, VendorAddress, VendorLocation
+from .models import Item, Category, Brands, Vendor, VendorAddress, VendorLocation, SameItem
 
 
 def copy_items(modeladmin, request, queryset):
@@ -42,6 +42,7 @@ class VendorLocationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Item, ItemAdmin)
+admin.site.register(SameItem)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Brands)
 admin.site.register(Vendor)

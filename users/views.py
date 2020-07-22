@@ -12,7 +12,7 @@ from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeEr
 from .utils import account_activation_token
 from django.urls import reverse
 
-from store.models import Order, OrderItem, Location
+from store.models import Order, OrderItem, CustomerLocation, MiniOrder
 from .models import User
 from .forms import UserUpdateForm, CustomerRegistrationForm, VendorRegistrationForm, CustomerUpdateForm,\
                    VendorUpdateForm
@@ -137,7 +137,9 @@ def account_view(request, data):
 @login_required
 def order(request):
     order_model = Order.objects.filter(user=request.user)
-    return render(request, 'users/order.html', {'order': order_model})
+    mini_order = MiniOrder.objects.filter(user=request.user)
+    return render(request, 'users/order.html', {'order': order_model,
+                                                'mini_order': mini_order})
 
 
 @login_required

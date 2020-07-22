@@ -1,101 +1,205 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import slugify
 from django.utils import timezone
-from stripe.api_resources import order
+# from stripe.api_resources import order
 
-from .forms import ItemForm, CategoryForm, OrderForm, ItemVariationsForm, BrandsForm, VendorAddressForm, LocationForm
-from .filters import ProductOrderFilter, ItemFilter, CategoryFilter
-from .models import Item, Category, VendorLocation
+from .forms import ItemForm, CategoryForm, OrderForm, ItemVariationsForm, BrandsForm, VendorAddressForm, LocationForm,\
+                   SameItemForm, ReturnForm
+from .filters import ProductOrderFilter, ItemFilter, CategoryFilter, VendorItemFilter
+from .models import Item, Category, VendorLocation, SameItem
 from users.models import User
-from store.models import Order, OrderItem
+from store.models import Order, OrderItem, MiniOrder
 from .models import Vendor
 
 
 @login_required
-def item_add(request):
+def products_add(request):
     context = {}
-    if request.POST:
-        form = ItemForm(request.POST, request.FILES)
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.sold_by = request.user.vendor
-            item.slug = slugify(item.title)
-            item.save()
-            item.variation_id = f"IVRN-{100000 + item.id}"
-            item.slug = slugify(f"{str(item.title)}+{'-'}+{str(item.item_ref_number)}")
-            item.item_ref_number = f"IRN-{100000 + int(item.id)}"
+    if request.user.vendor.adding_product:
+        if request.POST:
+            form = ItemForm(request.POST, request.FILES)
+            if form.is_valid():
+                item = form.save(commit=False)
+                # item.sold_by = request.user.vendor
+                item.slug = slugify(item.title)
+                item.save()
+                item.vendors.add(request.user.vendor)
+                item.variation_id = f"IVRN-{100000 + item.id}"
+                item.item_ref_number = f"IRN-{100000 + int(item.id)}"
+                item.slug = slugify(f"{str(item.title)}+{'-'}+{str(item.item_ref_number)}")
+                item.save()
 
-            item.save()
-            return redirect('store:store')
+                same_items = SameItem.objects.create(vendor=request.user.vendor, item_ref_number=item.item_ref_number,
+                                                     stock_no=item.stock_no)
+                same_items.save()
+
+                item.same_item.add(same_items)
+                item.save()
+
+                return redirect('store:store')
+            else:
+                context['form'] = form
+
         else:
+            form = ItemForm()
             context['form'] = form
+        return render(request, 'vendors/form.html', context)
 
     else:
-        form = ItemForm()
-        context['form'] = form
-    return render(request, 'vendors/form.html', context)
+        model = Item.objects.all()
+
+        item_filter = VendorItemFilter(request.GET, queryset=model)
+        model = item_filter.qs
+        context['filter'] = item_filter
+        context['object_list'] = model
+    return render(request, 'vendors/vendor_item_select.html', context)
 
 
 @login_required
-def varient_item_add(request, var_id):
-    context = {}
-    itemss = Item.objects.filter(variation_id=var_id).first()
-    if request.POST:
-        form = ItemVariationsForm(request.POST, request.FILES)
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.category = itemss.category
-            item.brand = itemss.brand
-            item.has_variation = True
-            item.sold_by = request.user.vendor
-            item.slug = slugify(item.title)
-            item.variation_id = var_id
-            item.save()
+def product_sell(request, pk):
+    if not request.user.vendor.adding_product:
+        context = {}
+        item = Item.objects.get(id=pk)
+        if request.POST:
+            form = SameItemForm(request.POST)
+            try:
+                if form.is_valid():
+                    item_form = form.save(commit=False)
+                    item_form.vendor = request.user.vendor
+                    item_form.item_ref_number = item.item_ref_number
+                    item_form.save()
+                    item.same_item.add(item_form)
+                    item.vendors.add(request.user.vendor)
+                    item.save()
+            except IntegrityError:
+                if form.is_valid():
+                    item_form = form.save(commit=False)
+                    same_items = SameItem.objects.get(vendor=request.user.vendor, item_ref_number=item.item_ref_number)
+                    same_items.stock_no = item_form.stock_no
+                    same_items.save()
+                return redirect('vendors-products')
+            else:
+                context['form'] = form
 
-            item.slug = slugify(f"{str(item.title)}+{'-'}+{str(item.item_ref_number)}")
-            item.item_ref_number = f"IRN-{100000 + int(item.id)}"
-            item.save()
-
-            return redirect('store:store')
         else:
+            form = SameItemForm()
             context['form'] = form
-    else:
-        form = ItemVariationsForm()
-        context['form'] = form
-    return render(request, 'vendors/form.html', context)
 
+        return render(request, 'vendors/form.html', context)
+    else:
+        redirect("/")
+
+
+@login_required
+def varient_products_add(request, var_id):
+    context = {}
+    if request.user.vendor.adding_product:
+        itemss = Item.objects.filter(variation_id=var_id).first()
+        if request.POST:
+            form = ItemVariationsForm(request.POST, request.FILES)
+            if form.is_valid():
+                item = form.save(commit=False)
+                item.category = itemss.category
+                item.brand = itemss.brand
+                item.has_variation = True
+                # item.sold_by = request.user.vendor
+                item.slug = slugify(item.title)
+                item.variation_id = var_id
+                item.save()
+                item.vendors.add(request.user.vendor)
+                item.item_ref_number = f"IRN-{100000 + int(item.id)}"
+                item.slug = slugify(f"{str(item.title)}+{'-'}+{str(item.item_ref_number)}")
+                item.save()
+
+                same_items = SameItem.objects.create(vendor=request.user.vendor, item_ref_number=item.item_ref_number,
+                                                     stock_no=item.stock_no)
+                same_items.save()
+
+                item.same_item.add(same_items)
+                item.save()
+
+                return redirect('store:store')
+            else:
+                context['form'] = form
+        else:
+            form = ItemVariationsForm()
+            context['form'] = form
+        return render(request, 'vendors/form.html', context)
+    else:
+        redirect("/")
+   
 
 @login_required
 def category_add(request):
     context = {}
-    if request.POST:
-        form = CategoryForm(request.POST, request.FILES)
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.slug = slugify(item.title)
-            item.save()
-            return redirect('vendors-category')
-        else:
-            context['form'] = form
+    if request.user.vendor.adding_product:
+        if request.POST:
+            form = CategoryForm(request.POST, request.FILES)
+            if form.is_valid():
+                item = form.save(commit=False)
+                item.slug = slugify(item.title)
+                item.save()
+                return redirect('vendors-category')
+            else:
+                context['form'] = form
 
+        else:
+            form = CategoryForm()
+            context['form'] = form
+        return render(request, 'vendors/form.html', context)
     else:
-        form = CategoryForm()
-        context['form'] = form
-    return render(request, 'vendors/form.html', context)
+        return redirect("/")
+
+
+@login_required
+def brand_add(request):
+    context = {}
+    if request.user.vendor.adding_product:
+        if request.POST:
+            form = BrandsForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('/')
+            else:
+                context['form'] = form
+
+        else:
+            form = BrandsForm()
+            context['form'] = form
+        return render(request, 'vendors/form.html', context)
+    else:
+        return redirect("/")
+
+
+@login_required
+def category_display(request):
+    if request.user.vendor.adding_product:
+        category = Category.objects.all()
+        filters = CategoryFilter(request.GET, queryset=category)
+        category = filters.qs
+        context = {
+            'category': category,
+            'filters': filters
+        }
+        return render(request, 'vendors/category.html', context)
+    else:
+        return redirect("/")
 
 
 @login_required
 def products_ordered_update(request, pk):
     context = {}
     # vendor = Vendor.objects.get(user_id=request.user.vendor.user_id)
-    order = Order.objects.get(ordered=True, vendor=request.user.vendor, id=pk)
+    mini_order = MiniOrder.objects.get(id=pk)
+    order = Order.objects.get(order_ref_number=mini_order.order_ref_number)
     order_item = OrderItem.objects.filter(ordered=True, order=order)
 
     if request.POST:
-        form = OrderForm(request.POST, instance=order)
+        form = OrderForm(request.POST, instance=mini_order)
         if form.is_valid():
             form.save()
             return redirect('vendors-products-ordered')
@@ -103,61 +207,108 @@ def products_ordered_update(request, pk):
             context['form'] = form
             context['order_item'] = order_item
             context['order'] = order
+            context['mini_order'] = mini_order
 
     else:
-        form = OrderForm(instance=order)
+        form = OrderForm(instance=mini_order)
         context['form'] = form
         context['order_item'] = order_item
         context['order'] = order
+        context['mini_order'] = mini_order
     return render(request, 'vendors/products_ordered_detail.html', context)
 
 
 @login_required
 def products_ordered(request):
-    orders = Order.objects.filter(ordered=True, vendor=request.user.vendor)  # add delivered is False
+    orders = MiniOrder.objects.filter(ordered=True, vendor=request.user.vendor, delivered=False)
+    try:
+        orderr = Order.objects.get(mini_order=orders.first().id)
+    except AttributeError:
+        orderr = ''
     filters = ProductOrderFilter(request.GET, queryset=orders)
+
     orders = filters.qs
     context = {
         'orders': orders,
-        'filters': filters
+        'orderr': orderr,
+        'filters': filters,
     }
     return render(request, 'vendors/products_ordered.html', context)
 
 
 @login_required
-def category_display(request):
-    category = Category.objects.all()
-    filters = CategoryFilter(request.GET, queryset=category)
-    category = filters.qs
-    context = {
-        'category': category,
-        'filters': filters
-    }
-    return render(request, 'vendors/category.html', context)
-
-
-@login_required
 def products_display(request):
-    products = Item.objects.filter(sold_by=request.user.vendor)
+    # same_item = SameItem.objects.filter(vendor=request.user.vendor)
+
+    products = request.user.vendor.item_set.all()
+    same_item = SameItem.objects.filter(vendor=request.user.vendor)
+
     filters = ItemFilter(request.GET, queryset=products)
     products = filters.qs
     context = {
         'products': products,
+        'same_item': same_item,
         'filters': filters
     }
     return render(request, 'vendors/products.html', context)
 
 
 @login_required
+def products_returned(request):
+    orders = MiniOrder.objects.filter(ordered=True, vendor=request.user.vendor, return_requested=True,
+                                      )  # return_granted=False
+    try:
+        orderr = Order.objects.get(mini_order=orders.first().id)
+    except AttributeError:
+        orderr = ''
+    filters = ProductOrderFilter(request.GET, queryset=orders)
+
+    orders = filters.qs
+    context = {
+        'orders': orders,
+        'orderr': orderr,
+        'filters': filters,
+    }
+    return render(request, 'vendors/products_returned.html', context)
+
+
+@login_required
+def products_ordered_update(request, pk):
+    context = {}
+    mini_order = MiniOrder.objects.get(id=pk)
+    order = Order.objects.get(order_ref_number=mini_order.order_ref_number)
+    order_item = OrderItem.objects.filter(ordered=True, order=order)
+
+    if request.POST:
+        form = ReturnForm(request.POST, instance=mini_order)
+        if form.is_valid():
+            form.save()
+            return redirect('vendors-products-returned')
+        else:
+            context['form'] = form
+            context['order_item'] = order_item
+            context['order'] = order
+            context['mini_order'] = mini_order
+
+    else:
+        form = ReturnForm(instance=mini_order)
+        context['form'] = form
+        context['order_item'] = order_item
+        context['order'] = order
+        context['mini_order'] = mini_order
+    return render(request, 'vendors/products_return_detail.html', context)
+
+
+@login_required
 def sales(request):
-    orders = Order.objects.filter(vendor=request.user.vendor)
-    orders_today = Order.objects.filter(vendor=request.user.vendor, ordered_date=timezone.datetime.now().strftime('%Y-%m-%d'))
-    print(timezone.datetime.now().strftime('%Y-%m-%d'), 'date')
+    orders = MiniOrder.objects.filter(vendor=request.user.vendor, ordered=True, return_granted=False)
+    orders_today = MiniOrder.objects.filter(vendor=request.user.vendor, ordered=True, return_granted=False,
+                                            ordered_date=timezone.datetime.now().strftime('%Y-%m-%d'))
     total_sales = 0
     total_orders = len(orders)
     pending_order = 0
     for order in orders:
-        total_sales = total_sales + int(order.get_total())
+        total_sales = total_sales + int(order.order_item.get_final_price())
 
         if order.received is False:
             pending_order += 1
@@ -165,7 +316,7 @@ def sales(request):
     today_total_sales = 0
     today_total_orders = len(orders_today)
     for order in orders_today:
-        today_total_sales = today_total_sales + int(order.get_total())
+        today_total_sales = today_total_sales + int(order.order_item.get_final_price())
 
     context = {
         'total_sales': total_sales,
@@ -175,23 +326,6 @@ def sales(request):
         'pending_order': pending_order,
     }
     return render(request, 'vendors/sales.html', context)
-
-
-@login_required
-def brand_add(request):
-    context = {}
-    if request.POST:
-        form = BrandsForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
-        else:
-            context['form'] = form
-
-    else:
-        form = BrandsForm()
-        context['form'] = form
-    return render(request, 'vendors/form.html', context)
 
 
 @login_required

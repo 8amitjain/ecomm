@@ -36,9 +36,9 @@
                                         </tr>
 
                                             {% for product in orders%}
-                                                <tr> <td>{{product.order_ref_number}}</td> <td>{{product.user.first_name}}</td>
-                                                    <td>{{product.ordered_date}}</td> <td>{{product.payment_method}}</td>
-                                                    <td>{{product.get_total}}</td>
+                                                <tr> <td>{{product.mini_order_ref_number}}</td> <td>{{orderr.user.first_name}}</td>
+                                                    <td>{{product.ordered_date}}</td> <td>{{orderr.payment_method}}</td>
+                                                    <td>{{product.order_item.get_final_price}}</td>
                                                     <td><a href="{% url 'vendors-products-ordered-update' product.id %}"> {{product.order_status}} </a> </td>
                                                 </tr>
                                             {% endfor %}

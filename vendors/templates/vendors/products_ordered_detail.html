@@ -21,19 +21,16 @@
                                          <th>Price</th> <th>Order Total</th>  <th>Order Status</th>
                                     </tr>
 
-                                        {% for product in order_item%}
-                                            <tr> <td>{{product.item.item_ref_number}}</td> <td>{{product.item.title}}</td>
-                                                <td>{{product.quantity}}</td>
+                                            <tr> <td>{{mini_order.order_item.item.item_ref_number}}</td> <td>{{mini_order.order_item.item.title}}</td>
+                                                <td>{{mini_order.order_item.quantity}}</td>
 
-                                                {% if product.item.discount_price %}
-                                                    <td>{{product.item.discount_price}}</td>
+                                                {% if mini_order.order_item.item.discount_price %}
+                                                    <td>{{mini_order.order_item.item.discount_price}}</td>
                                                 {% else %}
-                                                    <td>{{product.item.price}}</td>
+                                                    <td>{{mini_order.order_item.item.price}}</td>
                                                 {% endif  %}
 
-                                                <td>{{product.get_final_price}}</td>
-<!--                                                <td><a href="{% url 'vendors-products-ordered-update' product.id %}"> {{order.order_status}} </a> </td>-->
-                                        {% endfor %}
+                                                <td>{{mini_order.order_item.get_final_price}}</td>
 
                                                 <td>
                                                     <form method="POST" enctype="multipart/form-data">
@@ -58,8 +55,8 @@
                                     </tr>
 
                                     <tr>
-                                        <td>{{order.order_ref_number}}</td> <td>{{order.get_total}}</td>
-                                        <td>{{order.total_items}}</td> <td>{{order.taxes}}</td>
+                                        <td>{{mini_order.mini_order_ref_number}}</td> <td>{{mini_order.order_item.get_final_price}}</td>
+                                        <td>{{mini_order.order_item.quantity}}</td> <td>{{order.taxes}}</td>
                                         <td>{{order.order_status}}</td>
                                     </tr>
                                 </table>
@@ -67,7 +64,7 @@
                                     <hr>
                                     <h3>Order Details</h3>
                                     <table style="margin-left:2em;">
-                                        <tr> <th> Order Number: {{order.order_ref_number}}</th> </tr>
+                                        <tr> <th> Order Number: {{mini_order.mini_order_ref_number}}</th> </tr>
                                             <tr>  <td> <b>Contact Details</b> </td> </tr>
                                             <tr>    <td>{{order.user.first_name}}&nbsp;{{order.user.last_name}}</td> </tr>
                                             <tr>    <td>{{order.shipping_address.phone_number}}</td> </tr>

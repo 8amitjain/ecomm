@@ -3,11 +3,11 @@ from django.db import models
 from mapwidgets.widgets import GooglePointFieldWidget
 from django.contrib.gis.db import models as geo_model
 
-from .models import OrderItem, FavoriteItem, CompareItem, Order, Payment, Coupon, Refund, Slide, UserProfile, Addresss,\
-                    Reviews, Location, MiniOrder
+from .models import OrderItem, FavoriteItem, CompareItem, Order, Payment, Coupon, Slide, UserProfile, Addresss,\
+                    Reviews, CustomerLocation, MiniOrder, Return
 
 
-class LocationAdmin(admin.ModelAdmin):
+class CustomerLocationAdmin(admin.ModelAdmin):
     formfield_overrides = {
         geo_model.PointField: {"widget": GooglePointFieldWidget}
     }
@@ -24,8 +24,6 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['user',
                     'ordered',
                     'received',
-                    'refund_requested',
-                    'refund_granted',
                     'shipping_address',
                     'billing_address',
                     'payment',
@@ -41,8 +39,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ['user',
                    'ordered',
                    'received',
-                   'refund_requested',
-                   'refund_granted']
+                   ]
     search_fields = [
         'user__username',
         'ref_code'
@@ -70,11 +67,11 @@ admin.site.register(CompareItem)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Payment)
 admin.site.register(Coupon)
-admin.site.register(Refund)
 admin.site.register(Addresss)
 admin.site.register(Reviews)
-admin.site.register(Location, LocationAdmin)
+admin.site.register(CustomerLocation, CustomerLocationAdmin)
 admin.site.register(MiniOrder)
+admin.site.register(Return)
 
 # admin.site.register(Address, AddressAdmin)
 

@@ -20,21 +20,26 @@
                          <th>stock_no</th> <th>is_active</th> <th>Image</th> <th>Add Variation</th>
                     </tr>
 
-                        {% for product in products%}
+                        {% for product in products %}
 
-                            <tr> <td>{{product.item_ref_number}}</td> <td>{{product.title}}</td> <td>{{product.price}}</td>
-                                 <td>{{product.discount_price}}</td> <td>{{product.label}}</td>
-                                 <td>{{product.stock_no}}</td> <td>{{product.is_active}}</td>
-                                 <td><img src="{{product.image_main.url}}" width="300px"> </td>
-                                {% if product.has_variation is True %}
-                                     <td><a href="{% url 'vendors-products-add-varient' product.variation_id %}">Add Variation</a></td>
+                            {% for item in same_item %}
+                                {% if item.item_ref_number == product.item_ref_number %}
+
+                                    <tr> <td>{{product.item_ref_number}}</td> <td>{{product.title}}</td> <td>{{product.price}}</td>
+                                         <td>{{product.discount_price}}</td> <td>{{product.label}}</td>
+                                         <td>{{item.stock_no}}</td> <td>{{item.is_active}}</td>
+                                         <td><img src="{{product.image_main.url}}" width="300px"> </td>
+                                        {% if product.has_variation is True %}
+                                             <td><a href="{% url 'vendors-products-add-varient' product.variation_id %}">Add Variation</a></td>
+                                        {% endif %}
+                                    </tr>
+
                                 {% endif %}
-
-                            </tr>
-
+                            {% endfor %}
                         {% endfor %}
 
                 </table>
+
 
         </div>
 <br>

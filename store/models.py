@@ -3,6 +3,7 @@ from django.contrib.gis.db import models as geo_models
 from django.db.models.signals import post_save
 from django.core.validators import MaxValueValidator
 from django.utils import timezone
+from django.utils.timezone import timedelta
 
 from users.models import User
 from vendors.models import Item, Category, Vendor
@@ -30,7 +31,35 @@ ORDER_STATUS = (
     ('Out for delivery', 'Out for delivery'),
     ('Delivered', 'Delivered'),
     ('RETURNED', 'RETURNED'),
-    ('CANCELED', 'CANCELED'),
+    ('CANCELED', 'CANCELED')
+)
+
+
+RETURN_STATUS = (
+    ('', ''),
+    ('Return Denied', 'Return Denied'),
+    ('Processing Return Request', 'Processing Return Request'),
+    ('Item Picked up', 'Item Picked up '),
+    ('Item Received Vendor', 'Item Received Vendor'),
+    ('Return Granted', 'Return Granted'),
+    ('CANCELED', 'CANCELED')
+)
+
+REQUEST_RETURN_TYPE = (
+     ('RETURN', 'RETURN'),
+     ('Exchange', 'Exchange')
+)
+
+
+RETURN_REASON = (
+    ('', ''),
+    ('Not as Describe', 'Not as Describe'),
+    ('Damaged', 'Damaged'),
+    ('Expired', 'Expired'),
+    ('Ordered Wrong Item', 'Ordered Wrong Item'),
+    ('Received Wrong Item', 'Received Wrong Item'),
+    ('Received Wrong Brand Item', 'Received Wrong Brand Item'),  # may be variation
+    ('Other', 'Other')
 )
 
 
@@ -48,10 +77,11 @@ def userprofile_receiver(sender, instance, created, *args, **kwargs):
     if created:
         userprofile = UserProfile.objects.create(user=instance)
 
+
 post_save.connect(userprofile_receiver, sender=User)
 
 
-class Location(geo_models.Model):
+class CustomerLocation(geo_models.Model):
     order_ref_number = models.CharField(unique=True, max_length=15, null=True)  # or vendor name here
     location = geo_models.PointField(help_text="Use map widget for point the house location")
 
@@ -59,18 +89,18 @@ class Location(geo_models.Model):
         return f"{self.location} point location"
 
     class Meta:
-        verbose_name_plural = 'Locations'
+        verbose_name_plural = 'Customer Locations'
 
 
 class Addresss(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
+    location = models.ForeignKey(CustomerLocation, on_delete=models.CASCADE, null=True)
 
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100)
 
     city = models.TextField(default='Jalgaon')
-    phone_number = models.IntegerField(validators=[MaxValueValidator(9999999999)], blank=True)
+    phone_number = models.BigIntegerField(validators=[MaxValueValidator(9999999999)], blank=True)
     postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)])
 
     address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
@@ -182,7 +212,9 @@ class CompareItem(models.Model):
 
 
 class MiniOrder(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+
     order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
 
     order_ref_number = models.CharField(default='ORD-100000', max_length=15)
@@ -192,6 +224,14 @@ class MiniOrder(models.Model):
     ordered_time = models.TimeField()
     ordered = models.BooleanField(default=False)
     order_status = models.CharField(choices=ORDER_STATUS, max_length=50, default='Preparing Order')
+
+    # received_by_customer = models.BooleanField(default=False, blank=True, null=True)
+    delivered = models.BooleanField(default=False, blank=True, null=True)
+    return_requested = models.BooleanField(default=False)
+    return_granted = models.BooleanField(default=False)
+
+    return_window = models.DateTimeField(default=timezone.now() + timedelta(days=10))
+    return_status = models.CharField(choices=RETURN_STATUS, max_length=50, default='')
 
     def __str__(self):
         return f"{self.order_item.user} Mini_Order"
@@ -217,11 +257,8 @@ class Order(models.Model):
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
 
-    refund_requested = models.BooleanField(default=False)
-    refund_granted = models.BooleanField(default=False)
     item_url = models.TextField(default='', blank=True, null=True)
 
-    order_status = models.CharField(choices=ORDER_STATUS, max_length=50, default='Preparing Order')
     received = models.BooleanField(default=False, blank=True, null=True)
 
     payment_method = models.CharField(default='Online by card', max_length=30)
@@ -284,16 +321,6 @@ class Coupon(models.Model):
         return self.code
 
 
-class Refund(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    reason = models.TextField()
-    accepted = models.BooleanField(default=False)
-    email = models.EmailField()
-
-    def __str__(self):
-        return f"{self.pk}"
-
-
 class Reviews(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True)
@@ -309,5 +336,20 @@ class Reviews(models.Model):
         except:
             return f"{self.user}_{self.title}"
 
+
+class Return(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    mini_order = models.ForeignKey(MiniOrder, on_delete=models.SET_NULL, null=True)
+    return_date = models.DateTimeField(default=timezone.now())
+    return_reason = models.CharField(choices=RETURN_REASON, max_length=50, default='Not as Describe')
+    request_return_type = models.CharField(choices=REQUEST_RETURN_TYPE, max_length=50, default='RETURN')
+    review_description = models.TextField(null=True)
+
+    def __str__(self):
+        try:
+            return f"{self.user.first_name}_{self.return_reason}_RETURED"
+        except:
+            return f"{self.user}_{self.return_reason}_RETURED"
 
 
