@@ -33,7 +33,7 @@
 
                                         <tr> <th>Order Number</th> <th>Ordered by</th> <th>Ordered Date</th>
                                             <th>Payment Method</th> <th>Order Total</th> <th>Order Status</th>
-                                            <th>Return Status</th>
+                                            <th>Item Cancel Status</th>
                                         </tr>
 
                                             {% for product in orders%}
@@ -41,7 +41,7 @@
                                                     <td>{{product.ordered_date}}</td> <td>{{orderr.payment_method}}</td>
                                                     <td>{{product.order_item.get_final_price}}</td>
                                                     <td><a href="{% url 'vendors-products-ordered-update' product.id %}"> {{product.order_status}} </a> </td>
-                                                    <td><a href="{% url 'vendors-products-returned-update' product.id %}"> {{product.return_status}} </a> </td>
+                                                    <td><a href="{% url 'vendors-products-canceled-update' product.id %}"> {{product.cancel_status}} </a> </td>
                                                 </tr>
                                             {% endfor %}
 

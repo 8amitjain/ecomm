@@ -66,6 +66,13 @@ class ReturnForm(forms.ModelForm):
         fields = ('return_status', 'return_granted')
 
 
+class CancelForm(forms.ModelForm):
+
+    class Meta:
+        model = MiniOrder
+        fields = ('cancel_status', 'cancel_granted')
+
+
 class BrandsForm(forms.ModelForm):
     brand_image = forms.ImageField(required=False)
 

@@ -270,7 +270,10 @@
                                           <article>
                                             <section class="uk-grid-small uk-child-width-1-1" uk-grid>
                                               <header>
-                                                <div class="uk-h4 uk-margin-remove">{{ user_review.user.first_name }}<span class="uk-text-meta" style="margin-left:5em;"><a href="{% url 'store:store-review' item.id %}">Edit</a></span></div>
+                                                <div class="uk-h4 uk-margin-remove">{{ user_review.user.first_name }}
+                                                  <span class="uk-text-meta" style="margin-left:5em;"><a href="{% url 'store:store-review' item.id %}">Edit</a></span>
+                                                  <span class="uk-text-meta" style="margin-left:5em;"><a href="{% url 'store:store-review-delete' item.id %}">Delete</a></span>
+                                                </div>
                                                 <time class="uk-text-meta">{{ user_review.date }}</time>
                                               </header>
 

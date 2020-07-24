@@ -36,11 +36,15 @@ urlpatterns = [
     path('order-summary/', views.OrderSummaryNewView.as_view(), name='order-summary'),
     path('category/<slug>/', views.category_view, name='store-category'),
     path('review/<int:pk>/', views.review, name='store-review'),
+    path('review/delete/<int:pk>/', views.review_delete, name='store-review-delete'),
     path('product/return/<str:status>/<int:pk>/', views.product_refund, name='store-product-return'),
-
+    path('product/cancel/<int:pk>/', views.product_canceled, name='store-product-cancel'),
 
 
 
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+

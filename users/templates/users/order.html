@@ -95,6 +95,7 @@
 
                             {% else %}
                                 <h4 class="uk-text-muted uk-text-small">Order Status: {{ m_order.order_status }}</h4>
+                                <h4 class="uk-text-muted uk-text-small"><a href="{% url 'store:store-product-cancel' m_order.id %}">Cancel Item</a></h4>
                             {% endif %}
 
                             {% else %}

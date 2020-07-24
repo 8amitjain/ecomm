@@ -10,6 +10,8 @@ urlpatterns = [
     path('products/', views.products_display, name='vendors-products'),
     path('products/add/', views.products_add, name='vendors-products-add'),
     path('products/add/<str:var_id>', views.varient_products_add, name='vendors-products-add-varient'),
+    path('products/update/<int:pk>', views.products_update, name='vendors-products-update'),
+    path('products/delete/<int:pk>', views.product_delete, name='vendors-products-delete'),
 
     path('product/<int:pk>/', views.product_sell, name='vendor-product-sell'),
 
@@ -17,7 +19,11 @@ urlpatterns = [
     path('products/ordered/update/<int:pk>/', views.products_ordered_update, name='vendors-products-ordered-update'),
 
     path('products/returned/', views.products_returned, name='vendors-products-returned'),
-    path('products/returned/update/<int:pk>/', views.products_ordered_update, name='vendors-products-returned-update'),
+    path('products/returned/update/<int:pk>/', views.products_returned_update, name='vendors-products-returned-update'),
+
+    path('products/canceled/', views.products_canceled, name='vendors-products-canceled'),
+    path('products/canceled/update/<int:pk>/', views.products_cancel_update, name='vendors-products-canceled-update'),
+
 
     path('category/', views.category_display, name='vendors-category'),
     path('category/add/', views.category_add, name='vendors-category-add'),

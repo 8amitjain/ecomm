@@ -63,6 +63,29 @@ RETURN_REASON = (
 )
 
 
+REQUEST_CANCEL_TYPE = (
+     ('CANCEL', 'CANCEL'),
+     ('Exchange', 'Exchange')
+)
+
+
+CANCEL_REASON = (
+    ('', ''),
+    ('Not Needed', 'Not Needed'),
+    ('Ordered Wrong Product', 'Ordered Wrong Product'),
+    ('Receiving To Late', 'Receiving To Late'),
+    ('Select Different Payment Method', 'Select Different Payment Method'),
+    ('Other', 'Other')
+)
+
+CANCEL_STATUS = (
+    ('', ''),
+    ('CANCEL Denied', 'CANCEL Denied'),
+    ('Processing Cancel Request', 'Processing Cancel Request'),
+    ('Cancel Granted', 'Cancel Granted'),
+)
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE)
@@ -233,6 +256,10 @@ class MiniOrder(models.Model):
     return_window = models.DateTimeField(default=timezone.now() + timedelta(days=10))
     return_status = models.CharField(choices=RETURN_STATUS, max_length=50, default='')
 
+    cancel_status = models.CharField(choices=CANCEL_STATUS, max_length=50, default='')
+    cancel_requested = models.BooleanField(default=False)
+    cancel_granted = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.order_item.user} Mini_Order"
 
@@ -342,14 +369,30 @@ class Return(models.Model):
 
     mini_order = models.ForeignKey(MiniOrder, on_delete=models.SET_NULL, null=True)
     return_date = models.DateTimeField(default=timezone.now())
-    return_reason = models.CharField(choices=RETURN_REASON, max_length=50, default='Not as Describe')
+    return_reason = models.CharField(choices=RETURN_REASON, max_length=50, default='')
     request_return_type = models.CharField(choices=REQUEST_RETURN_TYPE, max_length=50, default='RETURN')
     review_description = models.TextField(null=True)
 
     def __str__(self):
         try:
-            return f"{self.user.first_name}_{self.return_reason}_RETURED"
+            return f"{self.user.first_name}_{self.return_reason}_RETURNED"
         except:
-            return f"{self.user}_{self.return_reason}_RETURED"
+            return f"{self.user}_{self.return_reason}_RETURNED"
+
+
+class Cancel(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    mini_order = models.ForeignKey(MiniOrder, on_delete=models.SET_NULL, null=True)
+
+    cancel_date = models.DateTimeField(default=timezone.now())
+    cancel_reason = models.CharField(choices=CANCEL_REASON, max_length=50, default='')
+    request_cancel_type = models.CharField(choices=REQUEST_CANCEL_TYPE, max_length=50, default='CANCEL')
+    review_description = models.TextField(null=True)
+
+    def __str__(self):
+        try:
+            return f"{self.user.first_name}_{self.cancel_reason}_CANCELED"
+        except:
+            return f"{self.user}_{self.cancel_reason}_CANCELED"
 
 

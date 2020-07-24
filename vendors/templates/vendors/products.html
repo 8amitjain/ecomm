@@ -6,41 +6,45 @@
             <a class="btn btn-info" href="{% url 'vendors-products-add' %}">Add Products</a>
             <hr>
             <!--FILTER FORM-->
-                <form action="." method="get">
-                    <div class="row">
-                      {{ filters.form | crispy }}
-                      <button class="btn btn-primary" type="submit">Search</button>
-                    </div>
-                </form>
-                <hr>
+            <form action="." method="get">
+                <div class="row">
+                  {{ filters.form | crispy }}
+                  <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+            <hr>
 
-                <table border="2">
+            <table border="2">
 
-                    <tr> <th>Item reference number</th> <th>Title</th> <th>price</th> <th>discount_price</th> <th>label</th>
-                         <th>stock_no</th> <th>is_active</th> <th>Image</th> <th>Add Variation</th>
-                    </tr>
+                <tr> <th>Item reference number</th> <th>Title</th> <th>price</th> <th>discount_price</th> <th>label</th>
+                     <th>stock_no</th> <th>is_active</th> <th>Image</th> <th>Add Variation</th> <th>Update Product</th>
+                     <th>Delete Product</th>
+                </tr>
 
-                        {% for product in products %}
+                {% for product in products %}
+                    {% for item in same_item %}
+                        {% if item.item_ref_number == product.item_ref_number %}
 
-                            {% for item in same_item %}
-                                {% if item.item_ref_number == product.item_ref_number %}
+                            <tr> <td>{{product.item_ref_number}}</td> <td>{{product.title}}</td> <td>{{product.price}}</td>
+                                 <td>{{product.discount_price}}</td> <td>{{product.label}}</td>
+                                 <td>{{item.stock_no}}</td> <td>{{item.is_active}}</td>
+                                 <td><img src="{{product.image_main.url}}" width="300px"> </td>
 
-                                    <tr> <td>{{product.item_ref_number}}</td> <td>{{product.title}}</td> <td>{{product.price}}</td>
-                                         <td>{{product.discount_price}}</td> <td>{{product.label}}</td>
-                                         <td>{{item.stock_no}}</td> <td>{{item.is_active}}</td>
-                                         <td><img src="{{product.image_main.url}}" width="300px"> </td>
-                                        {% if product.has_variation is True %}
-                                             <td><a href="{% url 'vendors-products-add-varient' product.variation_id %}">Add Variation</a></td>
-                                        {% endif %}
-                                    </tr>
-
+                                {% if product.has_variation is True %}
+                                     <td><a href="{% url 'vendors-products-add-varient' product.variation_id %}">Add Variation</a></td>
+                                {% else %}
+                                    <td>-</td>
                                 {% endif %}
-                            {% endfor %}
-                        {% endfor %}
 
-                </table>
+                                 <td><a href="{% url 'vendors-products-update' product.id %}">Update Product Details</a></td>
+                                 <td><a href="{% url 'vendors-products-delete' product.id %}">Stop Selling This Product?</a></td>
+                            </tr>
 
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
 
+            </table>
         </div>
-<br>
+        <br>
 {% endblock content %}

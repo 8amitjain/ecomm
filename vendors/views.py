@@ -8,7 +8,7 @@ from django.utils import timezone
 # from stripe.api_resources import order
 
 from .forms import ItemForm, CategoryForm, OrderForm, ItemVariationsForm, BrandsForm, VendorAddressForm, LocationForm,\
-                   SameItemForm, ReturnForm
+                   SameItemForm, ReturnForm, CancelForm
 from .filters import ProductOrderFilter, ItemFilter, CategoryFilter, VendorItemFilter
 from .models import Item, Category, VendorLocation, SameItem
 from users.models import User
@@ -57,6 +57,85 @@ def products_add(request):
         context['filter'] = item_filter
         context['object_list'] = model
     return render(request, 'vendors/vendor_item_select.html', context)
+
+
+@login_required
+def products_update(request, pk):
+    context = {}
+    if request.user.vendor.adding_product:
+        item = Item.objects.get(id=pk)
+        if request.POST:
+            form = ItemForm(request.POST, request.FILES, instance=item)
+            if form.is_valid():
+                item = form.save(commit=False)
+                # item.sold_by = request.user.vendor
+                item.slug = slugify(item.title)
+                item.save()
+                # item.vendors.add(request.user.vendor)
+                # item.variation_id = f"IVRN-{100000 + item.id}"
+                # item.item_ref_number = f"IRN-{100000 + int(item.id)}"
+                item.slug = slugify(f"{str(item.title)}+{'-'}+{str(item.item_ref_number)}")
+                item.save()
+
+                same_items = SameItem.objects.get(vendor=request.user.vendor, item_ref_number=item.item_ref_number)
+                same_items.stock_no = item.stock_no
+                same_items.save()
+
+                # item.same_item.add(same_items)
+                # item.save()
+
+                return redirect('store:store')
+            else:
+                context['form'] = form
+
+        else:
+            form = ItemForm(instance=item)
+            context['form'] = form
+        return render(request, 'vendors/form.html', context)
+
+    else:
+        context = {}
+        item = Item.objects.get(id=pk)
+        if request.POST:
+            form = SameItemForm(request.POST)
+            try:
+                if form.is_valid():
+                    item_form = form.save(commit=False)
+                    item_form.vendor = request.user.vendor
+                    item_form.item_ref_number = item.item_ref_number
+                    item_form.save()
+                    item.same_item.add(item_form)
+                    item.vendors.add(request.user.vendor)
+                    item.save()
+            except IntegrityError:
+                if form.is_valid():
+                    item_form = form.save(commit=False)
+                    same_items = SameItem.objects.get(vendor=request.user.vendor, item_ref_number=item.item_ref_number)
+                    same_items.stock_no = item_form.stock_no
+                    same_items.save()
+                return redirect('vendors-products')
+            else:
+                context['form'] = form
+
+        else:
+            form = SameItemForm()
+            context['form'] = form
+
+        return render(request, 'vendors/form.html', context)
+
+
+@login_required
+def product_delete(request, pk):
+    try:
+        item = Item.objects.get(id=pk)
+        item.vendors.remove(request.user.vendor)
+        if not item.vendors.all():
+            item.delete()
+        SameItem.objects.get(vendor=request.user.vendor, item_ref_number=item.item_ref_number).delete()
+
+    except ObjectDoesNotExist:
+        pass
+    return redirect('vendors-products')
 
 
 @login_required
@@ -273,7 +352,7 @@ def products_returned(request):
 
 
 @login_required
-def products_ordered_update(request, pk):
+def products_returned_update(request, pk):
     context = {}
     mini_order = MiniOrder.objects.get(id=pk)
     order = Order.objects.get(order_ref_number=mini_order.order_ref_number)
@@ -297,6 +376,52 @@ def products_ordered_update(request, pk):
         context['order'] = order
         context['mini_order'] = mini_order
     return render(request, 'vendors/products_return_detail.html', context)
+
+
+@login_required
+def products_canceled(request):
+    orders = MiniOrder.objects.filter(ordered=True, vendor=request.user.vendor, cancel_requested=True,
+                                      )  # return_granted=False
+    try:
+        orderr = Order.objects.get(mini_order=orders.first().id)
+    except AttributeError:
+        orderr = ''
+    filters = ProductOrderFilter(request.GET, queryset=orders)
+
+    orders = filters.qs
+    context = {
+        'orders': orders,
+        'orderr': orderr,
+        'filters': filters,
+    }
+    return render(request, 'vendors/products_canceled.html', context)
+
+
+@login_required
+def products_cancel_update(request, pk):
+    context = {}
+    mini_order = MiniOrder.objects.get(id=pk)
+    order = Order.objects.get(order_ref_number=mini_order.order_ref_number)
+    order_item = OrderItem.objects.filter(ordered=True, order=order)
+
+    if request.POST:
+        form = CancelForm(request.POST, instance=mini_order)
+        if form.is_valid():
+            form.save()
+            return redirect('vendors-products-canceled')
+        else:
+            context['form'] = form
+            context['order_item'] = order_item
+            context['order'] = order
+            context['mini_order'] = mini_order
+
+    else:
+        form = CancelForm(instance=mini_order)
+        context['form'] = form
+        context['order_item'] = order_item
+        context['order'] = order
+        context['mini_order'] = mini_order
+    return render(request, 'vendors/products_canceled_detail.html', context)
 
 
 @login_required
@@ -359,5 +484,5 @@ def vendor_address(request):
         'form': form,
         'location_form': location_form,
     }
-    return render(request, 'vendors/form.html', context)
+    return render(request, 'vendors/location_form.html', context)
 
