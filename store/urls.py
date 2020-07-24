@@ -23,7 +23,7 @@ urlpatterns = [
     path('add-to-compare/<slug>/', views.add_to_compare, name='add-to-compare'),
     path('compare/', views.compare, name='store-compare'),
     path('product/<int:pk>/', views.product, name='store-product'),
-    path('product/<slug>/', views.product, name='store-product'),
+    # path('product/<slug>/', views.product, name='store-product'),
     path('add-to-favorite/<slug>/', views.add_to_favorite, name='add-to-favorite'),
     path('favorites/', views.favorites, name='store-favorites'),
     path('checkout/', views.CheckoutView.as_view(), name='store-checkout'),
@@ -39,8 +39,9 @@ urlpatterns = [
     path('review/delete/<int:pk>/', views.review_delete, name='store-review-delete'),
     path('product/return/<str:status>/<int:pk>/', views.product_refund, name='store-product-return'),
     path('product/cancel/<int:pk>/', views.product_canceled, name='store-product-cancel'),
+    path('product/promo-code/<int:pk>/', views.product_promo_code, name='store-product-promo-code'),
 
-
+    path('product/prescription-upload/', views.prescription_upload, name='store-product-prescription-upload'),
 
 ]
 if settings.DEBUG:

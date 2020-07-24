@@ -14,9 +14,10 @@ from stripe.api_resources.terminal import location
 
 from vendors.models import VendorLocation, VendorAddress, Vendor
 
-from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm, LocationForm, ReturnForm, CancelForm
-from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, UserProfile, Addresss, Slide,\
-                    Reviews, CustomerLocation, MiniOrder
+from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm, LocationForm, ReturnForm, CancelForm, \
+    CouponCustomerForm, PrescriptionUploadForm
+from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, UserProfile, Addresss, Slide, \
+    Reviews, CustomerLocation, MiniOrder, CouponCustomer
 
 from vendors.models import Item, Category, Brands
 from users.models import User
@@ -823,6 +824,75 @@ def product_canceled(request, pk):
             'form': form
         }
         return render(request, 'store/form.html', context)
+
+
+@login_required
+def product_promo_code(request, pk):
+    order = Order.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = CouponCustomerForm(request.POST)
+
+        if form.is_valid():
+            coupon = form.save(commit=False)
+            try:
+                coupon = CouponCustomer.objects.get(code=coupon.code)
+                if coupon.usable is True:
+                    coupon.order_amount = order.get_total()
+                    coupon.save()
+                    vendor_coupon = Coupon.objects.get(code=coupon.code)
+                    if coupon.order_amount >= vendor_coupon.minimum_order_amount:
+                        coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
+                        coupon.used = True
+                        coupon.applicable = True
+                        coupon.save()
+
+            except :
+                coupon.user = request.user
+                coupon.save()
+                vendor_coupon = Coupon.objects.get(code=coupon.code)
+                coupon.coupon = vendor_coupon
+                coupon.order_amount = order.get_total()
+                coupon.save()
+                if coupon.order_amount >= vendor_coupon.minimum_order_amount:
+                    coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
+                    coupon.used = True
+                    coupon.applicable = True
+                    coupon.save()
+
+            order.coupon_customer = coupon
+            order.save()
+            messages.success(request, f'Code Applied!')
+            return redirect('store:store-cart')
+    else:
+        form = CouponCustomerForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'store/form.html', context)
+
+
+@login_required
+def prescription_upload(request):
+    if request.method == 'POST':
+        form = PrescriptionUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            prescription = form.save(commit=False)
+            prescription.user = request.user
+            prescription.save()
+
+            messages.success(request, f' Prescription Uploaded!')
+            return redirect('/')
+    else:
+        form = PrescriptionUploadForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'store/form.html', context)
 
 
 def blog(request):

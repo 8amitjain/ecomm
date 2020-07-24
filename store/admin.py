@@ -4,7 +4,7 @@ from mapwidgets.widgets import GooglePointFieldWidget
 from django.contrib.gis.db import models as geo_model
 
 from .models import OrderItem, FavoriteItem, CompareItem, Order, Payment, Coupon, Slide, UserProfile, Addresss,\
-                    Reviews, CustomerLocation, MiniOrder, Return
+                    Reviews, CustomerLocation, MiniOrder, Return, CouponCustomer, PrescriptionUpload
 
 
 class CustomerLocationAdmin(admin.ModelAdmin):
@@ -27,14 +27,14 @@ class OrderAdmin(admin.ModelAdmin):
                     'shipping_address',
                     'billing_address',
                     'payment',
-                    'coupon'
+                    # 'coupon'
                     ]
     list_display_links = [
         'user',
         'shipping_address',
         'billing_address',
         'payment',
-        'coupon'
+        # 'coupon'
     ]
     list_filter = ['user',
                    'ordered',
@@ -72,6 +72,8 @@ admin.site.register(Reviews)
 admin.site.register(CustomerLocation, CustomerLocationAdmin)
 admin.site.register(MiniOrder)
 admin.site.register(Return)
+admin.site.register(CouponCustomer)
+admin.site.register(PrescriptionUpload)
 
 # admin.site.register(Address, AddressAdmin)
 

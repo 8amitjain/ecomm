@@ -86,7 +86,7 @@
 
                       <div class="uk-card-footer">
                         <label><span class="uk-form-label uk-margin-small-right">Promo Code</span>
-                          <div class="uk-inline"><a class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="arrow-right"></a>
+                          <div class="uk-inline"><a class="uk-form-icon uk-form-icon-flip" href="{% url 'store:store-product-promo-code' object.id %}" uk-icon="arrow-right"></a>
                             <input class="uk-input uk-form-width-small" type="text">
                           </div>
                         </label>
@@ -104,6 +104,12 @@
                           <div class="uk-width-expand uk-text-muted">Discount</div>
                           <div class="uk-text-danger">-Rs:{{ object.get_discounted_total }}</div>
                         </div>
+                        {% if object.coupon_customer.discount_amount %}
+                         <div class="uk-grid-small" uk-grid>
+                          <div class="uk-width-expand uk-text-muted">Coupon</div>
+                          <div class="uk-text-danger">-Rs:{{ object.coupon_customer.discount_amount }}</div>
+                        </div>
+                        {% endif %}
                       </div>
                       <div class="uk-card-body">
                         <div class="uk-grid-small uk-flex-middle" uk-grid>

@@ -234,6 +234,15 @@ class CompareItem(models.Model):
         return self.quantity
 
 
+class Coupon(models.Model):
+    code = models.CharField(max_length=15, unique=True)
+    discount_percent = models.FloatField()
+    minimum_order_amount = models.FloatField()
+
+    def __str__(self):
+        return self.code
+
+
 class MiniOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
@@ -264,9 +273,25 @@ class MiniOrder(models.Model):
         return f"{self.order_item.user} Mini_Order"
 
 
+class CouponCustomer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE, null=True)
+    code = models.CharField(max_length=15)
+    discount_amount = models.FloatField(null=True)
+    order_amount = models.FloatField(null=True)
+    used = models.BooleanField(default=False)
+    applicable = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('code', 'user')
+
+    def __str__(self):
+        return f"{self.code}_{self.user}"
+
+
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    coupon_customer = models.ForeignKey(CouponCustomer, on_delete=models.CASCADE, null=True)
     mini_order = models.ManyToManyField(MiniOrder)
     items = models.ManyToManyField(OrderItem)
 
@@ -281,8 +306,6 @@ class Order(models.Model):
         'Addresss', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
-    coupon = models.ForeignKey(
-        'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
 
     item_url = models.TextField(default='', blank=True, null=True)
 
@@ -312,8 +335,8 @@ class Order(models.Model):
         total = 0
         for order_item in self.items.all():
             total += order_item.get_final_price()
-        if self.coupon:
-            total -= self.coupon.amount
+        if self.coupon_customer:
+            total -= self.coupon_customer.discount_amount
         return total
 
     def get_sub_total(self):
@@ -337,15 +360,7 @@ class Payment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.username
-
-
-class Coupon(models.Model):
-    code = models.CharField(max_length=15)
-    amount = models.FloatField()
-
-    def __str__(self):
-        return self.code
+        return f"{self.user}_Payment"
 
 
 class Reviews(models.Model):
@@ -395,4 +410,11 @@ class Cancel(models.Model):
         except:
             return f"{self.user}_{self.cancel_reason}_CANCELED"
 
+
+class PrescriptionUpload(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    prescription = models.ImageField()
+
+    def __str__(self):
+        return f"{self.user}_PrescriptionUpload"
 

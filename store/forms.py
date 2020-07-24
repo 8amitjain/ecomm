@@ -1,5 +1,5 @@
 from django import forms
-from .models import Reviews, CustomerLocation, Return, Cancel
+from .models import Reviews, CustomerLocation, Return, Cancel, CouponCustomer, PrescriptionUpload
 from mapwidgets.widgets import GooglePointFieldWidget
 
 PAYMENT_CHOICES = (
@@ -84,3 +84,16 @@ class CancelForm(forms.ModelForm):
         model = Cancel
         fields = ('cancel_reason', 'request_cancel_type', 'review_description')
 
+
+class CouponCustomerForm(forms.ModelForm):
+
+    class Meta:
+        model = CouponCustomer
+        fields = ('code',)
+
+
+class PrescriptionUploadForm(forms.ModelForm):
+
+    class Meta:
+        model = PrescriptionUpload
+        fields = ('prescription',)
