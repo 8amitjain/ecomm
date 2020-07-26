@@ -366,7 +366,7 @@ class Payment(models.Model):
 class Reviews(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=300)
     review_description = models.TextField()
     rating = models.CharField(choices=REVIEW_RATING_CHOICES, max_length=1)
@@ -383,7 +383,7 @@ class Return(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     mini_order = models.ForeignKey(MiniOrder, on_delete=models.SET_NULL, null=True)
-    return_date = models.DateTimeField(default=timezone.now())
+    return_date = models.DateTimeField(default=timezone.now)
     return_reason = models.CharField(choices=RETURN_REASON, max_length=50, default='')
     request_return_type = models.CharField(choices=REQUEST_RETURN_TYPE, max_length=50, default='RETURN')
     review_description = models.TextField(null=True)
@@ -399,7 +399,7 @@ class Cancel(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     mini_order = models.ForeignKey(MiniOrder, on_delete=models.SET_NULL, null=True)
 
-    cancel_date = models.DateTimeField(default=timezone.now())
+    cancel_date = models.DateTimeField(default=timezone.now)
     cancel_reason = models.CharField(choices=CANCEL_REASON, max_length=50, default='')
     request_cancel_type = models.CharField(choices=REQUEST_CANCEL_TYPE, max_length=50, default='CANCEL')
     review_description = models.TextField(null=True)

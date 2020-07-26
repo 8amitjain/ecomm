@@ -23,11 +23,15 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'store.apps.StoreConfig',
     'vendors.apps.VendorsConfig',
+    'rest_api.apps.RestApiConfig',
     'crispy_forms',
     'django_filters',
     'django_countries',
     'widget_tweaks',
     'mapwidgets',
+    'rest_framework',
+    'knox',
+    'django_rest_passwordreset',
 
     'django.contrib.gis',
     'django.contrib.admin',
@@ -37,6 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'knox.auth.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+    ),
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -79,6 +93,11 @@ WSGI_APPLICATION = 'dawaiwala.wsgi.application'
 #     }
 # }
 
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.ModelBackend',
+#     'allauth.account.auth_backends.AuthenticationBackend',
+# )
+
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
@@ -109,9 +128,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -123,8 +139,6 @@ USE_L10N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'users.User'
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 GDAL_LIBRARY_PATH = r'E:\Coding\Python\django\Dawaiwala-online\venv\Lib\site-packages\osgeo\gdal301.dll'
 
