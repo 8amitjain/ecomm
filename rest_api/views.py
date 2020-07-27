@@ -8,7 +8,8 @@ from django.urls import reverse
 import jwt
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
-from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
+from rest_framework import authentication, generics, permissions, status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -17,6 +18,19 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import User
 from .utils import Util
 from .serializers import UserSerializer, CustomerRegisterSerializer, ChangePasswordSerializer, VendorRegisterSerializer
+
+
+# Users
+class ListUsers(APIView):
+    # authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, format=None):
+        """
+        Return a list of all users.
+        """
+        usernames = [user.username for user in User.objects.all()]
+        return Response(usernames)
 
 
 # Customer Register API

@@ -1,9 +1,12 @@
 from knox import views as knox_views
 from django.urls import path, include
 
-from .views import CustomerRegisterAPI, VendorRegisterAPI, LoginAPI, ChangePasswordView, VerifyUserEmail
+from .views import CustomerRegisterAPI, VendorRegisterAPI, LoginAPI, ChangePasswordView, VerifyUserEmail, ListUsers
+
 
 urlpatterns = [
+    # Users
+    path('users/all/', ListUsers.as_view(), name='list-users'),
 
     # Register
     path('register/customer/', CustomerRegisterAPI.as_view(), name='register'),
