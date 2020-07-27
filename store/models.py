@@ -262,7 +262,7 @@ class MiniOrder(models.Model):
     return_requested = models.BooleanField(default=False)
     return_granted = models.BooleanField(default=False)
 
-    return_window = models.DateTimeField(default=timezone.now() + timedelta(days=10))
+    return_window = models.DateTimeField(default=timezone.now) # () + timedelta(days=10)
     return_status = models.CharField(choices=RETURN_STATUS, max_length=50, default='')
 
     cancel_status = models.CharField(choices=CANCEL_STATUS, max_length=50, default='')

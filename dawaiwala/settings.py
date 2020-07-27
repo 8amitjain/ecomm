@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
     'vendors.apps.VendorsConfig',
     'rest_api.apps.RestApiConfig',
+    'frontend.apps.FrontendConfig',
     'crispy_forms',
     'django_filters',
     'django_countries',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'knox.auth.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.TokenAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
     ),
@@ -84,7 +86,6 @@ WSGI_APPLICATION = 'dawaiwala.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 # DATABASES = {
 #     "default": {
@@ -93,10 +94,6 @@ WSGI_APPLICATION = 'dawaiwala.wsgi.application'
 #     }
 # }
 
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-# )
 
 DATABASES = {
     "default": {
@@ -173,7 +170,6 @@ MAP_WIDGETS = {
     ),
     "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY,
 }
-
 
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51GziiaEMM8ICDJpWkzDBSC4IRrZZiae23SdzYedj0uPaKdSYwf6jJui0VfF2RFgMa1looBaTq82qRrvsLe0wkFqm00llm82WLu'
 STRIPE_SECRET_KEY = 'sk_test_51GziiaEMM8ICDJpWgnWlUH3cBzh6IOrYqTPpB7SgD5ZCZWb4sHcoa6WWd5BU69IhngDN0igApImzgA9aiZZj9k0y006rsHOJiB'
