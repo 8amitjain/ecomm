@@ -575,91 +575,91 @@ class PaymentView(View):
 
             amount = int(order.get_total() * 100)
 
-            try:
+            # try:
 
-                if use_default or save:
-                    # charge the customer because we cannot charge the token more than once
-                    charge = stripe.Charge.create(
-                        amount=amount,  # cents
-                        currency="inr",
-                        customer=userprofile.stripe_customer_id
-                    )
-                else:
-                    # charge once off on the token
-                    charge = stripe.Charge.create(
-                        amount=amount,  # cents
-                        currency="inr",
-                        source=token
-                    )
+            if use_default or save:
+                # charge the customer because we cannot charge the token more than once
+                charge = stripe.Charge.create(
+                    amount=amount,  # cents
+                    currency="inr",
+                    customer=userprofile.stripe_customer_id
+                )
+            else:
+                # charge once off on the token
+                charge = stripe.Charge.create(
+                    amount=amount,  # cents
+                    currency="inr",
+                    source=token
+                )
 
-                # create the payment
-                payment = Payment()
-                payment.stripe_charge_id = charge['id']
-                payment.user = self.request.user
-                payment.amount = order.get_total()
-                payment.save()
+            # create the payment
+            payment = Payment()
+            payment.stripe_charge_id = charge['id']
+            payment.user = self.request.user
+            payment.amount = order.get_total()
+            payment.save()
 
-                order_items = order.items.all()
+            order_items = order.items.all()
 
-                for x in order_items:
-                    x.item.stock_no = int(x.item.stock_no) - x.quantity
-                    x.item.save()
+            for x in order_items:
+                x.item.stock_no = int(x.item.stock_no) - x.quantity
+                x.item.save()
 
-                order.item_url = ''
-                total_qty = 0
-                for item in order_items:
-                    order.item_url = order.item_url + item.item.get_absolute_url() + '  *  ' + str(item.quantity) + '\n'
-                    total_qty += item.quantity
-                    item.save()
+            order.item_url = ''
+            total_qty = 0
+            for item in order_items:
+                order.item_url = order.item_url + item.item.get_absolute_url() + '  *  ' + str(item.quantity) + '\n'
+                total_qty += item.quantity
+                item.save()
 
-                ordered_date = timezone.datetime.now().strftime('%Y-%m-%d')
-                ordered_time = timezone.datetime.now().strftime('%H:%M:%S')
-                mini_order = order.mini_order.all()  #
+            ordered_date = timezone.datetime.now().strftime('%Y-%m-%d')
+            ordered_time = timezone.datetime.now().strftime('%H:%M:%S')
+            mini_order = order.mini_order.all()  #
 
-                location_model = order.shipping_address.location
-                latitude = location_model.location.y
-                longitude = location_model.location.x
-                user_location = Point(longitude, latitude, srid=4326)
-                queryset = VendorLocation.objects.annotate(
-                    distance=Distance("location", user_location)
-                ).order_by("distance")[0:]
+            location_model = order.shipping_address.location
+            latitude = location_model.location.y
+            longitude = location_model.location.x
+            user_location = Point(longitude, latitude, srid=4326)
+            queryset = VendorLocation.objects.annotate(
+                distance=Distance("location", user_location)
+            ).order_by("distance")[0:]
 
-                for vendor_location in queryset:
-                    mini_order = MiniOrder.objects.filter(order_ref_number=order.order_ref_number, ordered=False)
-                    if mini_order:
-                        vendor_address = VendorAddress.objects.get(location=vendor_location)
+            for vendor_location in queryset:
+                mini_order = MiniOrder.objects.filter(order_ref_number=order.order_ref_number, ordered=False)
+                if mini_order:
+                    vendor_address = VendorAddress.objects.get(location=vendor_location)
 
-                        vendorr = Vendor.objects.get(address=vendor_address) # nearest vendor is this
-                        items = vendorr.item_set.all()
-                        # items = Item.objects.filter(vendors=vendorr)
+                    vendorr = Vendor.objects.get(address=vendor_address) # nearest vendor is this
+                    items = vendorr.item_set.all()
+                    # items = Item.objects.filter(vendors=vendorr)
 
-                        for m_order in mini_order:
-                            item_title = m_order.order_item.item.title
+                    for m_order in mini_order:
+                        item_title = m_order.order_item.item.title
 
-                            for item in items:
-                                if item_title == item.title:
-                                    m_order.vendor = vendorr
-                                    m_order.ordered = True
-                                    m_order.save()
-                                    break
+                        for item in items:
+                            if item_title == item.title:
+                                m_order.vendor = vendorr
+                                m_order.ordered = True
+                                m_order.save()
+                                break
 
-                order.ordered_date = ordered_date
-                order.ordered_time = ordered_time
+            order.ordered_date = ordered_date
+            order.ordered_time = ordered_time
 
-                order.total_items = total_qty
-                order.return_window = timezone.datetime.now() + timezone.timedelta(days=10)
-                order.payment = payment
+            order.total_items = total_qty
+            order.return_window = timezone.datetime.now() + timezone.timedelta(days=10)
+            order.payment = payment
 
-                order_items.update(ordered=True)
-                mini_order.update(ordered=True)  #
+            order_items.update(ordered=True)
+            mini_order.update(ordered=True)  #
 
-                order.ordered = True
+            order.ordered = True
 
-                order.save()
+            order.save()
 
-                messages.success(self.request, "Your order was successful!")
-                return redirect("users-order")
-# '''
+            messages.success(self.request, "Your order was successful!")
+            return redirect("users-order")
+'''
             except stripe.error.CardError as e:
                 body = e.json_body
                 err = body.get('error', {})

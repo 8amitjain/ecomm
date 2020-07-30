@@ -1,5 +1,5 @@
 import django_filters
-from django_filters import DateFilter, CharFilter, NumberFilter, NumericRangeFilter, RangeFilter, ChoiceFilter
+from django_filters import DateFilter, CharFilter, RangeFilter
 
 from store.models import Item
 

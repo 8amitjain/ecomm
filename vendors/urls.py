@@ -9,7 +9,7 @@ urlpatterns = [
 
     path('products/', views.products_display, name='vendors-products'),
     path('products/add/', views.products_add, name='vendors-products-add'),
-    path('products/add/<str:var_id>', views.varient_products_add, name='vendors-products-add-varient'),
+    path('products/add/<str:var_id>', views.product_varient_add, name='vendors-products-add-varient'),
     path('products/update/<int:pk>', views.products_update, name='vendors-products-update'),
     path('products/delete/<int:pk>', views.product_delete, name='vendors-products-delete'),
 

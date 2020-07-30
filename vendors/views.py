@@ -14,11 +14,13 @@ from .models import Item, Category, VendorLocation, SameItem
 from users.models import User
 from store.models import Order, OrderItem, MiniOrder
 from .models import Vendor
+from store.filters import OrderFilter
 
 
 @login_required
 def products_add(request):
-    context = {}
+    context = {'title': 'Add Products',
+               'submit': 'Add'}
     if request.user.vendor.adding_product:
         if request.POST:
             form = ItemForm(request.POST, request.FILES)
@@ -61,7 +63,8 @@ def products_add(request):
 
 @login_required
 def products_update(request, pk):
-    context = {}
+    context = {'title': 'Update Products',
+               'submit': 'Update'}
     if request.user.vendor.adding_product:
         item = Item.objects.get(id=pk)
         if request.POST:
@@ -87,11 +90,13 @@ def products_update(request, pk):
                 return redirect('store:store')
             else:
                 context['form'] = form
+                context['product'] = item
 
         else:
             form = ItemForm(instance=item)
             context['form'] = form
-        return render(request, 'vendors/form.html', context)
+            context['product'] = item
+        return render(request, 'vendors/products_update.html', context)
 
     else:
         context = {}
@@ -141,7 +146,8 @@ def product_delete(request, pk):
 @login_required
 def product_sell(request, pk):
     if not request.user.vendor.adding_product:
-        context = {}
+        context = {'title': 'Add Products',
+                   'submit': 'Add'}
         item = Item.objects.get(id=pk)
         if request.POST:
             form = SameItemForm(request.POST)
@@ -174,8 +180,9 @@ def product_sell(request, pk):
 
 
 @login_required
-def varient_products_add(request, var_id):
-    context = {}
+def product_varient_add(request, var_id):
+    context = {'title': 'Add Product Varient',
+               'submit': 'Add'}
     if request.user.vendor.adding_product:
         itemss = Item.objects.filter(variation_id=var_id).first()
         if request.POST:
@@ -214,7 +221,8 @@ def varient_products_add(request, var_id):
 
 @login_required
 def category_add(request):
-    context = {}
+    context = {'title': 'Add Category',
+               'submit': 'Add Category'}
     if request.user.vendor.adding_product:
         if request.POST:
             form = CategoryForm(request.POST, request.FILES)
@@ -236,7 +244,8 @@ def category_add(request):
 
 @login_required
 def brand_add(request):
-    context = {}
+    context = {'title': 'Add Brand',
+               'submit': 'Add'}
     if request.user.vendor.adding_product:
         if request.POST:
             form = BrandsForm(request.POST, request.FILES)
@@ -259,10 +268,14 @@ def category_display(request):
     if request.user.vendor.adding_product:
         category = Category.objects.all()
         filters = CategoryFilter(request.GET, queryset=category)
+        len_category = len(category)
+        print(filters.form)
         category = filters.qs
         context = {
             'category': category,
-            'filters': filters
+            'len_category': len_category,
+            'filter': filters,
+
         }
         return render(request, 'vendors/category.html', context)
     else:
@@ -271,7 +284,8 @@ def category_display(request):
 
 @login_required
 def products_ordered_update(request, pk):
-    context = {}
+    context = {'title': 'Order Update',
+               'submit': 'Update'}
     # vendor = Vendor.objects.get(user_id=request.user.vendor.user_id)
     mini_order = MiniOrder.objects.get(id=pk)
     order = Order.objects.get(order_ref_number=mini_order.order_ref_number)
@@ -299,18 +313,20 @@ def products_ordered_update(request, pk):
 
 @login_required
 def products_ordered(request):
-    orders = MiniOrder.objects.filter(ordered=True, vendor=request.user.vendor, delivered=False)
+    m_orders = MiniOrder.objects.filter(ordered=True, vendor=request.user.vendor, delivered=False)
+    len_m_orders = len(m_orders)
     try:
-        orderr = Order.objects.get(mini_order=orders.first().id)
+        orderr = Order.objects.get(mini_order=m_orders.first().id)
     except AttributeError:
         orderr = ''
-    filters = ProductOrderFilter(request.GET, queryset=orders)
+    filters = ProductOrderFilter(request.GET, queryset=m_orders)
 
-    orders = filters.qs
+    m_orders = filters.qs
     context = {
-        'orders': orders,
+        'orders': m_orders,
+        'len_m_orders': len_m_orders,
         'orderr': orderr,
-        'filters': filters,
+        'filter': filters,
     }
     return render(request, 'vendors/products_ordered.html', context)
 
@@ -321,13 +337,14 @@ def products_display(request):
 
     products = request.user.vendor.item_set.all()
     same_item = SameItem.objects.filter(vendor=request.user.vendor)
-
+    len_same_item = len(same_item)
     filters = ItemFilter(request.GET, queryset=products)
     products = filters.qs
     context = {
         'products': products,
         'same_item': same_item,
-        'filters': filters
+        'len_same_item': len_same_item,
+        'filter': filters
     }
     return render(request, 'vendors/products.html', context)
 
@@ -435,7 +452,7 @@ def sales(request):
     for order in orders:
         total_sales = total_sales + int(order.order_item.get_final_price())
 
-        if order.received is False:
+        if order.delivered is False:
             pending_order += 1
 
     today_total_sales = 0
@@ -483,6 +500,8 @@ def vendor_address(request):
     context = {
         'form': form,
         'location_form': location_form,
+        'title': 'Vendor Address',
+        'submit': 'Submit'
     }
     return render(request, 'vendors/location_form.html', context)
 

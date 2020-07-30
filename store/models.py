@@ -269,6 +269,8 @@ class MiniOrder(models.Model):
     cancel_requested = models.BooleanField(default=False)
     cancel_granted = models.BooleanField(default=False)
 
+    payment_method = models.CharField(default='Online by card', max_length=30)
+
     def __str__(self):
         return f"{self.order_item.user} Mini_Order"
 

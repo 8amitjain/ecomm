@@ -1,50 +1,313 @@
-{% extends "store/base.html" %}
+{% extends 'store/base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
-{% block content %}
-    <h1 class="uk-h2">Orders</h1>
-        <div style="margin:2em">
-            <a class="btn btn-info" href="{% url 'vendors-products-add' %}">Add Products</a>
-            <hr>
-            <!--FILTER FORM-->
-            <form action="." method="get">
-                <div class="row">
-                  {{ filters.form | crispy }}
-                  <button class="btn btn-primary" type="submit">Search</button>
-                </div>
-            </form>
-            <hr>
+{% load widget_tweaks %}
+  {% block content %}
+      <main>
+        <section class="uk-section uk-section-small">
+          <div class="uk-container">
+            <div class="uk-grid-medium uk-child-width-1-1" uk-grid>
+              <div class="uk-text-center">
+<!--                <ul class="uk-breadcrumb uk-flex-center uk-margin-remove">-->
+<!--                  <li><a href="{% url 'store:store' %}">Home</a></li>-->
+<!--                  <li><a href="{% url 'store:store' %}">Catalog</a></li>-->
+<!--                  <li><a href="{% url 'store:store-subcategory' %}">Laptops &amp; Tablets</a></li>-->
+<!--                  <li><span>Laptops</span></li>-->
+<!--                </ul>-->
+                <h1 class="uk-margin-small-top uk-margin-remove-bottom">Products</h1>
+                <div class="uk-text-meta uk-margin-xsmall-top">{{ len_same_item }} items</div>
+                <hr>
 
-            <table border="2">
+              </div>
+              <div>
+                <div class="uk-grid-medium" uk-grid>
+                  <aside class="uk-width-1-4 tm-aside-column tm-filters" id="filters" uk-offcanvas="overlay: true; container: false;">
+                    <div class="uk-offcanvas-bar uk-padding-remove">
+                      <div class="uk-card uk-card-default uk-card-small uk-flex uk-flex-column uk-height-1-1">
+                        <header class="uk-card-header uk-flex uk-flex-middle">
+                          <div class="uk-grid-small uk-flex-1" uk-grid>
+                            <div class="uk-width-expand">
+                              <h3>Filters</h3>
 
-                <tr> <th>Item reference number</th> <th>Title</th> <th>price</th> <th>discount_price</th> <th>label</th>
-                     <th>stock_no</th> <th>is_active</th> <th>Image</th> <th>Add Variation</th> <th>Update Product</th>
-                     <th>Delete Product</th>
-                </tr>
+                            </div>
+                            <button class="uk-offcanvas-close" type="button" uk-close></button>
+                          </div>
+                        </header>
 
-                {% for product in products %}
-                    {% for item in same_item %}
-                        {% if item.item_ref_number == product.item_ref_number %}
+                        <div class="uk-margin-remove uk-flex-1 uk-overflow-auto" uk-accordion="multiple: true; targets: &gt; .js-accordion-section" style="flex-basis: auto">
+                        <form method="get">
+                           <div class="uk-card-body">
+                             <a class="uk-link-reset" href="{% url 'vendors-products-add' %}"><span class="uk-button uk-button-default uk-width-1-1"><span class="uk-margin-xsmall-right" uk-icon="icon: tag; ratio: .75;"></span>Add Products</span></a>
+                            <br><br>
+                            <button class="uk-button uk-button-default uk-width-1-1" type="submit"><span class="uk-margin-xsmall-right" uk-icon="icon: search; ratio: .75;"></span>Search</button>
+                            <br><br>
+                            <button class="uk-button uk-button-default uk-width-1-1" type="reset"><span class="uk-margin-xsmall-right" uk-icon="icon: close; ratio: .75;"></span>Reset all filters</button>
+                          </div>
 
-                            <tr> <td>{{product.item_ref_number}}</td> <td>{{product.title}}</td> <td>{{product.price}}</td>
-                                 <td>{{product.discount_price}}</td> <td>{{product.label}}</td>
-                                 <td>{{item.stock_no}}</td> <td>{{item.is_active}}</td>
-                                 <td><img src="{{product.image_main.url}}" width="300px"> </td>
+                          <section class="uk-card-body js-accordion-section">
+                              <h4 class="uk-accordion-title uk-margin-remove">Search<span class="tm-help-icon" uk-icon="icon: question; ratio: .75;" onclick="event.stopPropagation();"></span>
+                                <div class="uk-margin-remove" uk-drop="mode: click;boundary-align: true; boundary: !.uk-accordion-title; pos: bottom-justify;">
+                                  <div class="uk-card uk-card-body uk-card-default uk-card-small uk-box-shadow-xlarge uk-text-small">A small description for this property</div>
+                                </div>
+                              </h4>
+                              <div class="uk-accordion-content">
+                                <ul class="uk-list tm-scrollbox" >
+                                  <li>
+                                    <input class="uk-input" type="text" placeholder="Search.." name="note" id="id_note">
+                                    <label  for="id_note"><span class="uk-text-meta uk-text-xsmall">Search medicine name</span></label>
+                                  </li>
 
-                                {% if product.has_variation is True %}
-                                     <td><a href="{% url 'vendors-products-add-varient' product.variation_id %}">Add Variation</a></td>
-                                {% else %}
-                                    <td>-</td>
+
+                                </ul>
+                              </div>
+                            </section>
+
+                        <section class="uk-card-body js-accordion-section">
+                              <h4 class="uk-accordion-title uk-margin-remove">IRN<span class="tm-help-icon" uk-icon="icon: question; ratio: .75;" onclick="event.stopPropagation();"></span>
+                                <div class="uk-margin-remove" uk-drop="mode: click;boundary-align: true; boundary: !.uk-accordion-title; pos: bottom-justify;">
+                                  <div class="uk-card uk-card-body uk-card-default uk-card-small uk-box-shadow-xlarge uk-text-small">A small description for this property</div>
+                                </div>
+                              </h4>
+                              <div class="uk-accordion-content">
+                                <ul class="uk-list tm-scrollbox" >
+                                  <li>
+                                    <input class="uk-input" type="text" placeholder="Search.." name="irn" id="id_irn">
+                                    <label  for="id_irn"><span class="uk-text-meta uk-text-xsmall">Item Reference Number</span></label>
+                                  </li>
+
+
+                                </ul>
+                              </div>
+                        </section>
+
+                         <section class="uk-card-body js-accordion-section">
+                              <h4 class="uk-accordion-title uk-margin-remove">Stock Units<span class="tm-help-icon" uk-icon="icon: question; ratio: .75;" onclick="event.stopPropagation();"></span>
+                                <div class="uk-margin-remove" uk-drop="mode: click;boundary-align: true; boundary: !.uk-accordion-title; pos: bottom-justify;">
+                                  <div class="uk-card uk-card-body uk-card-default uk-card-small uk-box-shadow-xlarge uk-text-small">A small description for this property</div>
+                                </div>
+                              </h4>
+                              <div class="uk-accordion-content">
+                                <ul class="uk-list tm-scrollbox" >
+                                  <li>
+                                    <input class="uk-input" type="text" placeholder="Search.." name="irn" id="id_stock_no">
+                                    <label  for="id_stock_no"><span class="uk-text-meta uk-text-xsmall">Stock Units</span></label>
+                                  </li>
+
+
+                                </ul>
+                              </div>
+                        </section>
+
+                          <section class="uk-card-body uk-open js-accordion-section">
+                                <h4 class="uk-accordion-title uk-margin-remove">Prices</h4>
+                                <div class="uk-accordion-content">
+                                  <div class="uk-grid-small uk-child-width-1-2 uk-text-small" uk-grid>
+                                    <div>
+
+                                      <div class="uk-inline"><span class="uk-form-icon uk-text-xsmall" for="id_discount_price_0">from</span>
+                                        <input class="uk-input"  type="number" name="discount_price_min" step="0.01" id="id_discount_price_0" placeholder="0.0" min="1.0">
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div class="uk-inline"><span class="uk-form-icon uk-text-xsmall" for="discount_price_1">to</span>
+                                        <input class="uk-input"  type="number" name="discount_price_max" step="0.01" id="discount_price_1" placeholder="0.0" min="2.0">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                            </section>
+
+                          <section class="uk-card-body js-accordion-section uk-open">
+                              <h4 class="uk-accordion-title uk-margin-remove">Brands</h4>
+
+                              <div class="uk-accordion-content">
+                                  <div class="form-group">
+                                {% for field in filter.form.visible_fields %}
+
+                                  {% if 'Brand:' in field.label_tag %}
+  <!--                                  {{ field.label_tag }}-->
+                                    {% render_field field class="form-control" %}
+                                    {% if field.help_text %}
+                                      <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                  {% endif %}
+                                {% endfor %}
+                              </div>
+  <!--                              <ul class="uk-list tm-scrollbox">-->
+  <!--                                <li>-->
+  <!--                                  <input class="tm-checkbox" id="brand-1" name="brand" value="1" type="checkbox">-->
+  <!--                                  <label for="brand-1"><span>Acer-->
+  <!--                                      <span class="uk-text-meta uk-text-xsmall">177</span></span></label>-->
+  <!--                                </li>-->
+  <!--                              </ul>-->
+                              </div>
+                            </section>
+
+                          <section class="uk-card-body js-accordion-section uk-open">
+                              <h4 class="uk-accordion-title uk-margin-remove">Category</h4>
+
+                              <div class="uk-accordion-content">
+                                    <div class="form-group">
+
+                                {% for field in filter.form.visible_fields %}
+                                      {% if 'Category:' in field.label_tag %}
+      <!--                                  {{ field.label_tag }}-->
+                                        {% render_field field class="form-control" %}
+                                        {% if field.help_text %}
+                                          <small class="form-text text-muted">{{ field.help_text }}</small>
+                                        {% endif %}
+                                      {% endif %}
+                                    {% endfor %}
+                                  </div>
+  <!--                              <ul class="uk-list tm-scrollbox">-->
+  <!--                                <li>-->
+  <!--                                  <input class="tm-checkbox" id="brand-1" name="brand" value="1" type="checkbox">-->
+  <!--                                  <label for="brand-1"><span>Acer-->
+  <!--                                      <span class="uk-text-meta uk-text-xsmall">177</span></span></label>-->
+  <!--                                </li>-->
+  <!--                              </ul>-->
+                              </div>
+                            </section>
+
+                          <section class="uk-card-body js-accordion-section uk-open">
+                            <h4 class="uk-accordion-title uk-margin-remove">In Stock</h4>
+
+                            <div class="uk-accordion-content">
+                                    <div class="form-group">
+
+                              {% for field in filter.form.visible_fields %}
+                                {% if 'Is active:' in field.label_tag %}
+<!--                                  {{ field.label_tag }}-->
+                                  {% render_field field class="form-control" %}
+                                  {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                  {% endif %}
                                 {% endif %}
+                              {% endfor %}
+                            </div>
+<!--                              <ul class="uk-list tm-scrollbox">-->
+<!--                                <li>-->
+<!--                                  <input class="tm-checkbox" id="brand-1" name="brand" value="1" type="checkbox">-->
+<!--                                  <label for="brand-1"><span>Acer-->
+<!--                                      <span class="uk-text-meta uk-text-xsmall">177</span></span></label>-->
+<!--                                </li>-->
+<!--                              </ul>-->
+                            </div>
+                          </section>
 
-                                 <td><a href="{% url 'vendors-products-update' product.id %}">Update Product Details</a></td>
-                                 <td><a href="{% url 'vendors-products-delete' product.id %}">Stop Selling This Product?</a></td>
-                            </tr>
+                         <section class="uk-card-body js-accordion-section uk-open">
+                            <h4 class="uk-accordion-title uk-margin-remove">Label</h4>
 
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
+                            <div class="uk-accordion-content">
+                                    <div class="form-group">
 
-            </table>
-        </div>
-        <br>
-{% endblock content %}
+                              {% for field in filter.form.visible_fields %}
+                                {% if 'Label:' in field.label_tag %}
+                                  {% render_field field class="form-control" %}
+                                  {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                  {% endif %}
+                                {% endif %}
+                              {% endfor %}
+                            </div>
+                            </div>
+                          </section>
+
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                </aside>
+
+
+                  <div class="uk-width-expand">
+                    <div class="uk-grid-medium uk-child-width-1-1" uk-grid>
+                      <div>
+                        <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
+                          <div class="uk-grid-collapse uk-child-width-1-1" id="products" uk-grid>
+                            <div>
+                               <div class="uk-card uk-card-default uk-card-body">
+                                <table class="uk-table uk-table-divider uk-table-hover">
+                                  <tr>
+                                    <th>Item reference number</th>
+                                    <th>Title</th>
+                                    <th>discount_price</th>
+                                    <th>is_active</th>
+                                    <th>Image</th>
+                                    <!--                    <th>Add Variation</th> <th>Update Product</th><th>Delete Product</th>-->
+                                  </tr>
+
+                                  {% for product in products %}
+                                    {% for item in same_item %}
+                                      {% if item.item_ref_number == product.item_ref_number %}
+
+                                      <tr>
+                                        <td> <a class="uk-link-reset" href="{% url 'vendors-products-update' product.id %}">{{product.item_ref_number}}</a>  </td>
+                                        <td> <a class="uk-link-reset" href="{% url 'vendors-products-update' product.id %}">{{product.title}}</a> </td>
+                                        <td> <a class="uk-link-reset" href="{% url 'vendors-products-update' product.id %}">{{product.discount_price}}</a> </td>
+                                        <td> <a class="uk-link-reset" href="{% url 'vendors-products-update' product.id %}">{{item.is_active}}</a> </td>
+                                        <td> <a class="uk-link-reset" href="{% url 'vendors-products-update' product.id %}"><img src="{{product.image_main.url}}" width="30px" /></a> </td>
+                                      </tr>
+
+                                      {% endif %}
+                                    {% endfor %}
+                                  {% endfor %}
+
+                                </table>
+                                   <hr />
+
+                             </div>
+
+                              </div>
+                            </div>
+                            <div class="uk-card-header">
+                              <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                <div class="uk-width-1-1 uk-width-expand@s uk-flex uk-flex-center uk-flex-left@s uk-text-small"><span class="uk-margin-small-right uk-text-muted">Sort by:</span>
+                                  <ul class="uk-subnav uk-margin-remove">
+                                    <li class="uk-active uk-padding-remove"><a class="uk-text-lowercase" href="#">relevant<span class="uk-margin-xsmall-left" uk-icon="icon: chevron-down; ratio: .5;"></span></a></li>
+                                    <li><a class="uk-text-lowercase" href="#">price</a></li>
+                                    <li><a class="uk-text-lowercase" href="#">newest</a></li>
+                                  </ul>
+                                </div>
+
+                                <div class="uk-width-1-1 uk-width-auto@s uk-flex uk-flex-center uk-flex-middle">
+                                  <button class="uk-button uk-button-default uk-button-small uk-hidden@m" uk-toggle="target: #filters"><span class="uk-margin-xsmall-right" uk-icon="icon: settings; ratio: .75;"></span>Filters
+                                  </button>
+                                  <div class="tm-change-view uk-margin-small-left">
+                                    <ul class="uk-subnav uk-iconnav js-change-view" uk-switcher>
+                                      <li><a class="uk-active" data-view="grid" uk-icon="grid" uk-tooltip="Grid"></a></li>
+                                      <li><a data-view="list" uk-icon="list" uk-tooltip="List"></a></li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <button class="uk-button uk-button-default uk-button-large uk-width-1-1" style="border-top-left-radius: 0; border-top-right-radius: 0;"><span class="uk-margin-small-right" uk-icon="icon: plus; ratio: .75;"></span><span>Load more</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <ul class="uk-pagination uk-flex-center">
+                          <li class="uk-active"><span>1</span></li>
+                          <li><a href="#">2</a></li>
+                          <li><a href="#">3</a></li>
+                          <li><a href="#">4</a></li>
+                          <li><a href="#">5</a></li>
+                          <li class="uk-disabled"><span>…</span></li>
+                          <li><a href="#">20</a></li>
+                          <li><a href="#"><span uk-pagination-next></span></a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </section>
+      </main>
+ {% endblock content %}

@@ -1,4 +1,4 @@
-{% extends 'store/base.html' %}
+ {% extends 'store/base.html' %}
 {% load static %}
   {% block content %}
       <main>
@@ -151,12 +151,12 @@
                             </div>
                           </div>
 
-                            <div class="uk-margin">
-                              <div class="uk-padding-small uk-background-primary-lighten uk-border-rounded">
+                            <div class="">
+                              <div class="uk-padding-small uk-background-primary-lighten uk-border-rounded mt-0">
                                 <div class="uk-grid-small uk-child-width-1-1" uk-grid>
                                   <div>
                                     <del class="uk-text-meta">Rs.{{ item.price }}</del>
-                                    <div class="tm-product-price">Rs.{{ item.discount_price }}</div>
+                                    <div class="tm-product-price mt-1">Rs.{{ item.discount_price }}</div>
                                   </div>
                                 </div>
                               <div>
@@ -169,18 +169,18 @@
                                           <a href="#">Out Of Stock</a>
                                         {% else %}
                                       <!--                                      js-add-to-cart -->
-                                      <a href="{{ item.get_add_to_cart_url }}" style="color:white; decoration:none;"><button class="uk-button uk-button-primary tm-product-add-button tm-shine">Add to cart</button></a>
+                                      <a href="{{ item.get_add_to_cart_url }}" style="color:white; decoration:none;"><button class="uk-button uk-button-primary tm-product-add-button tm-shine mt-3">Add to cart</button></a>
                                       {% endif %}
 
-                                            <a class="uk-margin-small-right js-add-to js-add-to-favorites tm-action-button-active js-added-to" uk-tooltip="Add to favorites" href="{{ item.get_add_to_favorite_url }}" style="margin-left:1em;"><span uk-icon="heart"></span></a>
-                                            <a class="js-add-to js-add-to-compare tm-action-button-active js-added-to" uk-tooltip="Add to compare" href="{{ item.get_add_to_compare_url }}"><span uk-icon="copy"></span></a>
+                                            <a class="mt-2 uk-margin-small-right js-add-to js-add-to-favorites tm-action-button-active js-added-to" uk-tooltip="Add to favorites" href="{{ item.get_add_to_favorite_url }}" style="margin-left:1em;"><span uk-icon="heart"></span></a>
+                                            <a class="mt-2 js-add-to js-add-to-compare tm-action-button-active js-added-to" uk-tooltip="Add to compare" href="{{ item.get_add_to_compare_url }}"><span uk-icon="copy"></span></a>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div class="uk-margin">
-                              <div class="uk-padding-small uk-background-muted uk-border-rounded">
+                            <div class="">
+                              <div class="uk-padding-small uk-background-muted uk-border-rounded m-3">
                                 <div class="uk-grid-small uk-child-width-1-1 uk-text-small" uk-grid>
                                   <div>
                                     <div class="uk-grid-collapse" uk-grid><span class="uk-margin-xsmall-right" uk-icon="cart"></span>
@@ -201,8 +201,8 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="uk-margin">
-                              {{item.short_description}}
+                            <div class="">
+                              <h6 class="m-3">{{item.short_description}}</h6>
                               <div class="uk-margin-small-top"><a class="uk-link-heading js-scroll-to-description" href="#description" onclick="UIkit.switcher('.js-product-switcher').show(1);"><span class="tm-pseudo">Detailed specifications</span><span class="uk-margin-xsmall-left" uk-icon="icon: chevron-down; ratio: .75;"></span></a></div>
                             </div>
                           </div>
@@ -374,7 +374,7 @@
 
                                         </div>
 
-                                        <div class="tm-product-card-shop">
+                                        <div class="tm-product-card-shop mb-10">
                                           <div class="tm-product-card-prices">
                                             <del class="uk-text-meta">Rs:{{r_item.discount_price}}</del>
                                             <div class="tm-product-card-price">Rs:{{r_item.price}}</div>
@@ -384,7 +384,7 @@
                                             <div class="uk-text-meta tm-product-card-actions">
                                               <a class="tm-product-card-action js-add-to js-add-to-favorites tm-action-button-active js-added-to" title="Add to favorites" href="{{ item.get_add_to_favorite_url }}"><span uk-icon="icon: heart; ratio: .75;"></span><span class="tm-product-card-action-text">Add to favorites</span></a>
                                               <a class="tm-product-card-action js-add-to js-add-to-compare tm-action-button-active js-added-to" title="Add to compare" href="{{ item.get_add_to_compare_url }}"><span uk-icon="icon: copy; ratio: .75;"></span><span class="tm-product-card-action-text">Add to compare</span></a></div>
-                                            <button class="uk-button uk-button-primary tm-product-card-add-button tm-shine js-add-to-cart" ><a href="{{ item.get_add_to_cart_url }}" style="color:white; decoration:none;"><span class="tm-product-card-add-button-icon" uk-icon="cart"></span> </a><span class="tm-product-card-add-button-text">Add to cart</span></button>
+                                            <button class="uk-button uk-button-primary tm-product-card-add-button tm-shine js-add-to-cart" ><a href="{{ item.get_add_to_cart_url }}" style="color:white; decoration:none;"><span class="tm-product-card-add-button-icon mt-5" uk-icon="cart"></span> </a><span class="tm-product-card-add-button-text">Add to cart</span></button>
                                           </div>
                                         </div>
                                       </div>
@@ -403,7 +403,7 @@
                     </div>
                   </section>
                 </div>
-              </div>
         </section>
       </main>
  {% endblock content %}
+`

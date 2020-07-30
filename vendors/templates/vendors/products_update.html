@@ -1,0 +1,49 @@
+{% extends "store/base.html" %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<main>
+    <section class="uk-section uk-section-small">
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <div class="uk-container">
+            <div class="uk-grid-medium" uk-grid>
+              <div class="uk-width-1-1 uk-width-1-4@m tm-aside-column">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>
+                </div>
+              </div>
+              <div class="uk-width-1-1 uk-width-expand@m">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
+                  <header class="uk-card-header">
+                    <h2 class="uk-h2" style="text-align:center;">Ordered Products</h2>
+                  </header>
+
+
+                     <div class="content-section" style="margin:3%;">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <fieldset class="form-group">
+                                <legend class="border-bottom mb-4">Update Product</legend>
+                                {{ form|crispy }}
+                            </fieldset>
+                            <div class="form-group">
+                                <button class="btn btn-success" type="submit">Update Details</button>
+
+                                    {% if product.has_variation is True %}
+                                       <a class="btn btn-info" href="{% url 'vendors-products-add-varient' product.variation_id %}">Add Variation</a>
+                                    {% endif %}
+                                    <a class="btn btn-danger" href="{% url 'vendors-products-delete' product.id %}">Stop Selling This Product?</a>
+
+                            </div>
+                        </form>
+                    </div>
+                    <br>
+                        </div>
+                    </div>
+                </div>
+        </section>
+      </main>
+
+
+{% endblock content %}

@@ -2,25 +2,28 @@ import django_filters
 from django_filters import DateFilter, CharFilter, RangeFilter
 
 from .models import Item, Category
-from store.models import Order
+from store.models import MiniOrder
 
 
 class ProductOrderFilter(django_filters.FilterSet):
     start_date = DateFilter(field_name="ordered_date", lookup_expr='gte')
     end_date = DateFilter(field_name="ordered_date", lookup_expr='lte')
-    # note = CharFilter(field_name='shipping_address', lookup_expr='icontains')
+    mini_order_ref_number = CharFilter(field_name='mini_order_ref_number', lookup_expr='icontains')
+    payment_method = CharFilter(field_name='payment_method', lookup_expr='icontains')
 
     class Meta:
-        model = Order
-        fields = ['order_ref_number', 'ordered_date', 'payment_method', 'items']
+        model = MiniOrder
+        fields = ['order_status']
 
 
 class ItemFilter(django_filters.FilterSet):
+    discount_price = RangeFilter(field_name="discount_price")
     note = CharFilter(field_name='title', lookup_expr='icontains')
+    irn = CharFilter(field_name='item_ref_number', lookup_expr='icontains')
 
     class Meta:
         model = Item
-        fields = ['item_ref_number', 'title', 'category', 'price', 'discount_price', 'label', 'stock_no']
+        fields = ['category', 'is_active', 'brand', 'label', 'stock_no']
 
 
 class CategoryFilter(django_filters.FilterSet):
@@ -28,7 +31,7 @@ class CategoryFilter(django_filters.FilterSet):
 
     class Meta:
         model = Category
-        fields = ['title', 'description', 'is_active']
+        fields = ['is_active']
 
 
 class VendorItemFilter(django_filters.FilterSet):

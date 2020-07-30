@@ -4,44 +4,69 @@
 
 {% block content %}
 
-<main>
-    <section class="uk-section uk-section-small">
-    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-        <div class="uk-container">
-            <div class="uk-grid-medium" uk-grid>
-              <div class="uk-width-1-1 uk-width-1-4@m tm-aside-column">
-                <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>
-                </div>
-              </div>
-              <div class="uk-width-1-1 uk-width-expand@m">
-                <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
-                  <header class="uk-card-header">
-                    <h1 class="uk-h2">Ordered Products</h1>
-                  </header>
-                        <div style="margin:2em">
-                            <form method="POST" enctype="multipart/form-data">
-                                <div class="form-group">
-                                    {% csrf_token %}
-                                    {{form| crispy}}
-
-                                    <button class="btn btn-outline-info" type="submit">Submit</button>
-                                </div>
-                            </form>
-
+ <div class="content-section" style="margin:5%;">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <h1 style="text-align:center;">
+                   {% if title %}
+                         {{title}}
+                   {% else %}
+                        Products
+                   {% endif %}
+                </h1>
+                <hr>
+                <br>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">
+                    {% if submit %}
+                         {{submit}}
+                    {% else %}
+                        Submit
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+<!--<main>-->
+<!--    <section class="uk-section uk-section-small">-->
+<!--        <div class="content-section">-->
+<!--            <div class="uk-grid-medium" uk-grid>-->
+<!--              <div class="uk-width-1-1 uk-width-1-4@m tm-aside-column">-->
+<!--                <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="uk-width-1-1 uk-width-expand@m">-->
+<!--                <div class="uk-card uk-card-default uk-card-small tm-ignore-container">-->
+<!--                  <header class="uk-card-header">-->
+<!--                    <h1 class="uk-h2">{{ title }}</h1>-->
+<!--                  </header>-->
+<!--                        <div style="margin:2em">-->
 <!--                            <form method="POST" enctype="multipart/form-data">-->
-<!--                              {% csrf_token %}-->
-<!--                              {% include 'vendors/bs4_form.html' with form=form %}-->
-<!--                              <button type="submit" class="btn btn-primary">Submit</button>-->
+<!--                                <div class="form-group">-->
+<!--                                    {% csrf_token %}-->
+<!--                                    {{form| crispy}}-->
+
+<!--                                    <button class="btn btn-outline-info" type="submit">Submit</button>-->
+<!--                                </div>-->
 <!--                            </form>-->
 
+<!--&lt;!&ndash;                            <form method="POST" enctype="multipart/form-data">&ndash;&gt;-->
+<!--&lt;!&ndash;                              {% csrf_token %}&ndash;&gt;-->
+<!--&lt;!&ndash;                              {% include 'vendors/bs4_form.html' with form=form %}&ndash;&gt;-->
+<!--&lt;!&ndash;                              <button type="submit" class="btn btn-primary">Submit</button>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </form>&ndash;&gt;-->
 
-                            </div>
 
-                        </div>
-                    </div>
-                </div>
-        </section>
-      </main>
+<!--                            </div>-->
+<!--<br>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--        </section>-->
+<!--      </main>-->
 
 
 {% endblock content %}
