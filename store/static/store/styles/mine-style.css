@@ -5,6 +5,11 @@
     border-style: solid;
     border-color:#f8f8f8;
 }
+
+.add-border-mine{
+    border-radius: 2em;
+}
+
 @media only screen and (min-width: 1250px) {
   .content-section{
     margin: 5em 15%;

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Customer # , Address
+from .models import User, Customer
 
 
 class UserAdmin(UserAdmin):
@@ -13,21 +13,20 @@ class UserAdmin(UserAdmin):
     fieldsets = ()
 
 
-class AddressAdmin(admin.ModelAdmin):
-    list_display = [
-        'user',
-        'street_address',
-        'apartment_address',
-        'country',
-        'postal_code',
-        'address_type',
-        'default'
-    ]
-    list_filter = ['default', 'address_type', 'country']
-    search_fields = ['user', 'street_address', 'apartment_address', 'postal_code']
+# class AddressAdmin(admin.ModelAdmin):
+#     list_display = [
+#         'user',
+#         'street_address',
+#         'apartment_address',
+#         'country',
+#         'postal_code',
+#         'address_type',
+#         'default'
+#     ]
+#     list_filter = ['default', 'address_type', 'country']
+#     search_fields = ['user', 'street_address', 'apartment_address', 'postal_code']
 
 
 admin.site.register(User, UserAdmin)
-# admin.site.register(Address, )
 admin.site.register(Customer)
 # admin.site.register(Vendor)

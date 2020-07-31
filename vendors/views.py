@@ -9,7 +9,8 @@ from django.utils import timezone
 
 from .forms import ItemForm, CategoryForm, OrderForm, ItemVariationsForm, BrandsForm, VendorAddressForm, LocationForm,\
                    SameItemForm, ReturnForm, CancelForm
-from .filters import ProductOrderFilter, ItemFilter, CategoryFilter, VendorItemFilter
+from .filters import ProductOrderFilter, ItemFilter, CategoryFilter, VendorItemFilter, ProductReturnedFilter, \
+    ProductCanceledFilter
 from .models import Item, Category, VendorLocation, SameItem
 from users.models import User
 from store.models import Order, OrderItem, MiniOrder
@@ -357,13 +358,15 @@ def products_returned(request):
         orderr = Order.objects.get(mini_order=orders.first().id)
     except AttributeError:
         orderr = ''
-    filters = ProductOrderFilter(request.GET, queryset=orders)
+    filters = ProductReturnedFilter(request.GET, queryset=orders)
+    len_returned_products = len(orders)
 
     orders = filters.qs
     context = {
         'orders': orders,
         'orderr': orderr,
-        'filters': filters,
+        'len_returned_products': len_returned_products,
+        'filter': filters,
     }
     return render(request, 'vendors/products_returned.html', context)
 
@@ -403,13 +406,14 @@ def products_canceled(request):
         orderr = Order.objects.get(mini_order=orders.first().id)
     except AttributeError:
         orderr = ''
-    filters = ProductOrderFilter(request.GET, queryset=orders)
-
+    filters = ProductCanceledFilter(request.GET, queryset=orders)
+    len_cancel_products = len(orders)
     orders = filters.qs
     context = {
         'orders': orders,
         'orderr': orderr,
-        'filters': filters,
+        'len_cancel_products': len_cancel_products,
+        'filter': filters,
     }
     return render(request, 'vendors/products_canceled.html', context)
 

@@ -61,39 +61,73 @@
               </div>
               <div class="uk-width-1-1 uk-width-expand@m">
                 <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
-                  <header class="uk-card-header">
-                    <h1 class="uk-h2">Personal Info</h1>
-                  </header>
 
-                  <div class="content-section" style="margin:2%;">
-                    <div class="media">
-                      <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
-                      <div class="media-body">
-                        <h2 class="account-heading">{{ user.username }}</h2>
-                        <p class="text-secondary">{{ user.email }}</p>
-                      </div>
-                    </div>
+                <br>
+                  <div class="uk-width-1-1 tm-product-description" id="description">
+                      <header>
+                        <nav class="tm-product-nav" uk-sticky="offset: 60; bottom: #description; cls-active: tm-product-nav-fixed;">
+                          <ul class="uk-subnav uk-subnav-pill js-product-switcher" uk-switcher="connect: .js-tabs">
+                            <li><a class="js-scroll-to-description" href="#description">Personal Info</a></li>
+                            <li><a class="js-scroll-to-description" href="#description">Address</a></li>
+                          </ul>
+                        </nav>
+                      </header>
 
-                    <form method="POST" enctype="multipart/form-data">
-                          {% csrf_token %}
-                          <fieldset class="form-group">
-                              <legend class="border-bottom mb-4">Info</legend>
-                              {{ user_form|crispy }}
-                              {{ form|crispy }}
-                              {{ address_form|crispy }}
-                          </fieldset>
-                          <div class="form-group">
-                              <button class="btn btn-outline-info" type="submit">Update</button>
-                              <small class="text-muted">
-                                <a class="ml-2" href="{% url 'password_change' %}">Change Password?</a>
-                                </small>
+                      <div class="uk-card-body">
+                        <div class="uk-switcher js-product-switcher js-tabs">
+                          <section>
+                               <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                  <fieldset class="form-group">
+                                      <legend class="border-bottom mb-4">Personal Info</legend>
+                                      {{ user_form|crispy }}
+                                      {{ form|crispy }}
+                                      {{ address_form|crispy }}
+                                  </fieldset>
+                                  <div class="form-group">
+                                      <button class="btn btn-outline-info" type="submit">Update</button>
+                                      <small class="text-muted">
+                                        <a class="ml-2" href="{% url 'password_change' %}">Change Password?</a>
+                                        </small>
+                                  </div>
+                                </form>
+                          </section>
+
+                          <section>
+                                <h1 class="uk-card-title" style="text-align:center;">Please select a shipping address {{ user.first_name }}</h1>
+                                    <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:1em 18em 0em 18em;">
+                                        <a class="uk-link-reset" href="{% url 'store:store-address' %}"><span class="uk-button uk-button-default uk-width-1-1"><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Add Address</span></a>
+                                    </div>
+                                <div class="uk-grid-match uk-text-center" uk-grid style="margin-left:2em;">
+
+                                {% for address in customer_address %}
+                                    <div class="uk-card uk-card-default uk-card-body uk-card-hover uk-width-expand" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:2em;">
+                                        <h3 class="uk-card-title">Deliver to {{ user.first_name }}</h3>
+                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address|truncatechars:15}}</p>
+                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address_line_2|truncatechars:10 }}</p>
+                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_city }}</p>
+                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_postal_code }}</p>
+                                            <p style="font-size:18px;">{{ address.billing_phone_number }}</p>
+                                        <div class="uk-card uk-card-" >
+                                            <a class="uk-link-reset" href="{% url 'store:store-address-update' address.id %}"><span class="uk-button uk-button-default "><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Update Address</span></a>
+                                        </div>
+                                    </div>
+                                 <br>
+                                {% endfor %}
+
+                                </div>
+
+                          </section>
+
+
                           </div>
 
-                     </form>
-                  </div>
-                <br>
+                      </div>
+
+
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
           </div>
         </section>

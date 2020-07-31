@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
+from django.core.validators import MaxValueValidator
 
 from .managers import UserManager
 
@@ -63,29 +64,6 @@ class Customer(models.Model):
     def __str__(self):
         return self.user.username
 
-
-# class Address(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-#     b_street_address = models.CharField(max_length=100, null=True)
-#     b_street_address_line_2 = models.CharField(max_length=100, null=True)
-#     b_city = models.CharField(max_length=100, null=True)
-#     b_phone_number = models.IntegerField(validators=[MaxValueValidator(9999999999)], null=True)
-#     b_postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)], null=True)
-#
-#     s_street_address = models.CharField(max_length=100, null=True)
-#     s_street_address_line_2 = models.CharField(max_length=100, null=True)
-#     s_city = models.CharField(max_length=100, null=True)
-#     s_phone_number = models.IntegerField(validators=[MaxValueValidator(9999999999)], null=True)
-#     s_postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)], null=True)
-#
-#     shipping_is_billing = models.BooleanField(default=True)
-#     default = models.BooleanField(default=False)
-#
-#     def __str__(self):
-#         return self.user.username
-#
-#     class Meta:
-#         verbose_name_plural = 'Addresses'
 
 
 

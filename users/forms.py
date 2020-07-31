@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate
 from django.db import transaction
 
-from .models import User, Customer  # , Address
+from .models import User, Customer
+from store.models import CustomerAddress
 from vendors.models import Vendor, VendorAddress
 
 
@@ -47,6 +48,11 @@ class CustomerRegistrationForm(UserCreationForm):
         customer.phone_number = user.phone_number
         customer.customer_ref_number = f"VRN-{100000+int(customer.user_id)}"
         customer.save()
+
+        customer_address = CustomerAddress.objects.create(user=user)
+        customer_address.billing_phone_number = user.phone_number
+        customer_address.shipping_phone_number = user.phone_number
+        customer_address.save()
 
         return user
 
@@ -159,44 +165,34 @@ class VendorUpdateForm(forms.ModelForm):
 
 
 
-# class AddressForm(forms.ModelForm):
-#     b_street_address_line_2 = forms.CharField(max_length=100, required=False)
-#     s_street_address_line_2 = forms.CharField(max_length=100, required=False)
+# @transaction.atomic
+# def save(self):
+#     user = super().save()
+#     address = CustomerAddress.objects.get(user=user)
+#     address.user_id = user.id
+#     address.b_street_address = self.cleaned_data.get('b_street_address')
+#     address.b_street_address_line_2 = self.cleaned_data.get('b_street_address_line_2')
+#     address.b_city = self.cleaned_data.get('b_city')
+#     address.b_phone_number = user.phone_number
+#     address.b_postal_code = user.postal_code
+#     address.default = self.cleaned_data.get('default')
+#     address.shipping_is_billing = self.cleaned_data.get('shipping_is_billing')
 #
-#     class Meta:
-#         model = Address
-#         fields = ('b_street_address', 'b_street_address_line_2', 'b_city',  # 'b_phone_number', 'b_postal_code',
-#                   's_street_address', 's_street_address_line_2', 's_city', 's_phone_number', 's_postal_code',
-#                   'shipping_is_billing', 'default')
+#     if address.shipping_is_billing:
+#         address.s_street_address = self.cleaned_data.get('b_street_address')
+#         address.s_street_address_line_2 = self.cleaned_data.get('b_street_address_line_2')
+#         address.s_city = self.cleaned_data.get('b_city')
+#         address.s_phone_number = self.cleaned_data.get('phone_number')
+#         address.s_postal_code = self.cleaned_data.get('postal_code')
+#     else:
+#         address.s_street_address = self.cleaned_data.get('s_street_address')
+#         address.s_street_address_line_2 = self.cleaned_data.get('s_street_address_line_2')
+#         address.s_city = self.cleaned_data.get('s_city')
+#         address.s_phone_number = self.cleaned_data.get('s_phone_number')
+#         address.s_postal_code = self.cleaned_data.get('s_postal_code')
 #
-#         @transaction.atomic
-#         def save(self):
-#             user = super().save()
-#             address = Address.objects.get(user=user)
-#             address.user_id = user.id
-#             address.b_street_address = self.cleaned_data.get('b_street_address')
-#             address.b_street_address_line_2 = self.cleaned_data.get('b_street_address_line_2')
-#             address.b_city = self.cleaned_data.get('b_city')
-#             address.b_phone_number = user.phone_number
-#             address.b_postal_code = user.postal_code
-#             address.default = self.cleaned_data.get('default')
-#             address.shipping_is_billing = self.cleaned_data.get('shipping_is_billing')
-#
-#             if address.shipping_is_billing:
-#                 address.s_street_address = self.cleaned_data.get('b_street_address')
-#                 address.s_street_address_line_2 = self.cleaned_data.get('b_street_address_line_2')
-#                 address.s_city = self.cleaned_data.get('b_city')
-#                 address.s_phone_number = self.cleaned_data.get('phone_number')
-#                 address.s_postal_code = self.cleaned_data.get('postal_code')
-#             else:
-#                 address.s_street_address = self.cleaned_data.get('s_street_address')
-#                 address.s_street_address_line_2 = self.cleaned_data.get('s_street_address_line_2')
-#                 address.s_city = self.cleaned_data.get('s_city')
-#                 address.s_phone_number = self.cleaned_data.get('s_phone_number')
-#                 address.s_postal_code = self.cleaned_data.get('s_postal_code')
-#
-#             address.save()
-#             return user
+#     address.save()
+#     return user
 
 
 

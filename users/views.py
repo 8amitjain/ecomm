@@ -1,4 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.views import View
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -12,7 +11,7 @@ from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeEr
 from .utils import account_activation_token
 from django.urls import reverse
 
-from store.models import Order, OrderItem, CustomerLocation, MiniOrder
+from store.models import Order, MiniOrder, CustomerAddress
 from .models import User
 from .forms import UserUpdateForm, CustomerRegistrationForm, VendorRegistrationForm, CustomerUpdateForm,\
                    VendorUpdateForm
@@ -98,9 +97,12 @@ def account_view(request, data):
     if data == "vendor":
         req_form = VendorUpdateForm
         instance_data = request.user.vendor
+        customer_address = ''
     elif data == "customer":
         req_form = CustomerUpdateForm
         instance_data = request.user.customer
+        customer_address = CustomerAddress.objects.filter(user=request.user)
+
     else:
         return render(request, '/')
 
@@ -109,7 +111,6 @@ def account_view(request, data):
     if request.method == 'POST':
         form = req_form(request.POST, instance=instance_data)
         user_form = UserUpdateForm(request.POST, instance=request.user)
-        # address_form = AddressForm(request.POST, instance=request.user.address)
 
         if form.is_valid() and user_form.is_valid():  # and address_form.is_valid():
             form.save()
@@ -128,6 +129,7 @@ def account_view(request, data):
         'user_form': user_form,
         'data': data,
         'user': user_model,
+        'customer_address': customer_address,
         # 'address_form': address_form,
 
     }

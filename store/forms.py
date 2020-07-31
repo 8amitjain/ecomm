@@ -1,5 +1,5 @@
 from django import forms
-from .models import Reviews, CustomerLocation, Return, Cancel, CouponCustomer, PrescriptionUpload
+from .models import Reviews, CustomerLocation, Return, Cancel, CouponCustomer, PrescriptionUpload, CustomerAddress
 from mapwidgets.widgets import GooglePointFieldWidget
 
 PAYMENT_CHOICES = (
@@ -97,3 +97,21 @@ class PrescriptionUploadForm(forms.ModelForm):
     class Meta:
         model = PrescriptionUpload
         fields = ('prescription',)
+
+
+class CustomerAddressForm(forms.ModelForm):
+    shipping_street_address_line_2 = forms.CharField(max_length=100, required=False)
+    shipping_phone_number = forms.IntegerField(required=False)
+
+    billing_street_address = forms.CharField(max_length=100, required=False)
+    billing_street_address_line_2 = forms.CharField(max_length=100, required=False)
+    billing_city = forms.CharField(max_length=100, required=False)
+    billing_phone_number = forms.IntegerField(required=False)
+    billing_postal_code = forms.IntegerField(required=False)
+
+    class Meta:
+        model = CustomerAddress
+        fields = ('shipping_street_address', 'shipping_street_address_line_2', 'shipping_city',
+                  'shipping_phone_number', 'shipping_postal_code', 'billing_street_address',
+                  'billing_street_address_line_2', 'billing_city', 'billing_postal_code', 'billing_phone_number',
+                  'shipping_is_billing', 'default')

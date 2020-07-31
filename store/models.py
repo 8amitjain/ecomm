@@ -105,6 +105,7 @@ post_save.connect(userprofile_receiver, sender=User)
 
 
 class CustomerLocation(geo_models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_ref_number = models.CharField(unique=True, max_length=15, null=True)  # or vendor name here
     location = geo_models.PointField(help_text="Use map widget for point the house location")
 
@@ -134,6 +135,32 @@ class Addresss(models.Model):
 
     class Meta:
         verbose_name_plural = 'Addresses'
+
+
+class CustomerAddress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    location = models.ForeignKey(CustomerLocation, on_delete=models.CASCADE, null=True)
+
+    billing_street_address = models.CharField(max_length=100, null=True)
+    billing_street_address_line_2 = models.CharField(max_length=100, null=True)
+    billing_city = models.CharField(max_length=100, null=True)
+    billing_phone_number = models.BigIntegerField(validators=[MaxValueValidator(9999999999)], null=True)
+    billing_postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)], null=True)
+
+    shipping_street_address = models.CharField(max_length=100, null=True)
+    shipping_street_address_line_2 = models.CharField(max_length=100, null=True)
+    shipping_city = models.CharField(max_length=100, null=True)
+    shipping_phone_number = models.BigIntegerField(validators=[MaxValueValidator(9999999999)], null=True)
+    shipping_postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)], null=True)
+
+    shipping_is_billing = models.BooleanField(default=True)
+    default = models.BooleanField(default=True)
+
+    def __str__(self):
+        try:
+            return f"{self.user.first_name}_Address"
+        except:
+            return f"{self.user}_Address"
 
 
 class Slide(models.Model):
@@ -302,10 +329,11 @@ class Order(models.Model):
     ordered_time = models.TimeField()
     ordered = models.BooleanField(default=False)
 
-    shipping_address = models.ForeignKey(
-        'Addresss', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
-    billing_address = models.ForeignKey(
-        'Addresss', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
+    # shipping_address = models.ForeignKey(
+    #     'Addresss', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
+    # billing_address = models.ForeignKey(
+    #     'Addresss', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
+    address = models.ForeignKey(CustomerAddress, on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
 

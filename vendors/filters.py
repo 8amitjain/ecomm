@@ -43,3 +43,26 @@ class VendorItemFilter(django_filters.FilterSet):
     class Meta:
         model = Item
         fields = ['title', 'category', 'discount_price', 'brand']
+
+
+class ProductReturnedFilter(django_filters.FilterSet):
+    start_date = DateFilter(field_name="ordered_date", lookup_expr='gte')
+    end_date = DateFilter(field_name="ordered_date", lookup_expr='lte')
+    mini_order_ref_number = CharFilter(field_name='mini_order_ref_number', lookup_expr='icontains')
+    payment_method = CharFilter(field_name='payment_method', lookup_expr='icontains')
+
+    class Meta:
+        model = MiniOrder
+        fields = ['order_status', 'return_status']
+
+
+class ProductCanceledFilter(django_filters.FilterSet):
+    start_date = DateFilter(field_name="ordered_date", lookup_expr='gte')
+    end_date = DateFilter(field_name="ordered_date", lookup_expr='lte')
+    mini_order_ref_number = CharFilter(field_name='mini_order_ref_number', lookup_expr='icontains')
+    payment_method = CharFilter(field_name='payment_method', lookup_expr='icontains')
+
+    class Meta:
+        model = MiniOrder
+        fields = ['order_status', 'cancel_status']
+

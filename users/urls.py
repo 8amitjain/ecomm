@@ -14,6 +14,7 @@ urlpatterns = [
     # path('register/<slug:data>', views.registration_view, name='users-register-vendor'),
 
     path('account/<slug:data>/', views.account_view, name="users-account"),
+
     path('order/', views.order, name="users-order"),
     path('order/<int:pk>/', views.order_detail, name="users-order-detail"),
 
