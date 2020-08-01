@@ -1,0 +1,155 @@
+{% extends "store/base.html" %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% block content %}
+   <main>
+        <section class="uk-section uk-section-small">
+          <div class="uk-container">
+            <div class="uk-grid-medium uk-child-width-1-1" uk-grid>
+              <div class="uk-text-center">
+                <h1 class="uk-margin-small-top uk-margin-remove-bottom">Brands</h1>
+                <div class="uk-text-meta uk-margin-xsmall-top">{{ len_brands }} Brands</div>
+                <hr>
+
+
+              </div>
+              <div>
+                <div class="uk-grid-medium" uk-grid>
+                  <aside class="uk-width-1-4 tm-aside-column tm-filters" id="filters" uk-offcanvas="overlay: true; container: false;">
+                    <div class="uk-offcanvas-bar uk-padding-remove">
+                      <div class="uk-card uk-card-default uk-card-small uk-flex uk-flex-column uk-height-1-1">
+                        <header class="uk-card-header uk-flex uk-flex-middle">
+                          <div class="uk-grid-small uk-flex-1" uk-grid>
+                            <div class="uk-width-expand">
+                              <h3>Filters</h3>
+
+                            </div>
+                            <button class="uk-offcanvas-close" type="button" uk-close></button>
+                          </div>
+                        </header>
+
+
+                        <div class="uk-margin-remove uk-flex-1 uk-overflow-auto" uk-accordion="multiple: true; targets: &gt; .js-accordion-section" style="flex-basis: auto">
+                            <!--FILTER FORM-->
+
+
+<!--                            <hr>-->
+<!--                            <h2>SUDO BELOW</h2>-->
+                        <form method="get">
+                           <div class="uk-card-body">
+                           <a class="uk-link-reset" href="{% url 'vendors-brand-add' %}"><span class="uk-button uk-button-default uk-width-1-1"><span class="uk-margin-xsmall-right" uk-icon="icon: tag; ratio: .75;"></span>Add Brand</span></a>
+                            <br><br>
+                            <button class="uk-button uk-button-default uk-width-1-1" type="submit"><span class="uk-margin-xsmall-right" uk-icon="icon: search; ratio: .75;"></span>Search</button>
+                            <br><br>
+                            <button class="uk-button uk-button-default uk-width-1-1" type="reset"><span class="uk-margin-xsmall-right" uk-icon="icon: close; ratio: .75;"></span>Reset all filters</button>
+                          </div>
+
+                          <section class="uk-card-body js-accordion-section">
+                              <h4 class="uk-accordion-title uk-margin-remove">Search<span class="tm-help-icon" uk-icon="icon: question; ratio: .75;" onclick="event.stopPropagation();"></span>
+                                <div class="uk-margin-remove" uk-drop="mode: click;boundary-align: true; boundary: !.uk-accordion-title; pos: bottom-justify;">
+                                  <div class="uk-card uk-card-body uk-card-default uk-card-small uk-box-shadow-xlarge uk-text-small">A small description for this property</div>
+                                </div>
+                              </h4>
+                              <div class="uk-accordion-content">
+                                <ul class="uk-list tm-scrollbox" >
+                                  <li>
+                                    <input class="uk-input" type="text" placeholder="Search.." name="note" id="id_note">
+                                    <label  for="id_note"><span class="uk-text-meta uk-text-xsmall">Search Brand name</span></label>
+                                  </li>
+
+
+                                </ul>
+                              </div>
+                            </section>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                </aside>
+
+
+                  <div class="uk-width-expand">
+                    <div class="uk-grid-medium uk-child-width-1-1" uk-grid>
+                      <div>
+                        <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
+                          <div class="uk-grid-collapse uk-child-width-1-1" id="products" uk-grid>
+                            <div>
+                               <div class="uk-card uk-card-default uk-card-body">
+
+                                <table class="uk-table uk-table-divider uk-table-hover">
+                                  <tr>
+                                    <th>Title</th>
+                                    <th>Image</th>
+                                  </tr>
+
+
+                                    {% for brand in brands%}
+                                        <tr> <td>{{brand.brand_name}}</td>
+
+                                            {% if brand.image %}
+                                                <td> <img src="{{category.image.url}}" width="35px"> </td>
+                                            {% else %}
+                                                <td> <p>No Image</p> </td>
+                                            {% endif %}
+
+                                        </tr>
+                                    {% endfor %}
+
+                                </table>
+                                   <hr />
+
+                             </div>
+
+                              </div>
+                            </div>
+                            <div class="uk-card-header">
+                              <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                <div class="uk-width-1-1 uk-width-expand@s uk-flex uk-flex-center uk-flex-left@s uk-text-small"><span class="uk-margin-small-right uk-text-muted">Sort by:</span>
+                                  <ul class="uk-subnav uk-margin-remove">
+                                    <li class="uk-active uk-padding-remove"><a class="uk-text-lowercase" href="#">relevant<span class="uk-margin-xsmall-left" uk-icon="icon: chevron-down; ratio: .5;"></span></a></li>
+                                    <li><a class="uk-text-lowercase" href="#">price</a></li>
+                                    <li><a class="uk-text-lowercase" href="#">newest</a></li>
+                                  </ul>
+                                </div>
+
+                                <div class="uk-width-1-1 uk-width-auto@s uk-flex uk-flex-center uk-flex-middle">
+                                  <button class="uk-button uk-button-default uk-button-small uk-hidden@m" uk-toggle="target: #filters"><span class="uk-margin-xsmall-right" uk-icon="icon: settings; ratio: .75;"></span>Filters
+                                  </button>
+                                  <div class="tm-change-view uk-margin-small-left">
+                                    <ul class="uk-subnav uk-iconnav js-change-view" uk-switcher>
+                                      <li><a class="uk-active" data-view="grid" uk-icon="grid" uk-tooltip="Grid"></a></li>
+                                      <li><a data-view="list" uk-icon="list" uk-tooltip="List"></a></li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <button class="uk-button uk-button-default uk-button-large uk-width-1-1" style="border-top-left-radius: 0; border-top-right-radius: 0;"><span class="uk-margin-small-right" uk-icon="icon: plus; ratio: .75;"></span><span>Load more</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <ul class="uk-pagination uk-flex-center">
+                          <li class="uk-active"><span>1</span></li>
+                          <li><a href="#">2</a></li>
+                          <li><a href="#">3</a></li>
+                          <li><a href="#">4</a></li>
+                          <li><a href="#">5</a></li>
+                          <li class="uk-disabled"><span>…</span></li>
+                          <li><a href="#">20</a></li>
+                          <li><a href="#"><span uk-pagination-next></span></a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </section>
+      </main>
+<br>
+{% endblock content %}

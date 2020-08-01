@@ -366,7 +366,13 @@ class Order(models.Model):
         for order_item in self.items.all():
             total += order_item.get_final_price()
         if self.coupon_customer:
-            total -= self.coupon_customer.discount_amount
+            total -= self.get_coupon_total()
+        return total
+
+    def get_total_without_coupoun(self):
+        total = 0
+        for order_item in self.items.all():
+            total += order_item.get_final_price()
         return total
 
     def get_sub_total(self):
@@ -380,6 +386,17 @@ class Order(models.Model):
         for order_item in self.items.all():
             total += order_item.get_amount_saved()
         return total
+
+    def get_coupon_total(self):
+        vendor_coupon = Coupon.objects.get(code=self.coupon_customer.coupon.code)
+        total = self.get_total_without_coupoun()
+        if total >= vendor_coupon.minimum_order_amount:
+            self.coupon_customer.coupon.discount_amount = total * \
+                                                          (vendor_coupon.discount_percent / 100)
+        try :
+            return self.coupon_customer.coupon.discount_amount
+        except AttributeError:
+            return 0
 
 
 class Payment(models.Model):

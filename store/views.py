@@ -82,15 +82,62 @@ def product(request, pk):
 
 class CartView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
+
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
+
+            form = CouponCustomerForm()
             context = {
                 'object': order,
+                'form': form,
             }
             return render(self.request, 'store/cart.html', context)
         except ObjectDoesNotExist:
             messages.error(self.request, "You do not have any item in cart")
             return redirect("/")
+
+    def post(self, *args, **kwargs):
+        form = CouponCustomerForm(self.request.POST)
+        order = Order.objects.get(user=self.request.user, ordered=False)
+        if form.is_valid():
+            coupon = form.save(commit=False)
+            try:
+                coupon = CouponCustomer.objects.get(code=coupon.code, user=self.request.user)
+                if coupon.used is True:
+                    messages.success(self.request, f'Code Already Used!')
+                else:
+                    coupon.discount_amount = 0
+                    coupon.order_amount = order.get_total_without_coupoun()
+                    coupon.save()
+                    vendor_coupon = Coupon.objects.get(code=coupon.code)
+                    if coupon.order_amount >= vendor_coupon.minimum_order_amount:
+                        coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
+                        coupon.applicable = True
+                        coupon.save()
+                return redirect('store:store-cart')
+
+            except:
+                coupon.user = self.request.user
+                coupon.save()
+                vendor_coupon = Coupon.objects.get(code=coupon.code)
+                coupon.coupon = vendor_coupon
+                coupon.discount_amount = 0
+                coupon.order_amount = order.get_total_without_coupoun()
+                coupon.save()
+                if coupon.order_amount >= vendor_coupon.minimum_order_amount:
+                    coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
+                    # coupon.used = True
+                    coupon.applicable = True
+                    coupon.save()
+
+                order.coupon_customer = coupon
+                order.save()
+                context = {
+                    'object': order,
+                    'form': form,
+                }
+                messages.success(self.request, f'Code Applied!')
+                return render(self.request, 'store/cart.html', context)
 
 
 class OrderSummaryView(LoginRequiredMixin, View):
@@ -190,7 +237,7 @@ def remove_from_cart(request, slug):
             order_item.save()
             order.items.remove(order_item)
             try:
-                mini_order = MiniOrder.objects.get(order_item=order_item, ordered=False)
+                mini_order = MiniOrder.objects.filter(order_item=order_item, ordered=False)
                 mini_order.delete()
             except ObjectDoesNotExist:
                 pass
@@ -463,11 +510,15 @@ class PaymentView(View):
             order.return_window = timezone.datetime.now() + timezone.timedelta(days=10)
             order.payment = payment
 
+            if order.coupon_customer:
+                order.coupon_customer.used = True
+                coupon_customer = CouponCustomer.objects.get(id=order.coupon_customer.id)
+                coupon_customer.save()
+
             order_items.update(ordered=True)
             mini_order.update(ordered=True)  #
 
             order.ordered = True
-
             order.save()
 
             messages.success(self.request, "Your order was successful!")
@@ -640,54 +691,6 @@ def product_canceled(request, pk):
 
 
 @login_required
-def product_promo_code(request, pk):
-    order = Order.objects.get(pk=pk)
-    if request.method == 'POST':
-        form = CouponCustomerForm(request.POST)
-
-        if form.is_valid():
-            coupon = form.save(commit=False)
-            print(coupon)
-            try:
-                coupon = CouponCustomer.objects.get(code=coupon.code)
-                if coupon.usable is True:
-                    coupon.order_amount = order.get_total()
-                    coupon.save()
-                    vendor_coupon = Coupon.objects.get(code=coupon.code)
-                    if coupon.order_amount >= vendor_coupon.minimum_order_amount:
-                        coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
-                        coupon.used = True
-                        coupon.applicable = True
-                        coupon.save()
-
-            except :
-                coupon.user = request.user
-                coupon.save()
-                vendor_coupon = Coupon.objects.get(code=coupon.code)
-                coupon.coupon = vendor_coupon
-                coupon.order_amount = order.get_total()
-                coupon.save()
-                if coupon.order_amount >= vendor_coupon.minimum_order_amount:
-                    coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
-                    coupon.used = True
-                    coupon.applicable = True
-                    coupon.save()
-
-            order.coupon_customer = coupon
-            order.save()
-            messages.success(request, f'Code Applied!')
-            return redirect('store:store-cart')
-    else:
-        form = CouponCustomerForm()
-
-    context = {
-        'form': form
-    }
-
-    return render(request, 'store/form.html', context)
-
-
-@login_required
 def prescription_upload(request):
     if request.method == 'POST':
         form = PrescriptionUploadForm(request.POST, request.FILES)
@@ -791,7 +794,7 @@ def blog(request):
 
 
 def brands(request):
-    return render(request, 'store/brands.html', {'title': 'Home'})
+    return render(request, 'store/brand.html', {'title': 'Home'})
 
 
 def catalog(request):
@@ -820,6 +823,58 @@ def news(request):
 
 def settings(request):
     return render(request, 'store/settings.html', {'title': 'Home'})
+
+
+# @login_required
+# def product_promo_code(request, pk):
+#     order = Order.objects.get(pk=pk)
+#     if request.method == 'POST':
+#         form = CouponCustomerForm(request.POST)
+#
+#         if form.is_valid():
+#             coupon = form.save(commit=False)
+#             try:
+#                 coupon = CouponCustomer.objects.get(code=coupon.code, user=request.user)
+#                 if coupon.used is True:
+#                     messages.success(request, f'Code Already Used!')
+#                 else:
+#                     coupon.discount_amount = 0
+#                     coupon.order_amount = order.get_total_without_coupoun()
+#                     coupon.save()
+#                     vendor_coupon = Coupon.objects.get(code=coupon.code)
+#                     if coupon.order_amount >= vendor_coupon.minimum_order_amount:
+#                         coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
+#                         coupon.applicable = True
+#                         coupon.save()
+#                 return redirect('store:store-cart')
+#
+#             except:
+#                 coupon.user = request.user
+#                 coupon.save()
+#                 vendor_coupon = Coupon.objects.get(code=coupon.code)
+#                 coupon.coupon = vendor_coupon
+#                 coupon.discount_amount = 0
+#                 coupon.order_amount = order.get_total_without_coupoun()
+#                 coupon.save()
+#                 if coupon.order_amount >= vendor_coupon.minimum_order_amount:
+#                     coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
+#                     # coupon.used = True
+#                     coupon.applicable = True
+#                     coupon.save()
+#
+#                 order.coupon_customer = coupon
+#                 order.save()
+#                 messages.success(request, f'Code Applied!')
+#                 return redirect('store:store-cart')
+#     else:
+#         form = CouponCustomerForm()
+#
+#     context = {
+#         'form': form
+#     }
+#
+#     return render(request, 'store/form.html', context)
+
 
 
 # class CheckoutView(View):

@@ -28,6 +28,7 @@ urlpatterns = [
     path('category/', views.category_display, name='vendors-category'),
     path('category/add/', views.category_add, name='vendors-category-add'),
 
+    path('brand/', views.brand_display, name='vendors-brand'),
     path('brand/add/', views.brand_add, name='vendors-brand-add'),
 
     path('address/add/', views.vendor_address, name='vendors-address-add'),

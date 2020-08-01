@@ -10,8 +10,8 @@ from django.utils import timezone
 from .forms import ItemForm, CategoryForm, OrderForm, ItemVariationsForm, BrandsForm, VendorAddressForm, LocationForm,\
                    SameItemForm, ReturnForm, CancelForm
 from .filters import ProductOrderFilter, ItemFilter, CategoryFilter, VendorItemFilter, ProductReturnedFilter, \
-    ProductCanceledFilter
-from .models import Item, Category, VendorLocation, SameItem
+                     ProductCanceledFilter, BrandsFilter
+from .models import Item, Category, VendorLocation, SameItem, Brands
 from users.models import User
 from store.models import Order, OrderItem, MiniOrder
 from .models import Vendor
@@ -265,6 +265,25 @@ def brand_add(request):
 
 
 @login_required
+def brand_display(request):
+    if request.user.vendor.adding_product:
+        brand = Brands.objects.all()
+        filters = BrandsFilter(request.GET, queryset=brand)
+        len_brand = len(brand)
+        print(filters.form)
+        brand = filters.qs
+        context = {
+            'brands': brand,
+            'len_brands': len_brand,
+            'filter': filters,
+
+        }
+        return render(request, 'vendors/brand.html', context)
+    else:
+        return redirect("/")
+
+
+@login_required
 def category_display(request):
     if request.user.vendor.adding_product:
         category = Category.objects.all()
@@ -318,7 +337,7 @@ def products_ordered(request):
     len_m_orders = len(m_orders)
     try:
         orderr = Order.objects.get(mini_order=m_orders.first().id)
-    except AttributeError:
+    except:
         orderr = ''
     filters = ProductOrderFilter(request.GET, queryset=m_orders)
 
@@ -464,12 +483,15 @@ def sales(request):
     for order in orders_today:
         today_total_sales = today_total_sales + int(order.order_item.get_final_price())
 
+    item_out_of_stock = SameItem.objects.filter(vendor=request.user.vendor, stock_no=0)
+    len_item_out_of_stock = len(item_out_of_stock)
     context = {
         'total_sales': total_sales,
         'total_orders': total_orders,
         'today_total_sales': today_total_sales,
         'today_total_orders': today_total_orders,
         'pending_order': pending_order,
+        'len_item_out_of_stock ': len_item_out_of_stock,
     }
     return render(request, 'vendors/sales.html', context)
 

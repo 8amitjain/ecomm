@@ -1,7 +1,7 @@
 import django_filters
 from django_filters import DateFilter, CharFilter, RangeFilter
 
-from .models import Item, Category
+from .models import Item, Category, Brands
 from store.models import MiniOrder
 
 
@@ -32,6 +32,14 @@ class CategoryFilter(django_filters.FilterSet):
     class Meta:
         model = Category
         fields = ['is_active']
+
+
+class BrandsFilter(django_filters.FilterSet):
+    note = CharFilter(field_name='brand_name', lookup_expr='icontains')
+
+    class Meta:
+        model = Brands
+        fields = []
 
 
 class VendorItemFilter(django_filters.FilterSet):

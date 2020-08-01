@@ -85,11 +85,14 @@
                     </div>
 
                       <div class="uk-card-footer">
-                        <label><span class="uk-form-label uk-margin-small-right">Promo Code</span>
-                          <div class="uk-inline"><a class="uk-form-icon uk-form-icon-flip" href="{% url 'store:store-product-promo-code' object.id %}" uk-icon="arrow-right"></a>
-                            <input class="uk-input uk-form-width-small" type="text">
-                          </div>
-                        </label>
+                          <form method="POST" enctype="multipart/form-data">
+                            <label><span class="uk-form-label uk-margin-small-right">Promo Code</span>
+                              {% csrf_token %}
+                              <div class="uk-inline" for="id_code"><button class="uk-form-icon uk-form-icon-flip" type="submit" uk-icon="arrow-right"></button>
+                                <input class="uk-input uk-form-width-small" type="text" name="code" placeholder="Enter Code" maxlength="15" required id="id_code">
+                              </div>
+                            </label>
+                          </form>
                       </div>
                     </div>
                   </div>
@@ -107,7 +110,7 @@
                         {% if object.coupon_customer.discount_amount %}
                          <div class="uk-grid-small" uk-grid>
                           <div class="uk-width-expand uk-text-muted">Coupon</div>
-                          <div class="uk-text-danger">-Rs:{{ object.coupon_customer.discount_amount }}</div>
+                          <div class="uk-text-danger">-Rs:{{ object.get_coupon_total }}</div>
                         </div>
                         {% endif %}
                       </div>
