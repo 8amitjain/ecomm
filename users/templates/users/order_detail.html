@@ -2,6 +2,173 @@
 {% load static %}
 {% block content %}
 
+
+
+ <section class="uk-section uk-section-small">
+          <div class="uk-container">
+            <div class="uk-grid-large" uk-grid>
+              <div class="uk-width-1-1 uk-width-1-1@m tm-aside-column">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>
+                </div>
+              </div>
+
+
+
+          <div class="uk-grid-medium uk-child-width-1-2@s " uk-grid>
+
+                <div class="w-75">
+
+
+
+                <div class="uk-card uk-card-default uk-card-body">
+                    <h1 class="uk-h2">Shipment Details</h1><hr>
+                        <h6># {{order.order_ref_number}}</h6>
+                    <hr>
+
+                                <table class="uk-table uk-table-divider uk-table-hover" cellpadding="8px" border="0">
+
+                                    <tr> <th>Product</th>
+                                        <th>Order Date</th><th>Cancel Date</th><th>Ouantity</th> <th>Item Price</th> <th>Order Total</th>
+                                    </tr>
+                                    {% for item in order.items.all %}
+                                            <tr> <td  align="left"><img src="{{mini_order.order_item.item.image_main.url}}" width="35px">&nbsp&nbsp {{item.item.title}}</td>
+
+
+                                                <td>{{ order.ordered_date}}</td>
+                                                {% for x in order.mini_order.all%}
+                                                <td>{{x.return_window}}</td>
+                                                {% endfor %}
+
+
+                                                <td align="center">{{ item.quantity }}</td>
+                                                {% if item.item.discount_price %}
+                                                    <td align="left">{{item.item.discount_price}}</td>
+                                                {% else %}
+                                                    <td align="left">{{item.item.price}}</td>
+                                                {% endif  %}
+
+                                                <td align="left">{{item.get_final_price}}</td>
+                                            </tr>
+                                </table>
+    {% endfor %}                                <hr />
+
+                </div>
+                    <br>
+
+                    <div class="w-100 mt-10">
+                    <div class="uk-card uk-card-default uk-card-body">
+                        <h3 align="left">Summary</h3>
+                        <hr>
+{% for item in order.items.all %}
+                        <table class="p-15" cellpadding="8px">
+                            <tr>
+                                <td align="left" width="90%">Subtotal</td>
+                                <td align="right">Rs.{{item.item.price}}</td>
+                            </tr>
+
+                               <tr>
+                                <td align="left">Discount Price</td>
+                                <td align="right">Rs.{{item.item.discount_price}}</td>
+                            </tr>
+
+                            <tr>
+                                <td align="left">Shipping</td>
+                                <td align="right">Rs.0.0</td>
+                            </tr>
+
+                               <tr>
+                                   <td align="left" width="90%"><b>Total</b></td>
+                                   <td align="right"><b>Rs.{{item.get_final_price}}</b></td>
+                            </tr>
+
+                        </table>
+                        {% endfor %}
+                        <hr>
+                        <table>
+                            <tr>
+                                <th width="90%">
+                                   <h5>Prescription Uploaded</h5>
+                                </th>
+{% for y in order.items.all %}
+                                {% if y.prescription %}
+                                <th><div class="uk-inline">
+                                                <img src="{{y.prescription.prescription.url}}" width="100px" type="button"></button>
+                                                <div uk-drop="pos: top-right">
+                                                    <div class="uk-card uk-card-body uk-card-default"><img src="{{y.prescription.prescription.url}}" width="100%"></div>
+                                                </div>
+                                            </div></th>
+                                {% else %}
+                                <th>
+                                    <td align="right">No Prescription uploaded</td>
+                                </th>
+                                {% endif %}
+                                {% endfor %}
+                            </tr>
+                        </table>
+
+                    </div>
+                  </div>
+            </div>
+
+                <div class="w-25">
+                <div class="uk-card uk-card-default uk-card-body">
+
+                   <h1 class="uk-h2">Customer</h1><hr>
+
+                    <a align="left">{{order.user.username}}</a>
+                    <hr>
+                    <br>
+                    <h5><b>Payment Method</b></h5>
+                    {{mini_order.payment_method}}
+                    <hr>
+
+<br>
+                    <h6 align="left"><b>SHIPPING ADDRESS</b></h6>
+                    <br>
+                    <table >
+                    <tr><td align="left">{{order.address.shipping_street_address}}</td>  </tr>
+                        <tr> <td align="left">{{order.address.shipping_street_address_line_2}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_city}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_phone_number}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_postal_code}}</td>  </tr>
+
+
+                    </table>
+                    <hr>
+                    <br>
+                    <h6 align="left"><b>BILLING ADDRESS</b></h6>
+                    <br>
+                    <table align="left">
+                        <tr>    <td align="left">{{order.address.billing_street_address}}</td>      </tr>
+                                            <tr><td align="left">{{order.address.billing_street_address_line_2}}</td>   </tr>
+                                            <tr>    <td align="left">{{order.address.billing_city}}</td> </tr>
+                                            <tr>    <td align="left">{{order.address.billing_phone_number}}</td> </tr>
+                                             <tr> <td>{{order.address.billing_postal_code}}</td>  </tr>
+
+                    </table>
+
+
+                </div>
+            </div>
+
+
+
+         </div>
+
+
+
+
+
+
+        </section>
+
+
+
+
+
+
+
+
   <div class="uk-width-1-1 uk-width-expand@m">
     <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
       <header class="uk-card-header">

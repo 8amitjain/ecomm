@@ -80,7 +80,7 @@
                         <tr>
                           <th><img src="{{m_order.order_item.item.image_main.url}}" style="width:8em;"></th>
                           <td>
-                            <h4>{{m_order.item.title}}</h4>
+                            <h4>{{m_order.order_item.item.title}}</h4>
                             <span class="uk-text-muted uk-text-small"> Sold by:{{m_order.vendor}}</span><br>
                             <span class="uk-text-muted uk-text-small">Rs:{{m_order.order_item.get_final_price}}</span><br>
                             <h3 class="tm-product-card-title"><a class="uk-link-heading" href="{% url 'store:store-product' m_order.order_item.item.id %}">Buy it again?</a></h3>

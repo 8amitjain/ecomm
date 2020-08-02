@@ -20,12 +20,13 @@
                     <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
                       <div class="uk-grid-small uk-grid-collapse uk-grid-match" uk-grid>
                         <div class="uk-width-1-1 uk-width-expand@m">
-                          <div class="uk-grid-collapse uk-child-width-1-1" uk-slideshow="finite: true; ratio: 4:3;" uk-grid>
+                          <div class="uk-grid-collapse uk-child-width-1-1 hide-mobile" uk-slideshow="finite: true; ratio: 4:3;" uk-grid>
                             <div>
                               <ul class="uk-slideshow-items" uk-lightbox>
                                 <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="{{ item.image_main.url }}">
                                     <figure class="tm-media-box-wrap"><img src="{{ item.image_main.url }}" alt="{{ item.title }}"></figure></a>
                                 </li>
+
                                 {% if item.image_2 %}
                                   <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
                                       <figure class="tm-media-box-wrap"><img src="{{ item.image_2.url }}" alt="{{ item.title }}"></figure></a></li>
@@ -46,6 +47,138 @@
                                       <figure class="tm-media-box-wrap"><img src="{{ item.image_5.url }}" alt="{{ item.title }}"></figure></a></li>
                                 {% endif %}
                               </ul>
+
+                                <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="{{ item.image_main.url }}">
+                                    <figure class="tm-media-box-wrap"><img src="{{ item.image_main.url }}" alt="{{ item.title }}"></figure></a>
+                                </li>
+
+                                {% if item.image_2 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_2.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_3 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_3.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_4 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_4.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_5 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_5.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+                              </ul>
+
+                            </div>
+                            <div>
+                              <div class="uk-card-body uk-flex uk-flex-center">
+                                <div class="uk-width-1-2 uk-visible@s">
+                                  <div uk-slider="finite: true">
+                                    <div class="uk-position-relative">
+                                      <div class="uk-slider-container">
+                                        <ul class="tm-slider-items uk-slider-items uk-child-width-1-4 uk-grid uk-grid-small">
+                                          {% if item.image_main %}
+                                            <li uk-slideshow-item="0">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_main.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                          {% if item.image_2 %}
+                                            <li uk-slideshow-item="1">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame" href="#">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_2.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                          {% if item.image_3 %}
+                                            <li uk-slideshow-item="2">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame" href="#">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_3.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                          {% if item.image_4 %}
+                                            <li uk-slideshow-item="3">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame" href="#">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_4.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                          {% if item.image_5 %}
+                                            <li uk-slideshow-item="4">
+                                              <div class="tm-ratio tm-ratio-1-1"><a class="tm-media-box tm-media-box-frame" href="#">
+                                                  <figure class="tm-media-box-wrap"><img src="{{ item.image_5.url }}" alt="{{ item.title }}"></figure></a></div>
+                                            </li>
+                                          {% endif %}
+
+                                        </ul>
+                                        <div><a class="uk-position-center-left-out uk-position-small" href="#" uk-slider-item="previous" uk-slidenav-previous></a><a class="uk-position-center-right-out uk-position-small" href="#" uk-slider-item="next" uk-slidenav-next></a></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <ul class="uk-slideshow-nav uk-dotnav uk-hidden@s"></ul>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="uk-grid-collapse uk-child-width-1-1 show-mobile" uk-slideshow="finite: true; ratio: 2:1;" uk-grid>
+                            <div>
+                              <ul class="uk-slideshow-items" uk-lightbox>
+                                <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="{{ item.image_main.url }}">
+                                    <figure class="tm-media-box-wrap"><img src="{{ item.image_main.url }}" alt="{{ item.title }}"></figure></a>
+                                </li>
+
+                                {% if item.image_2 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_2.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_3 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_3.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_4 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_4.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_5 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_5.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+                              </ul>
+
+                                <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="{{ item.image_main.url }}">
+                                    <figure class="tm-media-box-wrap"><img src="{{ item.image_main.url }}" alt="{{ item.title }}"></figure></a>
+                                </li>
+
+                                {% if item.image_2 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_2.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_3 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_3.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_4 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_4.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+
+                                 {% if item.image_5 %}
+                                  <li><a class="uk-card-body tm-media-box tm-media-box-zoom" href="images/products/1/1-add-1-large.jpg">
+                                      <figure class="tm-media-box-wrap"><img src="{{ item.image_5.url }}" alt="{{ item.title }}"></figure></a></li>
+                                {% endif %}
+                              </ul>
+
                             </div>
                             <div>
                               <div class="uk-card-body uk-flex uk-flex-center">

@@ -123,13 +123,12 @@
                       <div>
                         <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
                           <div class="uk-grid-collapse uk-child-width-1-1" id="products" uk-grid>
-                            <div>
-                               <div class="uk-card uk-card-default uk-card-body">
-                                <table class="uk-table uk-table-divider uk-table-hover">
+                               <div class="uk-card uk-card-default uk-card-body hide-mobile">
+                                    <table class="uk-table uk-table-divider uk-table-hover">
 
-                                    <tr> <th>Order Number</th> <th>Ordered by</th> <th>Ordered Date</th>
-                                        <th>Payment Method</th> <th>Order Total</th> <th>Order Status</th>
-                                    </tr>
+                                        <tr> <th>Order Number</th> <th>Ordered by</th> <th>Ordered Date</th>
+                                            <th>Payment Method</th> <th>Order Total</th> <th>Order Status</th>
+                                        </tr>
 
                                         {% for product in orders%}
                                             <tr> <td>{{product.mini_order_ref_number}}</td> <td>{{orderr.user.first_name}}</td>
@@ -139,12 +138,29 @@
                                             </tr>
                                         {% endfor %}
 
-                                </table>
+                                    </table>
                                    <hr />
-                             </div>
+                               </div>
 
-                              </div>
-                            </div>
+                                <div class="uk-card uk-card-default uk-card-body show-mobile rwd-table">
+                                    <table class="uk-table uk-table-small uk-table-divider">
+                                    <tbody>
+                                        <tr> <th>Order Number</th> <th>Ordered by</th> <th>Ordered Date</th>
+                                            <th>Payment Method</th> <th>Order Total</th> <th>Order Status</th>
+                                        </tr>
+                                        {% for product in orders%}
+                                            <tr class="uk-text-small"> <td data-th="Order Number">{{product.mini_order_ref_number}}</td> <td data-th="Ordered by">{{orderr.user.first_name}}</td>
+                                                <td data-th="Ordered Date">{{product.ordered_date}}</td> <td data-th="Payment Method">{{orderr.payment_method}}</td>
+                                                <td data-th="Order Total">{{product.order_item.get_final_price}}</td>
+                                                <td data-th="Order Status"><a href="{% url 'vendors-products-ordered-update' product.id %}"> {{product.order_status}} </a> </td>
+                                            </tr>
+                                        {% endfor %}
+
+                                     </tbody>
+                                    </table>
+                                    <hr />
+                                </div>
+                        </div>
                             <div class="uk-card-header">
                               <div class="uk-grid-small uk-flex-middle" uk-grid>
                                 <div class="uk-width-1-1 uk-width-expand@s uk-flex uk-flex-center uk-flex-left@s uk-text-small"><span class="uk-margin-small-right uk-text-muted">Sort by:</span>

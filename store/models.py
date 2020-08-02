@@ -270,6 +270,14 @@ class Coupon(models.Model):
         return self.code
 
 
+class PrescriptionUpload(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    prescription = models.ImageField()
+
+    def __str__(self):
+        return f"{self.user}_PrescriptionUpload"
+
+
 class MiniOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
@@ -323,6 +331,7 @@ class Order(models.Model):
     coupon_customer = models.ForeignKey(CouponCustomer, on_delete=models.CASCADE, null=True)
     mini_order = models.ManyToManyField(MiniOrder)
     items = models.ManyToManyField(OrderItem)
+    prescription = models.ForeignKey(PrescriptionUpload, on_delete=models.CASCADE, blank=True, null=True)
 
     order_ref_number = models.CharField(unique=True, default='ORD-100000', max_length=15)
     ordered_date = models.DateField()
@@ -458,10 +467,5 @@ class Cancel(models.Model):
             return f"{self.user}_{self.cancel_reason}_CANCELED"
 
 
-class PrescriptionUpload(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    prescription = models.ImageField()
 
-    def __str__(self):
-        return f"{self.user}_PrescriptionUpload"
 

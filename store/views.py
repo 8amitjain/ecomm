@@ -17,7 +17,7 @@ from vendors.models import VendorLocation, VendorAddress, Vendor
 from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm, LocationForm, ReturnForm, CancelForm, \
                    CouponCustomerForm, PrescriptionUploadForm, CustomerAddressForm
 from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, UserProfile, Addresss, Slide, \
-                    Reviews, CustomerLocation, MiniOrder, CouponCustomer, CustomerAddress
+                    Reviews, CustomerLocation, MiniOrder, CouponCustomer, CustomerAddress, PrescriptionUpload
 
 from vendors.models import Item, Category, Brands
 from users.models import User
@@ -49,8 +49,8 @@ def category_view(request, slug):
     return render(request, 'store/category_wise.html', context)
 
 
-def product(request, pk):
-    item = Item.objects.get(id=pk)
+def product(request, slug):
+    item = Item.objects.get(id=slug)
     related_item = Item.objects.filter(category=item.category)
     variations = Item.objects.filter(variation_id=item.variation_id)
     order_item = OrderItem.objects.filter(user=request.user, ordered=True, item=item)
@@ -82,14 +82,15 @@ def product(request, pk):
 
 class CartView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
-
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
-
             form = CouponCustomerForm()
+            prescription_form = PrescriptionUploadForm()
+            print(prescription_form)
             context = {
                 'object': order,
                 'form': form,
+                'prescription_form': prescription_form,
             }
             return render(self.request, 'store/cart.html', context)
         except ObjectDoesNotExist:
@@ -98,13 +99,36 @@ class CartView(LoginRequiredMixin, View):
 
     def post(self, *args, **kwargs):
         form = CouponCustomerForm(self.request.POST)
+        prescription_form = PrescriptionUploadForm(self.request.POST)
         order = Order.objects.get(user=self.request.user, ordered=False)
+        context = {
+            'object': order,
+            'form': form,
+            'prescription_form': prescription_form,
+        }
+        # print(prescription_form)
+
+        if prescription_form.is_valid():
+            p_form = form.save(commit=False)
+            p_form.user = self.request.user
+            p_form.save()
+            print(p_form)
+            order.prescription = p_form
+            order.save()
+            context = {
+                'object': order,
+                'form': form,
+                'prescription_form': prescription_form,
+            }
+            return render(self.request, 'store/cart.html', context)
+
         if form.is_valid():
             coupon = form.save(commit=False)
             try:
                 coupon = CouponCustomer.objects.get(code=coupon.code, user=self.request.user)
                 if coupon.used is True:
                     messages.success(self.request, f'Code Already Used!')
+                    return render(self.request, 'store/cart.html', context)
                 else:
                     coupon.discount_amount = 0
                     coupon.order_amount = order.get_total_without_coupoun()
@@ -114,7 +138,12 @@ class CartView(LoginRequiredMixin, View):
                         coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
                         coupon.applicable = True
                         coupon.save()
-                return redirect('store:store-cart')
+                        context = {
+                            'object': order,
+                            'form': form,
+                            'prescription_form': prescription_form,
+                        }
+                        return render(self.request, 'store/cart.html', context)
 
             except:
                 coupon.user = self.request.user
@@ -138,6 +167,7 @@ class CartView(LoginRequiredMixin, View):
                 }
                 messages.success(self.request, f'Code Applied!')
                 return render(self.request, 'store/cart.html', context)
+        return render(self.request, 'store/cart.html', context)
 
 
 class OrderSummaryView(LoginRequiredMixin, View):
@@ -213,7 +243,7 @@ def add_to_cart(request, slug):
         order.save()
 
         messages.info(request, "Item was added to your cart.")
-    return redirect('store:store-product', pk=item.id)
+    return redirect('store:store-product', slug=item.id)
 
 #  return redirect("store:store-cart")
 

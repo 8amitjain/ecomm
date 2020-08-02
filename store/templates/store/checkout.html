@@ -7,8 +7,11 @@
               <h1 class="account-heading" style="text-align:center;">Please select a shipping address {{ user.first_name }}</h1>
             </div>
           </div>
-
+            <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:1em 35% 0em 35%;">
+                <a class="uk-link-reset" href="{% url 'store:store-address' %}"><span class="uk-button uk-button-default uk-width-1-1"><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Add Address</span></a>
+            </div>
         <div class="uk-grid-match uk-text-center" uk-grid>
+
         {% for address in customer_address_ %}
             <div class="uk-card uk-card-default uk-card-body uk-card-hover w-25" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:2em;">
                 <h3 class="uk-card-title">Deliver to {{ user.first_name }}</h3>

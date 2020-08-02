@@ -313,6 +313,7 @@ def products_ordered_update(request, pk):
 
     if request.POST:
         form = OrderForm(request.POST, instance=mini_order)
+        print(form)
         if form.is_valid():
             form.save()
             return redirect('vendors-products-ordered')

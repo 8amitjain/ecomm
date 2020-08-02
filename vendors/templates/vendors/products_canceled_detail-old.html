@@ -1,0 +1,174 @@
+{% extends "store/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+     <main>
+
+
+         <section class="uk-section uk-section-small">
+          <div class="uk-container">
+            <div class="uk-grid-large" uk-grid>
+              <div class="uk-width-1-1 uk-width-1-1@m tm-aside-column">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>
+                </div>
+              </div>
+
+
+
+          <div class="uk-grid-medium uk-child-width-1-2@s " uk-grid>
+                <div class="w-75">
+                <div class="uk-card uk-card-default uk-card-body">
+                    <h1 class="uk-h2">Cancel Order Details</h1><hr>
+                        <h6># {{mini_order.order_item.item.item_ref_number}}</h6>
+                    <hr>
+
+                    <table class="uk-table uk-table-divider uk-table-hover" cellpadding="8px" border="0">
+
+                        <tr> <th>Product</th>
+                            <th>Order Date</th><th>Cancel Date</th><th>Ouantity</th> <th>Item Price</th> <th>Order Total</th>
+                        </tr>
+
+
+                                            <tr> <td  align="left"><img src="{{mini_order.order_item.item.image_main.url}}" width="35px">&nbsp&nbsp {{mini_order.order_item.item.title}}</td>
+
+
+                                                <td>{{mini_order.ordered_date}}</td>
+                                                <td>{{mini_order.retun_window}}</td>
+
+
+
+                                                <td align="center">{{ mini_order.order_item.quantity }}</td>
+                                                {% if mini_order.order_item.item.discount_price %}
+                                                    <td align="left">{{mini_order.order_item.item.discount_price}}</td>
+                                                {% else %}
+                                                    <td align="left">{{mini_order.order_item.item.price}}</td>
+                                                {% endif  %}
+
+                                                <td align="left">{{mini_order.order_item.get_final_price}}</td>
+                                            </tr>
+                                </table>
+                                   <hr />
+
+
+                                  <table>
+                                        <tr>
+                                        <td width="33.5%" align="left"><b>Return Status :-</b></td>
+                                         <td width="33.5%">
+                                             <form method="POST" enctype="multipart/form-data">
+                                                 {% csrf_token %}
+                                                 <fieldset class="form-group">
+                                                            {{ form.cancel_granted.label }} {{ form.cancel_granted }}
+                                                 </fieldset>
+                                             </form>
+
+                                         </td>
+
+                                        <form method="POST" enctype="multipart/form-data"><td align="right" width="33.5%">
+                                                        {% csrf_token %}
+                                                       <fieldset class="form-group">
+                                                            {{ form.cancel_status }}
+                                                        </fieldset>
+                                            <td><button class="btn btn-outline-info" type="submit">Submit</button></td>
+                                        </form>
+
+                                    </tr>
+                                  </table>
+
+                </div>
+                    <br>
+
+                    <div class="w-100 mt-10">
+                    <div class="uk-card uk-card-default uk-card-body">
+                        <h3 align="left">Summary</h3>
+                        <hr>
+
+                        <table class="p-15" cellpadding="8px">
+                            <tr>
+                                <td align="left">Subtotal</td>
+                                <td align="right">Rs.{{mini_order.order_item.item.price}}</td>
+                            </tr>
+
+                               <tr>
+                                <td align="left">Discount Price</td>
+                                <td align="right">Rs.{{mini_order.order_item.item.discount_price}}</td>
+                            </tr>
+
+                            <tr>
+                                <td align="left">Shipping</td>
+                                <td align="right">Rs.0.0</td>
+                            </tr>
+
+                               <tr>
+                                   <td align="left" width="90%"><b>Total</b></td>
+                                   <td align="right"><b>Rs.{{mini_order.order_item.get_final_price}}</b></td>
+                            </tr>
+
+                        </table>
+                        <hr>
+                        <table>
+                            <tr>
+                                <th width="90%">
+                                   <h4>Prescription</h4>
+                                </th>
+
+                                {% if mini_order.order_item.prescription %}
+                                <th><div class="uk-inline">
+                                                <img src="{{mini_order.order_item.prescription.prescription.url}}" width="100px">
+                                                <div uk-drop="pos: top-right">
+                                                    <div class="uk-card uk-card-body uk-card-default"><img src="{{mini_order.order_item.prescription.prescription.url}}" width="100%"></div>
+                                                </div>
+                                            </div></th>
+                                {% else %}
+                                <th>
+                                    <td align="right">No Prescription</td>
+                                </th>
+                                {% endif %}
+                            </tr>
+                        </table>
+
+                    </div>
+                  </div>
+            </div>
+
+                <div class="w-25">
+                <div class="uk-card uk-card-default uk-card-body">
+
+                   <h3><b># Customer</b></h3>
+                    <hr>
+
+                    <a align="left">{{mini_order.user.username}}</a>
+                    <hr>
+                    <br>
+                    <h5><b>Payment Method</b></h5>
+                    {{mini_order.payment_method}}
+                    <hr>
+
+                    <h6 align="left"><b>SHIPPING ADDRESS</b></h6>
+                    <br>
+                    <table >
+                    <tr><td align="left">{{order.address.shipping_street_address}}</td>  </tr>
+                        <tr> <td align="left">{{order.address.shipping_street_address_line_2}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_city}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_phone_number}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_postal_code}}</td>  </tr>
+
+
+                    </table>
+                    <hr>
+                    <h6 align="left"><b>BILLING ADDRESS</b></h6>
+                    <br>
+                    <table align="left">
+                        <tr>    <td align="left">{{order.address.billing_street_address}}</td>      </tr>
+                                            <tr><td align="left">{{order.address.billing_street_address_line_2}}</td>   </tr>
+                                            <tr>    <td align="left">{{order.address.billing_city}}</td> </tr>
+                                            <tr>    <td align="left">{{order.address.billing_phone_number}}</td> </tr>
+                                             <tr> <td>{{order.address.billing_postal_code}}</td>  </tr>
+
+                    </table>
+                </div>
+            </div>
+         </div>
+         </div>
+        </section>
+      </main>
+
+{% endblock content %}

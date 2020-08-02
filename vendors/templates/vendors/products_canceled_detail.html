@@ -1,94 +1,312 @@
 {% extends "store/base.html" %}
 {% load crispy_forms_tags %}
+{% load widget_tweaks %}
 {% block content %}
      <main>
-        <section class="uk-section uk-section-small">
+         <section class="uk-section uk-section-small">
           <div class="uk-container">
-            <div class="uk-grid-medium" uk-grid>
-              <div class="uk-width-1-1 uk-width-1-4@m tm-aside-column">
+            <div class="uk-grid-large" uk-grid>
+              <div class="uk-width-1-1 uk-width-1-1@m tm-aside-column">
                 <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>
                 </div>
               </div>
-              <div class="uk-width-1-1 uk-width-expand@m">
-                <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
-                  <header class="uk-card-header">
-                    <h1 class="uk-h2">Canceled Products</h1>
-                  </header>
-                        <div style="margin:2em">
-                            <hr>
-                                <table cellpadding="12px">
-                                    <tr> <th>Item Number</th> <th>Product</th> <th>Quantity</th>
-                                         <th>Price</th> <th>Order Total</th>  <th>Order Status</th>
-                                    </tr>
-
-                                            <tr> <td>{{mini_order.order_item.item.item_ref_number}}</td> <td>{{mini_order.order_item.item.title}}</td>
-                                                <td>{{mini_order.order_item.quantity}}</td>
-
-                                                {% if mini_order.order_item.item.discount_price %}
-                                                    <td>{{mini_order.order_item.item.discount_price}}</td>
-                                                {% else %}
-                                                    <td>{{mini_order.order_item.item.price}}</td>
-                                                {% endif  %}
-
-                                                <td>{{mini_order.order_item.get_final_price}}</td>
-
-                                                <td>
-                                                    <form method="POST" enctype="multipart/form-data">
-                                                        {% csrf_token %}
-                                                        <fieldset class="form-group">
-                                                            {{ form|crispy }}
-                                                        </fieldset>
-                                                        <div class="form-group">
-                                                            <button class="btn btn-outline-info" type="submit">Submit</button>
-                                                        </div>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                </table>
-                            </div>
-
-                            <div style="margin:2em">
-                                 <hr>
-                                <table cellpadding="12px">
-                                    <tr> <th>Order Number</th> <th>Order Total</th> <th>Total Quantity</th>
-                                         <th>Taxes</th> <th>Order Status</th>  <th>Shipping</th>
-                                    </tr>
-
-                                    <tr>
-                                        <td>{{mini_order.mini_order_ref_number}}</td> <td>{{mini_order.order_item.get_final_price}}</td>
-                                        <td>{{mini_order.order_item.quantity}}</td> <td>{{order.taxes}}</td>
-                                        <td>{{order.order_status}}</td>
-                                    </tr>
-                                </table>
+            <div class="hide-mobile">
+                <div class="uk-grid-medium uk-child-width-1-2@s" uk-grid>
+                <div class="w-75">
+                        <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                            <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>
                                 <div>
-                                    <hr>
-                                    <h3>Order Details</h3>
-                                    <table style="margin-left:2em;">
-                                        <tr> <th> Order Number: {{mini_order.mini_order_ref_number}}</th> </tr>
-                                            <tr>  <td> <b>Contact Details</b> </td> </tr>
-                                            <tr>    <td>{{order.user.first_name}}&nbsp;{{order.user.last_name}}</td> </tr>
-                                            <tr>    <td>{{order.shipping_address.phone_number}}</td> </tr>
-                                            <tr> <td><br></td> </tr>
-
-                                            <tr>  <td> <b>Shipping Address</b> </td> </tr>
-                                            <tr>    <td>{{order.shipping_address.street_address}}</td>  </tr>
-                                            <tr>    <td>{{order.shipping_address.apartment_address}}</td>  </tr>
-                                            <tr>    <td>{{order.shipping_address.city}}&nbsp;{{order.shipping_address.postal_code}}</td>  </tr>
-                                            <tr> <td><br></td> </tr>
-
-                                            <tr>  <td> <b>Billing Address</b> </td> </tr>
-                                             <tr>    <td>{{order.billing_address.street_address}}</td>      </tr>
-                                            <tr>    <td>{{order.billing_address.apartment_address}}</td>   </tr>
-                                            <tr>    <td>{{order.billing_address.city}}&nbsp;{{order.billing_address.postal_code}}</td> </tr>
-                                            <tr> <td><br></td> </tr>
-                                    </table>
+                                     <h1 class="uk-h2" align="left" style="margin-top:-0.5em;">Cancel Order Details</h1>
+                                </div>
+                                <div>
+                                    <h6 align="right" style="margin-top:-0.3em;"><b>ORDER NUMBER:</b>  #{{mini_order.mini_order_ref_number}}</h6>
                                 </div>
                             </div>
 
+                            <table class="uk-table uk-table-striped" cellpadding="8px" border="0">
+                                <tr>
+                                    <th>Product</th> <th>Item Ref. no</th> <th>Cancel Date</th> <th>Order Date</th>
+                                    <th>Quantity</th> <th>Price</th> <th>Total</th>
+                                </tr>
+                                    <tr>
+                                        <td align="left"><img src="{{mini_order.order_item.item.image_main.url}}" width="35px">&nbsp&nbsp {{mini_order.order_item.item.title}}</td>
+                                        <td>{{mini_order.order_item.item.item_ref_number}}</td>
+
+                                        <td>{{mini_order.return_window}}</td>
+                                        <td>{{mini_order.ordered_date}}</td>
+
+                                        <td align="center">{{ mini_order.order_item.quantity }}</td>
+                                        {% if mini_order.order_item.item.discount_price %}
+                                            <td>{{mini_order.order_item.item.discount_price}}</td>
+                                        {% else %}
+                                            <td>{{mini_order.order_item.item.price}}</td>
+                                        {% endif  %}
+
+                                        <td>{{mini_order.order_item.get_final_price}}</td>
+                                    </tr>
+                            </table>
+                            <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>
+                                <div style="margin-top:0.4em;">
+                                    <label for="id_cancel_granted">Cancel granted</label>
+                                    <input type="checkbox" name="return_granted" id="id_cancel_granted">
+                                </div>
+                                  <div class="uk-accordion-content" style="margin:0 0 0 0;">
+                                    <div class="form-group">
+                                        {% for field in form.visible_fields %}
+                                          {% if 'Cancel status:' in field.label_tag %}
+                                            {% render_field field class="form-control" %}
+                                            {% if field.help_text %}
+                                              <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% endif %}
+                                          {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                  </div>
+                                <div style="margin:-0.1em 0 0 0;">
+                                    <button class="uk-button uk-button-default" type="submit">Submit</button>
+                                </div>
+                            </div>
+                            <hr />
+
+                </div>
+                    <br>
+                    <div class="w-100 mt-10">
+                        <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                            <h3 align="left">Payment Details</h3>
+                            <hr>
+
+                            <table class="p-15" cellpadding="8px">
+                                <tr>
+                                    <td align="left">Subtotal</td>
+                                    <td align="right">Rs.{{mini_order.order_item.item.price}}</td>
+                                </tr>
+
+                                   <tr>
+                                    <td align="left">Discount Price</td>
+                                    <td align="right">Rs.{{mini_order.order_item.item.discount_price}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td align="left">Shipping</td>
+                                    <td align="right">Rs.0.0</td>
+                                </tr>
+
+                                   <tr>
+                                       <td align="left" width="90%"><b>Total</b></td>
+                                       <td align="right"><b>Rs.{{mini_order.order_item.get_final_price}}</b></td>
+                                </tr>
+
+                            </table>
+                            <hr>
+                            {% if order.prescription%}
+                            <table>
+                                <tr>
+                                    <th width="90%">
+                                       <h4>Prescription</h4>
+                                    </th>
+
+                                    <th>
+                                        <div class="uk-inline">
+                                            <img src="{{order.prescription.prescription.url}}" width="100px" style="margin-right:12em;">
+                                            <div uk-drop="pos: top-right">
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </table>
+                            {% endif %}
+
+                        </div>
+                  </div>
+              </div>
+               <div class="w-25">
+                        <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                            <h2 class="uk-h3">Customer Details</h2><hr>
+                            <a>{{order.user.first_name}} {{order.user.last_name}}</a>
+                             <br class="uk-margin-remove">
+                            <a>{{order.user.phone_number}}</a>
+                            <hr>
+                            <br>
+                            <h6><b>Payment Method</b></h6>
+                            {{mini_order.payment_method}}
+                            <hr>
+                            <br>
+
+                            <h6 align="left"><b>SHIPPING ADDRESS</b></h6>
+                            <table >
+                            <tr><td align="left">{{order.address.shipping_street_address}}</td>  </tr>
+                                <tr> <td align="left">{{order.address.shipping_street_address_line_2}}</td>  </tr>
+                            <tr> <td>{{order.address.shipping_city}}</td>  </tr>
+                            <tr> <td>{{order.address.shipping_phone_number}}</td>  </tr>
+                            <tr> <td>{{order.address.shipping_postal_code}}</td>  </tr>
+
+
+                            </table>
+                            <hr>
+                            <br>
+                            <h6 align="left"><b>BILLING ADDRESS</b></h6>
+                            <table align="left">
+                                <tr>  <td align="left">{{order.address.billing_street_address}}</td>      </tr>
+                                <tr><td align="left">{{order.address.billing_street_address_line_2}}</td>   </tr>
+                                <tr>    <td align="left">{{order.address.billing_city}}</td> </tr>
+                                <tr>    <td align="left">{{order.address.billing_phone_number}}</td> </tr>
+                                 <tr> <td>{{order.address.billing_postal_code}}</td>  </tr>
+
+                            </table>
                         </div>
                     </div>
+            </div>
+            </div>
+
+              <div class="uk-grid-small uk-child-auto show-mobile" uk-grid>
+<!--                    <div class="w-75">-->
+                        <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                            <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+                                <div>
+                                     <h1 class="uk-h2"  align="left">Cancel Details</h1>
+                                </div>
+                                <div>
+                                    <h6 align="right"><b>ORDER NUMBER:</b>  #{{mini_order.mini_order_ref_number}}</h6>
+                                </div>
+                            </div>
+
+                            <table class="uk-table uk-table-striped rwd-table" cellpadding="8px" border="0">
+                                <tr>
+                                    <th>Product</th> <th>Item Ref. no</th> <th>Cancel Date</th> <th>Order Date</th>
+                                    <th>Quantity</th> <th>Price</th> <th>Total</th>
+                                </tr>
+                                    <tr>
+                                        <td align="left" data-th="Product"><img src="{{mini_order.order_item.item.image_main.url}}" width="35px">&nbsp&nbsp {{mini_order.order_item.item.title}}</td>
+
+                                        <td data-th="Request Date">{{mini_order.return_window}}</td>
+                                        <td data-th="Order Date">{{mini_order.ordered_date}}</td>
+
+                                        <td data-th="Item Ref. no">{{mini_order.order_item.item.item_ref_number}}</td>
+                                        <td align="center" data-th="Quantity">{{ mini_order.order_item.quantity }}</td>
+                                        {% if mini_order.order_item.item.discount_price %}
+                                            <td data-th="Price">{{mini_order.order_item.item.discount_price}}</td>
+                                        {% else %}
+                                            <td data-th="Price">{{mini_order.order_item.item.price}}</td>
+                                        {% endif  %}
+
+                                        <td data-th="Total">{{mini_order.order_item.get_final_price}}</td>
+                                    </tr>
+                            </table>
+                            <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>
+                                <div style="margin:0.5em -3.5em; 0 0;">
+                                    <label for="id_cancel_granted">Cancel granted</label>
+                                    <input type="checkbox" name="return_granted" id="id_cancel_granted">
+                                </div>
+
+                                  <div class="uk-accordion-content" style="margin:0 0 0 0;">
+                                    <div class="form-group">
+                                        {% for field in form.visible_fields %}
+                                          {% if 'Cancel status:' in field.label_tag %}
+                                            {% render_field field class="form-control" %}
+                                            {% if field.help_text %}
+                                              <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% endif %}
+                                          {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                  </div>
+                            </div>
+                             <div style="margin:0.5em 0 0 8em;">
+                                    <button class="uk-button uk-button-default" type="submit">Submit</button>
+                                </div>
+
+                            <hr />
+
                 </div>
+                    <br>
+<!--                    <div class="w-100 mt-10">-->
+                    <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                        <h3 align="left">Payment Details</h3>
+                        <hr>
+
+                        <table class="p-15" cellpadding="8px">
+                            <tr>
+                                <td align="left">Subtotal</td>
+                                <td align="right">Rs.{{mini_order.order_item.item.price}}</td>
+                            </tr>
+
+                               <tr>
+                                <td align="left">Discount Price</td>
+                                <td align="right">Rs.{{mini_order.order_item.item.discount_price}}</td>
+                            </tr>
+
+                            <tr>
+                                <td align="left">Shipping</td>
+                                <td align="right">Rs.0.0</td>
+                            </tr>
+
+                               <tr>
+                                   <td align="left" width="90%"><b>Total</b></td>
+                                   <td align="right"><b>Rs.{{mini_order.order_item.get_final_price}}</b></td>
+                            </tr>
+
+                        </table>
+                        <hr>
+                        {% if order.prescription%}
+                        <table>
+                            <tr>
+                                <th width="90%">
+                                   <h4>Prescription</h4>
+                                </th>
+
+                                <th>
+                                    <div class="uk-inline">
+                                        <img src="{{order.prescription.prescription.url}}" width="100px" style="margin-right:12em;">
+                                        <div uk-drop="pos: top-right">
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                        </table>
+                        {% endif %}
+
+                    </div>
+
+              <br>
+<!--            </div>-->
+<!-- <div w-75>-->
+                <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                    <h2 class="uk-h3">Customer Details</h2><hr>
+                    <a>{{order.user.first_name}} {{order.user.last_name}}</a>
+                     <br class="uk-margin-remove">
+                    <a>{{order.user.phone_number}}</a>
+                    <hr>
+                    <br>
+                    <h6><b>Payment Method</b></h6>
+                    {{mini_order.payment_method}}
+                    <hr>
+                    <br>
+
+                    <h6 align="left"><b>SHIPPING ADDRESS</b></h6>
+                    <table >
+                    <tr><td align="left">{{order.address.shipping_street_address}}</td>  </tr>
+                        <tr> <td align="left">{{order.address.shipping_street_address_line_2}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_city}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_phone_number}}</td>  </tr>
+                    <tr> <td>{{order.address.shipping_postal_code}}</td>  </tr>
+
+
+                    </table>
+                    <hr>
+                    <br>
+                    <h6 align="left"><b>BILLING ADDRESS</b></h6>
+                    <table align="left">
+                        <tr>  <td align="left">{{order.address.billing_street_address}}</td>      </tr>
+                                            <tr><td align="left">{{order.address.billing_street_address_line_2}}</td>   </tr>
+                                            <tr>    <td align="left">{{order.address.billing_city}}</td> </tr>
+                                            <tr>    <td align="left">{{order.address.billing_phone_number}}</td> </tr>
+                                             <tr> <td>{{order.address.billing_postal_code}}</td>  </tr>
+                    </table>
+                </div>
+            </div>
+            </div>
         </section>
       </main>
+
 
 {% endblock content %}

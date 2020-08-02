@@ -19,10 +19,10 @@ urlpatterns = [
     path('settings/', views.settings, name='store-settings'),
 
 
-    path('payment/<payment_option>/', views.PaymentView.as_view(), name='store-payment'),
+    # path('payment/<payment_option>/', views.PaymentView.as_view(), name='store-payment'),
     path('add-to-compare/<slug>/', views.add_to_compare, name='add-to-compare'),
     path('compare/', views.compare, name='store-compare'),
-    path('product/<int:pk>/', views.product, name='store-product'),
+    # path('product/<int:pk>/', views.product, name='store-product'),
     path('product/<slug>/', views.product, name='store-product'),
     path('add-to-favorite/<slug>/', views.add_to_favorite, name='add-to-favorite'),
     path('favorites/', views.favorites, name='store-favorites'),
@@ -42,7 +42,7 @@ urlpatterns = [
     path('address/', views.customer_address_add, name='store-address'),
     path('address/update/<int:pk>/', views.customer_address_update, name='store-address-update'),
     path('checkout/', views.checkout, name='store-checkout'),
-    path('payment/stripe/<int:pk>', views.PaymentView.as_view(), name='store-payment-stripe'),
+    path('payment/stripe/<int:pk>/', views.PaymentView.as_view(), name='store-payment-stripe'),
 
 ]
 if settings.DEBUG:
