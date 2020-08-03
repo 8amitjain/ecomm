@@ -4,17 +4,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
+from django.core.exceptions import ObjectDoesNotExist
+
 from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeError
+from django.utils.encoding import force_bytes, force_text
 from .utils import account_activation_token
 from django.urls import reverse
 
 from store.models import Order, MiniOrder, CustomerAddress
 from .models import User
-from .forms import UserUpdateForm, CustomerRegistrationForm, VendorRegistrationForm, CustomerUpdateForm,\
-                   VendorUpdateForm
+from .forms import UserUpdateForm, CustomerRegistrationForm, VendorRegistrationForm, CustomerUpdateForm
+from vendors.forms import VendorAddressForm, LocationForm
+from vendors.models import VendorLocation
 
 
 def register_user(request, data):
@@ -93,46 +96,89 @@ class VerificationView(View):
 
 @login_required
 def account_view(request, data):
-
+    context = {}
     if data == "vendor":
-        req_form = VendorUpdateForm
-        instance_data = request.user.vendor
-        customer_address = ''
-    elif data == "customer":
+        user_model = User.objects.get(id=request.user.id)
         req_form = CustomerUpdateForm
         instance_data = request.user.customer
-        customer_address = CustomerAddress.objects.filter(user=request.user)
+
+        if request.method == 'POST':
+            form = req_form(request.POST, instance=instance_data)
+            user_form = UserUpdateForm(request.POST, instance=request.user)
+
+            vendor_address_form = VendorAddressForm(request.POST, instance=request.user.vendor.address)
+            location_form = LocationForm(request.POST)
+
+            if location_form.is_valid():
+                try:
+                    location_point = VendorLocation.objects.get(
+                        vendor_ref_id=f"{request.user.first_name}_{request.user.id}")
+                except ObjectDoesNotExist:
+                    location_point = location_form.save(commit=False)
+                    location_point.vendor_ref_id = f"{request.user.first_name}_{request.user.id}"
+                    location_point.save()
+                    location_point = VendorLocation.objects.get(vendor_ref_id=location_point.vendor_ref_id)
+
+            if vendor_address_form.is_valid():
+                address_form = form.save(commit=False)
+                address_form.user = request.user
+                address_form.phone_number = request.user.phone_number
+                address_form.location = location_point
+                address_form.save()
+                messages.success(request, f'Details Updated!')
+                return redirect('/')
+
+            if form.is_valid() and user_form.is_valid():
+                form.save()
+                user_form.save()
+                messages.success(request, f'Details Updated!')
+                return redirect('/')
+        else:
+            form = req_form(instance=instance_data)
+            user_form = UserUpdateForm(instance=request.user)
+            vendor_address_form = VendorAddressForm(instance=request.user.vendor.address)
+            location_form = LocationForm()
+
+        context['form'] = form
+        context['vendor_address_form'] = vendor_address_form
+        context['user'] = user_model
+        context['user_form'] = user_form
+        context['data'] = data
+        context['location_form'] = location_form
+        context['title'] = 'Vendor Address'
+        context['submit'] = 'Submit'
+
+    elif data == "customer":
+        user_model = User.objects.get(id=request.user.id)
+        req_form = CustomerUpdateForm
+        instance_data = request.user.customer
+
+        if request.method == 'POST':
+            form = req_form(request.POST, instance=instance_data)
+            user_form = UserUpdateForm(request.POST, instance=request.user)
+
+            if form.is_valid() and user_form.is_valid():
+                form.save()
+                user_form.save()
+                messages.success(request, f'Details Updated!')
+                return redirect('/')
+        else:
+            form = req_form(instance=instance_data)
+            user_form = UserUpdateForm(instance=request.user)
+
+        address = CustomerAddress.objects.filter(user=request.user)
+
+        context['form'] = form
+        context['user_form'] = user_form
+        context['data'] = data
+        context['user'] = user_model
+        context['customer_address'] = address
+        context['title'] = 'Customer Address'
+        context['submit'] = 'Submit'
 
     else:
         return render(request, '/')
 
-    user_model = User.objects.get(id=request.user.id)
-
-    if request.method == 'POST':
-        form = req_form(request.POST, instance=instance_data)
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-
-        if form.is_valid() and user_form.is_valid():  # and address_form.is_valid():
-            form.save()
-            user_form.save()
-            # address_form.user_id = request.user.id
-            # address_form.save()
-            messages.success(request, f'Details Updated!')
-            return redirect('/')
-    else:
-        form = req_form(instance=instance_data)
-        user_form = UserUpdateForm(instance=request.user)
-        # address_form = AddressForm(instance=request.user.address)
-
-    context = {
-        'form': form,
-        'user_form': user_form,
-        'data': data,
-        'user': user_model,
-        'customer_address': customer_address,
-        # 'address_form': address_form,
-
-    }
     return render(request, 'users/personal.html', context)
 
 

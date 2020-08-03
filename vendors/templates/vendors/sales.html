@@ -2,114 +2,319 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<div class="uk-container">
-    <h1 class="uk-heading-small uk-margin-large-top">Hello there, {{ user.first_name }}</h1>
-    <h3 class="uk-text-meta">Here is a overview of your store!</h3>
-    <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid >
-        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">
-            <div>
-                <h3 class="uk-card-title">Sales</h3>
-                <h3 class="uk-text-meta">Today</h3>
+<main>
+<section class="uk-section uk-section-small">
+          <div class="uk-container">
+            <div class="uk-grid-medium" uk-grid>
+              <div class="uk-width-1-1 uk-width-1-2@m tm-aside-column">
+                <div class="uk-card uk-card-default uk-card-small tm-ignore-container" uk-sticky="offset: 90; bottom: true; media: @m;"></div>
+                </div>
+              </div>
+            <div class="hide-mobile">
+                <h1 class="uk-heading-small uk-margin-large-top" style="margin:0 0 0 0.3em;">Hello there, {{ user.first_name }}</h1>
+                <h3 class="uk-text-meta" style="margin:0 0 1em 1em;">Here is a overview of your store!</h3>
+                <div class="uk-text-center" uk-grid>
+                    <div class="uk-text-center uk-width-expand" uk-grid>
+
+                        <div class="ml-1 uk-width-1-2 uk-grid-small">
+                            <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;>
+                                <h3 class="uk-card-title align="left">Sales</h3>
+                                <h6 class="uk-text-meta" align="left">Today</h6>
+                                <h4 class="" align="right">Rs.{{today_total_sales}}</h4>
+                            </div>
+                        </div>
+                        <div class="uk-width-1-2 uk-grid-small">
+                            <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;>
+                                 <h3 class="uk-card-title align="left">Orders</h3>
+                                <h6 class="uk-text-meta" align="left">Today</h6>
+                                <h4 class="" align="right">{{today_total_orders}}</h4>
+                            </div>
+                        </div>
+
+
+                        <div class="uk-width-1">
+                            <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                                <table class="uk-table uk-table-divider uk-table-hover" cellpadding="0px" cellspacing="0px">
+                                    <tr>
+                                        <td width="90%"> <h6 class="" align="left">Sales total</h6></td>
+                                        <td><h5 class="" align="right">₹.{{total_sales}}</h5></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td width="90%"> <h6 class="" align="left">Order total</h6></td>
+                                        <td><h5 class="" align="right">{{total_orders}}</h5></td>
+                                    </tr>
+
+                                    {% if len_item_out_of_stock is None %}
+                                   <tr>
+                                        <td width="90%"> <h6 class="" align="left">Out of stock product</h6></td>
+                                        <td><h5 class="" align="right">0</h5></td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td width="90%"> <h6 class="" align="left">Out of stock product</h6></td>
+                                        <td><h5 class="" align="right">{{len_item_out_of_stock}}</h5></td>
+                                    </tr>
+                                 {% endif %}
+                                     <tr>
+                                        <td width="90%"> <h6 class="" align="left">Pending Orders</h6></td>
+                                        <td><h5 class="" align="right">{{pending_order}}</h5></td>
+                                    </tr>
+
+
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+
+                    <div class="uk-width-1-3" ukgrid>
+
+                        <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+
+                        <h3 class="uk-h3">Top Selling Products</h3><hr>
+
+                        <table class="uk-table uk-table-divider uk-table-hover">
+                            <tr>
+                                <th width="90%" align="left">Product</th>
+                                <th>Stock</th>
+                                <th>Sold</th>
+                            </tr>
+
+                         {% for product in products %}
+                             {% for item in same_item %}
+                                    {% if item.item_ref_number == product.item_ref_number %}
+
+                                    <tr>
+                                        <td align="left"><img src="{{product.image_main.url}}" width="35px"> {{product.title}}</td>
+                                        <td>{{product.stock_no}}</td>
+                                        <td>{{product.sale}}</td>
+
+                                    </tr>
+
+                                    {% endif %}
+                                   {% endfor %}
+                              {% endfor %}
+                            </table>
+                        </div>
+                        </div>
+                                    </div>
+                                </div>
             </div>
 
-            <div>
-                <h1 class="uk-heading-small uk-margin-large-top">RS:{{today_total_sales}}</h1>
+
+
+
+    <div class="show-mobile">
+        <h1 class="uk-heading-small uk-margin-large-top" style="margin:0 0 0 0.6em;">Hello there, {{ user.first_name }}</h1>
+        <h3 class="uk-text-meta" style="margin:0 0 1em 1.9em;">Here is a overview of your store!</h3>
+
+          <div class="uk-text-center uk-width-expand" uk-grid style="margin:0 0 0 -0.5em;">
+              <div class="ml-1 uk-width-1-2 uk-grid-small">
+                <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                    <h3 class="uk-card-title" align="left">Sales</h3>
+                    <h6 class="uk-text-meta" align="left">Today</h6>
+                    <h4 class="" align="right">Rs.{{today_total_sales}}</h4>
+                </div>
+             </div>
+            <div class="uk-width-1-2 uk-grid-small">
+                <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;">
+                     <h3 class="uk-card-title" align="left">Orders</h3>
+                    <h6 class="uk-text-meta" align="left">Today</h6>
+                    <h4 class="" align="right">{{today_total_orders}}</h4>
+                </div>
             </div>
+         </div>
 
-            <div>
-                <span uk-icon="icon: credit-card; ratio: 3.5"></span>
-            </div>
-        </div>
 
-        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">
-            <div>
-                <h3 class="uk-card-title">Orders</h3>
-                <h3 class="uk-text-meta">Today</h3>
-            </div>
 
-            <div>
-                <h1 class="uk-heading-small uk-margin-large-top">{{today_total_orders}}</h1>
-            </div>
+        <div class="uk-width-1" ukgrid >
+            <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;margin:2em 1.5em 0 1.6em;">
+                <table class="uk-table uk-table-divider uk-table-hover" cellpadding="0px" cellspacing="0px">
+                    <tr>
+                        <td width="90%"> <h6 class="" align="left">Sales total</h6></td>
+                        <td><h5 class="" align="right">₹.{{total_sales}}</h5></td>
+                    </tr>
 
-            <div>
-                <span uk-icon="icon: credit-card; ratio: 3.5"></span>
-            </div>
-        </div>
+                    <tr>
+                        <td width="90%"> <h6 class="" align="left">Order total</h6></td>
+                        <td><h5 class="" align="right">{{total_orders}}</h5></td>
+                    </tr>
 
-        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">
-            <div>
-                <h3 class="uk-card-title">Pending Orders</h3>
-                <h3 class="uk-text-meta">Today</h3>
-            </div>
-
-            <div>
-                <h1 class="uk-heading-small uk-margin-large-top">{{pending_order}}</h1>
-            </div>
-
-            <div>
-                <span uk-icon="icon: credit-card; ratio: 3.5"></span>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>
-        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">
-            <div>
-                <h3 class="uk-card-title">Sales</h3>
-                <h3 class="uk-text-meta">TOTAL</h3>
-            </div>
-
-            <div>
-                <h1 class="uk-heading-small uk-margin-large-top">RS:{{total_sales}}</h1>
-            </div>
-
-            <div>
-                <span uk-icon="icon: credit-card; ratio: 3.5"></span>
-            </div>
-        </div>
-
-        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">
-            <div>
-                <h3 class="uk-card-title">Orders</h3>
-                <h3 class="uk-text-meta">TOTAL</h3>
-            </div>
-
-            <div>
-                <h1 class="uk-heading-small uk-margin-large-top">{{total_orders}}</h1>
-            </div>
-
-            <div>
-                <span uk-icon="icon: credit-card; ratio: 3.5"></span>
-            </div>
-        </div>
-
-        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">
-            <div>
-                <h3 class="uk-card-title">Products Out of stock</h3>
-                <h3 class="uk-text-meta">TOTAL</h3>
-            </div>
-
-            <div>
-                {% if len_item_out_of_stock is None %}
-                    <h1 class="uk-heading-small uk-margin-large-top">0</h1>
+                    {% if len_item_out_of_stock is None %}
+                   <tr>
+                        <td width="90%"> <h6 class="" align="left">Out of stock product</h6></td>
+                        <td><h5 class="" align="right">0</h5></td>
+                    </tr>
                 {% else %}
-                    <h1 class="uk-heading-small uk-margin-large-top">{{len_item_out_of_stock}}</h1>
+                    <tr>
+                        <td width="90%"> <h6 class="" align="left">Out of stock product</h6></td>
+                        <td><h5 class="" align="right">{{len_item_out_of_stock}}</h5></td>
+                    </tr>
+                 {% endif %}
+                     <tr>
+                        <td width="90%"> <h6 class="" align="left">Pending Orders</h6></td>
+                        <td><h5 class="" align="right">{{pending_order}}</h5></td>
+                    </tr>
+
+
+                </table>
+            </div>
+
+
+    <div class="mt-3 uk-width-1-1" ukgrid>
+        <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;margin:2em 1.5em 1em 1.6em;">
+
+            <h3 class="uk-h3">Top Selling Products</h3><hr>
+
+            <table class="uk-table uk-table-divider uk-table-hover">
+                <tr>
+                    <th width="90%" align="left">Product</th>
+                    <th>Stock</th>
+                    <th>Sold</th>
+                </tr>
+
+     {% for product in products %}
+         {% for item in same_item %}
+                {% if item.item_ref_number == product.item_ref_number %}
+
+                <tr>
+                    <td align="left"><img src="{{product.image_main.url}}" width="35px"> {{product.title}}</td>
+                    <td>{{product.stock_no}}</td>
+                    <td>{{product.sale}}</td>
+
+                </tr>
+
                 {% endif %}
-            </div>
-
-            <div>
-                <span uk-icon="icon: credit-card; ratio: 3.5"></span>
-            </div>
+               {% endfor %}
+          {% endfor %}
+            </table>
         </div>
-
     </div>
-
-
-
-
-
-
+</div>
 </div>
 
-{% endblock content %}
+</section>
+</main>
+
+
+
+
+
+
+
+
+
+
+<!--<div class="hide-mobile">-->
+<!--<div class="uk-container">-->
+<!--    <h1 class="uk-heading-small uk-margin-large-top">Hello there, {{ user.first_name }}</h1>-->
+<!--    <h3 class="uk-text-meta">Here is a overview of your store!</h3>-->
+<!--    <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid >-->
+<!--        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">-->
+<!--            <div>-->
+<!--                <h3 class="uk-card-title">Sales</h3>-->
+<!--                <h3 class="uk-text-meta">Today</h3>-->
+
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <h1 class="uk-heading-small uk-margin-large-top">RS:{{today_total_sales}}</h1>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <span uk-icon="icon: credit-card; ratio: 3.5"></span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">-->
+<!--            <div>-->
+<!--                <h3 class="uk-card-title">Orders</h3>-->
+<!--                <h3 class="uk-text-meta">Today</h3>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <h1 class="uk-heading-small uk-margin-large-top">{{today_total_orders}}</h1>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <span uk-icon="icon: credit-card; ratio: 3.5"></span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">-->
+<!--            <div>-->
+<!--                <h3 class="uk-card-title">Pending Orders</h3>-->
+<!--                <h3 class="uk-text-meta">Today</h3>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <h1 class="uk-heading-small uk-margin-large-top">{{pending_order}}</h1>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <span uk-icon="icon: credit-card; ratio: 3.5"></span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+<!--    <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>-->
+<!--        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">-->
+<!--            <div>-->
+<!--                <h3 class="uk-card-title">Total</h3>-->
+<!--                <h3 class="uk-text-meta">Sales</h3>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <h1 class="uk-heading-small uk-margin-large-top">RS:{{total_sales}}</h1>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <span uk-icon="icon: credit-card; ratio: 3.5"></span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">-->
+<!--            <div>-->
+<!--                <h3 class="uk-card-title">Orders</h3>-->
+<!--                <h3 class="uk-text-meta">TOTAL</h3>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <h1 class="uk-heading-small uk-margin-large-top">{{total_orders}}</h1>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <span uk-icon="icon: credit-card; ratio: 3.5"></span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-card uk-card-default uk-card-body" uk-grid style="border-radius:1em;margin:1em;">-->
+<!--            <div>-->
+<!--                <h3 class="uk-card-title">Products Out of stock</h3>-->
+<!--                <h3 class="uk-text-meta">TOTAL</h3>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                {% if len_item_out_of_stock is None %}-->
+<!--                    <h1 class="uk-heading-small uk-margin-large-top">0</h1>-->
+<!--                {% else %}-->
+<!--                    <h1 class="uk-heading-small uk-margin-large-top">{{len_item_out_of_stock}}</h1>-->
+<!--                {% endif %}-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <span uk-icon="icon: credit-card; ratio: 3.5"></span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+
+<!--</div>-->
+<!--</div>-->
+
+
+
+
+{% endblock %}

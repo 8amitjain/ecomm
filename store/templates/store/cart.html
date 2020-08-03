@@ -68,12 +68,12 @@
                                 <span class="uk-input tm-quantity-input">{{ item.quantity }}</span> <a  href="{% url 'store:add-to-cart' item.item.slug %}" uk-icon="icon: plus; ratio: .75"></a>
                               </div>
 
-                              {% if item.item.stock_no == item.quantity %}
+                              {% if item.item.total_stock == item.quantity %}
                                 <h6>No More Available</h6>
 
                               {% else %}
-                                {% if item.item.stock_no <= 10 %}
-                                <h6>Only {{ item.item.stock_no }} Quantity Available </h6>
+                                {% if item.item.total_stock <= 10 %}
+                                <h6>Only {{ item.item.total_stock }} Quantity Available </h6>
 
                                 {% endif %}
                               {% endif %}
@@ -127,12 +127,12 @@
                                               <span class="uk-input tm-quantity-input">{{ item.quantity }}</span> <a  href="{% url 'store:add-to-cart' item.item.slug %}" uk-icon="icon: plus; ratio: .75"></a>
                                             </div>
 
-                                            {% if item.item.stock_no == item.quantity %}
+                                            {% if item.item.total_stock == item.quantity %}
                                               <h6>No More Available</h6>
 
                                             {% else %}
-                                              {% if item.item.stock_no <= 10 %}
-                                              <h6>Only {{ item.item.stock_no }} Quantity Available </h6>
+                                              {% if item.item.total_stock <= 10 %}
+                                              <h6>Only {{ item.item.total_stock }} Quantity Available </h6>
 
                                               {% endif %}
                                             {% endif %}

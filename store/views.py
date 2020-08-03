@@ -17,7 +17,7 @@ from vendors.models import VendorLocation, VendorAddress, Vendor
 from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm, LocationForm, ReturnForm, CancelForm, \
                    CouponCustomerForm, PrescriptionUploadForm, CustomerAddressForm
 from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, UserProfile, Addresss, Slide, \
-                    Reviews, CustomerLocation, MiniOrder, CouponCustomer, CustomerAddress, PrescriptionUpload
+                    Reviews, CustomerLocation, MiniOrder, CouponCustomer, CustomerAddress
 
 from vendors.models import Item, Category, Brands
 from users.models import User
@@ -85,8 +85,7 @@ class CartView(LoginRequiredMixin, View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             form = CouponCustomerForm()
-            prescription_form = PrescriptionUploadForm()
-            print(prescription_form)
+            prescription_form = PrescriptionUploadForm(self.request.FILES)
             context = {
                 'object': order,
                 'form': form,
@@ -99,35 +98,33 @@ class CartView(LoginRequiredMixin, View):
 
     def post(self, *args, **kwargs):
         form = CouponCustomerForm(self.request.POST)
-        prescription_form = PrescriptionUploadForm(self.request.POST)
+        prescription_form = PrescriptionUploadForm(self.request.POST, self.request.FILES)
         order = Order.objects.get(user=self.request.user, ordered=False)
-        context = {
-            'object': order,
-            'form': form,
-            'prescription_form': prescription_form,
-        }
-        # print(prescription_form)
 
         if prescription_form.is_valid():
-            p_form = form.save(commit=False)
+            p_form = prescription_form.save(commit=False)
             p_form.user = self.request.user
             p_form.save()
-            print(p_form)
             order.prescription = p_form
             order.save()
             context = {
                 'object': order,
                 'form': form,
-                'prescription_form': prescription_form,
+                'prescription_form': prescription_form
             }
             return render(self.request, 'store/cart.html', context)
-
+        print('exe')
         if form.is_valid():
-            coupon = form.save(commit=False)
-            try:
+                coupon = form.save(commit=False)
+            # try:
                 coupon = CouponCustomer.objects.get(code=coupon.code, user=self.request.user)
                 if coupon.used is True:
                     messages.success(self.request, f'Code Already Used!')
+                    context = {
+                        'object': order,
+                        'form': form,
+                        'prescription_form': prescription_form
+                    }
                     return render(self.request, 'store/cart.html', context)
                 else:
                     coupon.discount_amount = 0
@@ -141,32 +138,45 @@ class CartView(LoginRequiredMixin, View):
                         context = {
                             'object': order,
                             'form': form,
-                            'prescription_form': prescription_form,
+                            'prescription_form': prescription_form
                         }
                         return render(self.request, 'store/cart.html', context)
 
-            except:
-                coupon.user = self.request.user
-                coupon.save()
-                vendor_coupon = Coupon.objects.get(code=coupon.code)
-                coupon.coupon = vendor_coupon
-                coupon.discount_amount = 0
-                coupon.order_amount = order.get_total_without_coupoun()
-                coupon.save()
-                if coupon.order_amount >= vendor_coupon.minimum_order_amount:
-                    coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
-                    # coupon.used = True
-                    coupon.applicable = True
-                    coupon.save()
-
-                order.coupon_customer = coupon
-                order.save()
-                context = {
-                    'object': order,
-                    'form': form,
-                }
-                messages.success(self.request, f'Code Applied!')
-                return render(self.request, 'store/cart.html', context)
+            # except:
+            #     coupon.user = self.request.user
+            #     coupon.save()
+            #     vendor_coupon = Coupon.objects.get(code=coupon.code)
+            #     coupon.coupon = vendor_coupon
+            #     coupon.discount_amount = 0
+            #     coupon.order_amount = order.get_total_without_coupoun()
+            #     coupon.save()
+            #     if coupon.order_amount >= vendor_coupon.minimum_order_amount:
+            #         coupon.discount_amount = coupon.order_amount * (vendor_coupon.discount_percent / 100)
+            #         # coupon.used = True
+            #         coupon.applicable = True
+            #         coupon.save()
+            #
+            #     order.coupon_customer = coupon
+            #     order.save()
+            #     context = {
+            #         'object': order,
+            #         'form': form,
+            #         'prescription_form': prescription_form
+            #     }
+            #     messages.success(self.request, f'Code Applied!')
+            #     return render(self.request, 'store/cart.html', context)
+            # finally:
+            #     context = {
+            #         'object': order,
+            #         'form': form,
+            #         'prescription_form': prescription_form
+            #     }
+            #     return render(self.request, 'store/cart.html', context)
+        context = {
+            'object': order,
+            'form': form,
+            'prescription_form': prescription_form,
+        }
         return render(self.request, 'store/cart.html', context)
 
 
@@ -197,8 +207,8 @@ def add_to_cart(request, slug):
     if order_qs.exists():
         order = order_qs[0]
         if order.items.filter(item__slug=item.slug).exists():
-            if order_item.quantity >= order_item.item.stock_no:
-                order_item.quantity = order_item.item.stock_no
+            if order_item.quantity >= order_item.item.total_stock:
+                order_item.quantity = order_item.item.total_stock
             else:
                 order_item.quantity += 1
                 order_item.save()
@@ -730,7 +740,7 @@ def prescription_upload(request):
             prescription.user = request.user
             prescription.save()
 
-            messages.success(request, f' Prescription Uploaded!')
+            messages.success(request, f'Prescription Uploaded!')
             return redirect('/')
     else:
         form = PrescriptionUploadForm()

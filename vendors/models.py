@@ -109,7 +109,7 @@ class Item(models.Model):
     slug = models.SlugField(unique=True)
 
     stock_no = models.IntegerField()  # number of products in stock
-
+    total_stock = models.IntegerField(null=True)
     short_description = models.TextField(help_text='To describe product in short', null=True)
     description = models.TextField(help_text='Overview product', null=True)
     key_benefits = models.TextField(help_text='Describe product\'s Benefits', null=True)

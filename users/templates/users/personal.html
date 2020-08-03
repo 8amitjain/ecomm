@@ -92,39 +92,93 @@
                                   </div>
                                 </form>
                           </section>
-
-                          <section>
+                            {% if data == 'customer' %}
+                              <section>
                                 <h1 class="uk-card-title" style="text-align:center;">Please select a shipping address {{ user.first_name }}</h1>
                                     <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:1em 18em 0em 18em;">
                                         <a class="uk-link-reset" href="{% url 'store:store-address' %}"><span class="uk-button uk-button-default uk-width-1-1"><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Add Address</span></a>
                                     </div>
-                                <div class="uk-grid-match uk-text-center" uk-grid style="margin-left:2em;">
+                                <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid style="margin-left:2em;">
 
                                 {% for address in customer_address %}
-                                    <div class="uk-card uk-card-default uk-card-body uk-card-hover uk-width-expand" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:2em;">
+                                    <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:2em;">
                                         <h3 class="uk-card-title">Deliver to {{ user.first_name }}</h3>
                                             <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address|truncatechars:15}}</p>
                                             <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address_line_2|truncatechars:10 }}</p>
                                             <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_city }}</p>
                                             <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_postal_code }}</p>
                                             <p style="font-size:18px;">{{ address.billing_phone_number }}</p>
-                                        <div class="uk-card uk-card-" >
+                                        <div class="uk-card" >
                                             <a class="uk-link-reset" href="{% url 'store:store-address-update' address.id %}"><span class="uk-button uk-button-default "><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Update Address</span></a>
                                         </div>
                                     </div>
-                                 <br>
                                 {% endfor %}
 
                                 </div>
 
                           </section>
+                            {% elif data == 'vendor' %}
+                                <section>
+                                <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+                                    <form method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <fieldset class="form-group">
+                                            <h1 style="text-align:center;">
+                                               {% if title %}
+                                                     {{title}}
+                                               {% else %}
+                                                    Products
+                                               {% endif %}
+                                            </h1>
+                                            <hr>
+                                            <br>
+
+                                            {{vendor_address_form| crispy}}
+                                            {{location_form.media}}
+                                            {{location_form.as_p}}
+                                        </fieldset>
+                                    <div class="form-group">
+                                        <button class="btn btn-outline-info" type="submit">
+                                            {% if submit %}
+                                                 {{submit}}
+                                            {% else %}
+                                                Submit
+                                            {% endif %}
+                                        </button>
+                                    </div>
+                                </form>
+                        </section>
+                                <script>
+window.onload=function(){
+
+$(document).on("google_point_map_widget:marker_create", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
+});
+
+$(document).on("google_point_map_widget:marker_change", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
+});
+
+$(document).on("google_point_map_widget:marker_delete", function (e, lat, lng, locationInputElem, mapWrapID) {
+    console.log(locationInputElem);
+    console.log(lat, lng);
+    console.log(mapWrapID);
+})
+
+}
 
 
-                          </div>
+</script>
+                            {% else %}
+                                <h1>EROoRR.....!!!!!!!!</h1>
+                            {% endif %}
+                        </div>
 
-                      </div>
-
-
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -34,6 +34,7 @@ def products_add(request):
                 item.variation_id = f"IVRN-{100000 + item.id}"
                 item.item_ref_number = f"IRN-{100000 + int(item.id)}"
                 item.slug = slugify(f"{str(item.title)}+{'-'}+{str(item.item_ref_number)}")
+                item.total_stock = item.stock_no
                 item.save()
 
                 same_items = SameItem.objects.create(vendor=request.user.vendor, item_ref_number=item.item_ref_number,
@@ -41,6 +42,7 @@ def products_add(request):
                 same_items.save()
 
                 item.same_item.add(same_items)
+
                 item.save()
 
                 return redirect('store:store')
@@ -160,7 +162,9 @@ def product_sell(request, pk):
                     item_form.save()
                     item.same_item.add(item_form)
                     item.vendors.add(request.user.vendor)
+                    item.total_stock += item_form.stock_no
                     item.save()
+
             except IntegrityError:
                 if form.is_valid():
                     item_form = form.save(commit=False)
