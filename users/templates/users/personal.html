@@ -25,7 +25,7 @@
                   <div class="uk-card-header">
                     <div class="uk-grid-small uk-child-width-1-1" uk-grid>
                       <section>
-                        <div class="uk-width-1-3 uk-width-1-4@s uk-width-1-2@m uk-margin-auto uk-visible-toggle uk-position-relative uk-border-circle uk-overflow-hidden uk-light"><img class="uk-width-1-1" src="{{ user.image.url }}"><a class="uk-link-reset uk-overlay-primary uk-position-cover uk-hidden-hover" href="#">
+                        <div class="uk-width-1-3 uk-width-1-2@s uk-width-1-2@m uk-margin-auto uk-visible-toggle uk-position-relative uk-border-circle uk-overflow-hidden uk-light"><img class="uk-width-1-1" src="{{ user.image.url }}"><a class="uk-link-reset uk-overlay-primary uk-position-cover uk-hidden-hover" href="#">
                             <div class="uk-position-center"><span uk-icon="icon: camera; ratio: 1.25;"></span>
                             </div></a></div>
                       </section>
@@ -48,10 +48,10 @@
                     <nav>
                       <ul class="uk-nav uk-nav-default tm-nav">
                         <li><a href="{% url 'users-order' %}">Orders
-                            
+
                             <span>(2)</span></a></li>
                         <li><a href="{% url 'store:store-favorites' %}">Favorites
-                            
+
                             <span>(3)</span></a></li>
                         <li class="uk-active"><a href="{% url 'users-account' data %}">Personal Info</a></li>
                       </ul>
@@ -63,6 +63,7 @@
                 <div class="uk-card uk-card-default uk-card-small tm-ignore-container">
 
                 <br>
+                    <div class="">
                   <div class="uk-width-1-1 tm-product-description" id="description">
                       <header>
                         <nav class="tm-product-nav" uk-sticky="offset: 60; bottom: #description; cls-active: tm-product-nav-fixed;">
@@ -92,31 +93,97 @@
                                   </div>
                                 </form>
                           </section>
+
+
                             {% if data == 'customer' %}
                               <section>
-                                <h1 class="uk-card-title" style="text-align:center;">Please select a shipping address {{ user.first_name }}</h1>
-                                    <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:1em 18em 0em 18em;">
-                                        <a class="uk-link-reset" href="{% url 'store:store-address' %}"><span class="uk-button uk-button-default uk-width-1-1"><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Add Address</span></a>
-                                    </div>
-                                <div class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid style="margin-left:2em;">
+                                <div class="hide-mobile">
+                                    <h1 class="uk-card-title" style="text-align:center;">Please select a shipping address {{ user.first_name }}</h1>
+                                        <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:1em 18em 0em 18em;">
+                                            <a class="uk-link-reset" href="{% url 'store:store-address' %}"><span class="uk-button uk-button-default uk-width-1-1"><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Add Address</span></a>
+                                        </div>
+    <!--                                <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-width-1-2@s" uk-grid style="margin-left:2em;">-->
 
-                                {% for address in customer_address %}
-                                    <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:2em;">
-                                        <h3 class="uk-card-title">Deliver to {{ user.first_name }}</h3>
-                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address|truncatechars:15}}</p>
-                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address_line_2|truncatechars:10 }}</p>
-                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_city }}</p>
-                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_postal_code }}</p>
-                                            <p style="font-size:18px;">{{ address.billing_phone_number }}</p>
-                                        <div class="uk-card" >
-                                            <a class="uk-link-reset" href="{% url 'store:store-address-update' address.id %}"><span class="uk-button uk-button-default "><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Update Address</span></a>
+<!--                                                         </div>-->
+
+
+                                        <div class="mt-4 uk-child-width-1-4@m uk-grid-small uk-grid-match" uk-grid >
+                                            {% for address in customer_address %}
+                                                <div class="uk-width-1-3">
+                                                    <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:0.1em;">
+                                                        <h3>Deliver to {{ user.first_name }}</h3>
+                                                                <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address|truncatechars:15}}</p>
+                                                                <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address_line_2|truncatechars:10 }}</p>
+                                                                <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_city }}</p>
+                                                                <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_postal_code }}</p>
+                                                                <p style="font-size:18px;">{{ address.billing_phone_number }}</p>
+
+                                                            <div class="uk-card" >
+                                                                <a class="uk-link-reset" href="{% url 'store:store-address-update' address.id %}"><span class="uk-button uk-button-default "><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Update Address</span></a>
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
                                         </div>
                                     </div>
-                                {% endfor %}
+                                <div class="show-mobile">
+                                    <h1 class="uk-card-title" style="text-align:center;">Please select a shipping address {{ user.first_name }}</h1>
+                                        <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:1em 5.7em 0em 6em;">
+                                            <a class="uk-link-reset" href="{% url 'store:store-address' %}"><span class="uk-button uk-button-default uk-width-auto"><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Add Address</span></a>
+                                        </div>
+    <!--                                <div class="uk-grid-small uk-child-width-expand@s uk-text-center uk-width-1-2@s" uk-grid style="margin-left:2em;">-->
 
-                                </div>
+<!--                                                         </div>-->
 
-                          </section>
+
+                                        <div class="mt-4 uk-child-width-1-4@m uk-grid-small uk-grid-match" uk-grid>
+                                            {% for address in customer_address %}
+<!--                                                <div class="uk-width-1-3">-->
+                                                    <div class="uk-card uk-card-default uk-card-body " style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:1em 2em 1em 2em;">
+                                                        <div align="center">
+                                                            <h3 style="margin:0 2em 0 2em;">Deliver to {{ user.first_name }}</h3>
+                                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address|truncatechars:15}}</p>
+                                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address_line_2|truncatechars:10 }}</p>
+                                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_city }}</p>
+                                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_postal_code }}</p>
+                                                            <p style="font-size:18px;">{{ address.billing_phone_number }}</p>
+
+                                                            <div class="uk-card" align="center">
+                                                                <a class="uk-link-reset" href="{% url 'store:store-address-update' address.id %}"><span class="uk-button uk-button-default "><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Update Address</span></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+<!--                                                </div>-->
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </section>
+
+
+<!-- {% for address in customer_address %}-->
+
+<!--                                    <div class="uk-grid-collapse uk-child-width-1-3 uk-card uk-card-default uk-card-body uk-card-hover uk-width-1-2@s" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:2em;">-->
+
+<!--                                        <div class="uk-grid-collapse uk-card uk-card-default uk-card-small ">-->
+<!--                                        <h3>Deliver to {{ user.first_name }}</h3>-->
+<!--                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address|truncatechars:15}}</p>-->
+<!--                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_street_address_line_2|truncatechars:10 }}</p>-->
+<!--                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_city }}</p>-->
+<!--                                            <p class="uk-margin-remove" style="font-size:18px;">{{ address.shipping_postal_code }}</p>-->
+<!--                                            <p style="font-size:18px;">{{ address.billing_phone_number }}</p>-->
+
+<!--                                        <div class="uk-card" >-->
+<!--                                            <a class="uk-link-reset" href="{% url 'store:store-address-update' address.id %}"><span class="uk-button uk-button-default "><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Update Address</span></a>-->
+<!--                                        </div>-->
+<!--                                        </div>-->
+
+<!--                                    </div>-->
+<!--{% endfor %}-->
+
+<!--                                </div>-->
+
+
+
                             {% elif data == 'vendor' %}
                                 <section>
                                 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -149,30 +216,30 @@
                                 </form>
                         </section>
                                 <script>
-window.onload=function(){
+                                        window.onload=function(){
 
-$(document).on("google_point_map_widget:marker_create", function (e, lat, lng, locationInputElem, mapWrapID) {
-    console.log(locationInputElem);
-    console.log(lat, lng);
-    console.log(mapWrapID);
-});
+                                        $(document).on("google_point_map_widget:marker_create", function (e, lat, lng, locationInputElem, mapWrapID) {
+                                            console.log(locationInputElem);
+                                            console.log(lat, lng);
+                                            console.log(mapWrapID);
+                                        });
 
-$(document).on("google_point_map_widget:marker_change", function (e, lat, lng, locationInputElem, mapWrapID) {
-    console.log(locationInputElem);
-    console.log(lat, lng);
-    console.log(mapWrapID);
-});
+                                        $(document).on("google_point_map_widget:marker_change", function (e, lat, lng, locationInputElem, mapWrapID) {
+                                            console.log(locationInputElem);
+                                            console.log(lat, lng);
+                                            console.log(mapWrapID);
+                                        });
 
-$(document).on("google_point_map_widget:marker_delete", function (e, lat, lng, locationInputElem, mapWrapID) {
-    console.log(locationInputElem);
-    console.log(lat, lng);
-    console.log(mapWrapID);
-})
+                                        $(document).on("google_point_map_widget:marker_delete", function (e, lat, lng, locationInputElem, mapWrapID) {
+                                            console.log(locationInputElem);
+                                            console.log(lat, lng);
+                                            console.log(mapWrapID);
+                                        })
 
-}
+                                        }
 
 
-</script>
+                                    </script>
                             {% else %}
                                 <h1>EROoRR.....!!!!!!!!</h1>
                             {% endif %}

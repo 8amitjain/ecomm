@@ -1,20 +1,28 @@
 {% extends "store/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+
+<div class="hide-mobile">
     <div class="content-section m-5">
           <div class="media">
             <div class="media-body">
               <h1 class="account-heading" style="text-align:center;">Please select a shipping address {{ user.first_name }}</h1>
             </div>
           </div>
+
             <div class="uk-card uk-card-default uk-card-body uk-card-hover" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:1em 35% 0em 35%;">
                 <a class="uk-link-reset" href="{% url 'store:store-address' %}"><span class="uk-button uk-button-default uk-width-1-1"><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Add Address</span></a>
             </div>
-        <div class="uk-grid-match uk-text-center" uk-grid>
 
-        {% for address in customer_address_ %}
-            <div class="uk-card uk-card-default uk-card-body uk-card-hover w-25" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:2em;">
-                <h3 class="uk-card-title">Deliver to {{ user.first_name }}</h3>
+
+
+
+<div class="mt-5 uk-child-width-1-5@m uk-grid-small uk-grid-match" uk-grid>
+    {% for address in customer_address_ %}
+    <div>
+        <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;border-style:solid;border-color:#f8f8f8;margin:0.1em;">
+
+            <h3 class="uk-card-title">Deliver to {{ user.first_name }}</h3>
                <a class="uk-link-reset" href="{% url 'store:store-payment-stripe' address.id %}">
                     <p class="uk-margin-remove uk-text-large">{{ address.billing_street_address|truncatechars:20}}</p>
                     <p class="uk-margin-remove uk-text-large">{{ address.billing_street_address_line_2|truncatechars:10 }}</p>
@@ -22,10 +30,53 @@
                     <p class="uk-margin-remove uk-text-large">{{ address.billing_postal_code }}</p>
                     <p class="uk-text-large">{{ address.billing_phone_number }}</p>
                 </a>
-            </div>
-         <br>
-        {% endfor %}
+
         </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
 
 </div>
+
+<div class="show-mobile">
+
+    <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
+   <div>
+       <div class="uk-card uk-card-default uk-card-body" align="center">
+           <h2 class="uk-h2" align="left">Select shipping address, {{user.first_name}}</h2>
+       </div>
+
+    </div>
+
+    <div>
+        <div class="uk-card uk-card-default uk-card-body uk-card-hover" align="center">
+            <button class="uk-button uk-button-default uk-width-1-2 uk-margin-small-bottom"><span class="uk-margin-xsmall-right" uk-icon="icon: plus; ratio: .75;"></span>Add Address</button>
+        </div>
+    </div>
+     {% for address in customer_address_ %}
+    <div>
+        <div class="uk-card uk-card-default uk-card-body" style="border-radius:1em;margin: 0 2em 0 2em;">
+
+            <h3 class="uk-card-title">Deliver to {{ user.first_name }}</h3><hr>
+               <a class="uk-link-reset" href="{% url 'store:store-payment-stripe' address.id %}">
+                    <h6>{{ address.billing_street_address|truncatechars:20}}, {{ address.billing_street_address_line_2|truncatechars:10 }}</h6>
+
+                    <h6>{{ address.billing_city }}, {{ address.billing_postal_code }} ,{{ address.billing_phone_number }}</h6>
+
+
+                </a>
+
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+<br>
+<br>
+</div>
+
+
+
+
 {% endblock content %}

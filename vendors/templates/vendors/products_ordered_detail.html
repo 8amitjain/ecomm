@@ -102,10 +102,8 @@
                                     </th>
 
                                     <th>
-                                        <div class="uk-inline">
-                                            <img src="{{order.prescription.prescription.url}}" width="100px" style="margin-right:12em;">
-                                            <div uk-drop="pos: top-right">
-                                            </div>
+                                        <div uk-lightbox>
+                                            <a class="" href="{{order.prescription.prescription.url}}"><img src="{{order.prescription.prescription.url}}" width="100px" style="margin-right:12em;"></a>
                                         </div>
                                     </th>
                                 </tr>
@@ -245,11 +243,9 @@
                                 </th>
 
                                 <th>
-                                    <div class="uk-inline">
-                                        <img src="{{order.prescription.prescription.url}}" width="100px" style="margin-right:12em;">
-                                        <div uk-drop="pos: top-right">
+                                    <div uk-lightbox>
+                                            <a class="" href="{{order.prescription.prescription.url}}"><img src="{{order.prescription.prescription.url}}" width="100px" style="margin-right:12em;"></a>
                                         </div>
-                                    </div>
                                 </th>
                             </tr>
                         </table>

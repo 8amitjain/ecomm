@@ -833,6 +833,14 @@ def blog(request):
     return render(request, 'store/blog.html', {'title': 'Home'})
 
 
+def contacts(request):
+    return render(request, 'store/contacts.html', {'title': 'Home'})
+
+
+def about(request):
+    return render(request, 'store/about.html', {'title': 'Home'})
+
+
 def brands(request):
     return render(request, 'store/brand.html', {'title': 'Home'})
 
@@ -843,10 +851,6 @@ def catalog(request):
 
 def category(request):
     return render(request, 'store/category.html', {'title': 'Home'})
-
-
-def contacts(request):
-    return render(request, 'store/contacts.html', {'title': 'Home'})
 
 
 def delivery(request):
