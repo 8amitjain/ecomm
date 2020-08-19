@@ -100,7 +100,7 @@ def account_view(request, data):
     if data == "vendor":
         user_model = User.objects.get(id=request.user.id)
         req_form = CustomerUpdateForm
-        instance_data = request.user.customer
+        instance_data = request.user.vendor
 
         if request.method == 'POST':
             form = req_form(request.POST, instance=instance_data)

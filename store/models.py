@@ -36,7 +36,6 @@ ORDER_STATUS = (
 
 
 RETURN_STATUS = (
-    ('', ''),
     ('Return Denied', 'Return Denied'),
     ('Processing Return Request', 'Processing Return Request'),
     ('Item Picked up', 'Item Picked up '),
@@ -52,8 +51,6 @@ REQUEST_RETURN_TYPE = (
 
 
 RETURN_REASON = (
-    ('', ''),
-    ('Not as Describe', 'Not as Describe'),
     ('Damaged', 'Damaged'),
     ('Expired', 'Expired'),
     ('Ordered Wrong Item', 'Ordered Wrong Item'),
@@ -79,7 +76,7 @@ CANCEL_REASON = (
 )
 
 CANCEL_STATUS = (
-    ('', ''),
+    ('Not Seen by Vendor', 'Not Seen by Vendor'),
     ('CANCEL Denied', 'CANCEL Denied'),
     ('Processing Cancel Request', 'Processing Cancel Request'),
     ('Cancel Granted', 'Cancel Granted'),
@@ -116,25 +113,25 @@ class CustomerLocation(geo_models.Model):
         verbose_name_plural = 'Customer Locations'
 
 
-class Addresss(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    location = models.ForeignKey(CustomerLocation, on_delete=models.CASCADE, null=True)
-
-    street_address = models.CharField(max_length=100)
-    apartment_address = models.CharField(max_length=100)
-
-    city = models.TextField(default='Jalgaon')
-    phone_number = models.BigIntegerField(validators=[MaxValueValidator(9999999999)], blank=True)
-    postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)])
-
-    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
-    default = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.user} Address"
-
-    class Meta:
-        verbose_name_plural = 'Addresses'
+# class Addresss(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     location = models.ForeignKey(CustomerLocation, on_delete=models.CASCADE, null=True)
+#
+#     street_address = models.CharField(max_length=100)
+#     apartment_address = models.CharField(max_length=100)
+#
+#     city = models.TextField(default='Jalgaon')
+#     phone_number = models.BigIntegerField(validators=[MaxValueValidator(9999999999)], blank=True)
+#     postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)])
+#
+#     address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+#     default = models.BooleanField(default=False)
+#
+#     def __str__(self):
+#         return f"{self.user} Address"
+#
+#     class Meta:
+#         verbose_name_plural = 'Addresses'
 
 
 class CustomerAddress(models.Model):
@@ -164,14 +161,12 @@ class CustomerAddress(models.Model):
 
 
 class Slide(models.Model):
-    caption1 = models.CharField(max_length=100)
-    caption2 = models.CharField(max_length=100)
-    link = models.CharField(max_length=100)
+    caption = models.CharField(max_length=100)
     image = models.ImageField(help_text="Size: 1920x570")
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{} - {}".format(self.caption1, self.caption2)
+        return self.caption
 
 
 class OrderItem(models.Model):

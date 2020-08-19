@@ -16,8 +16,8 @@ from vendors.models import VendorLocation, VendorAddress, Vendor
 
 from .forms import CheckoutForm, CouponForm, PaymentForm, ReviewForm, LocationForm, ReturnForm, CancelForm, \
                    CouponCustomerForm, PrescriptionUploadForm, CustomerAddressForm
-from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, UserProfile, Addresss, Slide, \
-                    Reviews, CustomerLocation, MiniOrder, CouponCustomer, CustomerAddress
+from .models import OrderItem, Order, FavoriteItem, CompareItem, Payment, Coupon, UserProfile, Slide, Reviews, \
+                    CustomerLocation, MiniOrder, CouponCustomer, CustomerAddress
 
 from vendors.models import Item, Category, Brands
 from users.models import User
@@ -113,7 +113,6 @@ class CartView(LoginRequiredMixin, View):
                 'prescription_form': prescription_form
             }
             return render(self.request, 'store/cart.html', context)
-        print('exe')
         if form.is_valid():
                 coupon = form.save(commit=False)
             # try:
@@ -535,7 +534,8 @@ class PaymentView(View):
 
                     for m_order in mini_order:
                         item_title = m_order.order_item.item.title
-
+                        m_order.return_window = timezone.datetime.now() + timezone.timedelta(days=10)
+                        m_order.save()
                         for item in items:
                             if item_title == item.title:
                                 m_order.vendor = vendorr
@@ -547,7 +547,6 @@ class PaymentView(View):
             order.ordered_time = ordered_time
 
             order.total_items = total_qty
-            order.return_window = timezone.datetime.now() + timezone.timedelta(days=10)
             order.payment = payment
 
             if order.coupon_customer:
@@ -719,7 +718,7 @@ def product_canceled(request, pk):
                 m_order.cancel_requested = True
                 m_order.cancel_status = 'Processing Cancel Request'
                 m_order.save()
-                messages.success(request, f'Request Initiated!')
+                messages.success(request, 'Request Initiated!')
                 return redirect('/')
         else:
             form = CancelForm()
@@ -728,6 +727,8 @@ def product_canceled(request, pk):
             'form': form
         }
         return render(request, 'store/form.html', context)
+    messages.info(request, 'Refund Window Closed!')
+    return redirect('/')
 
 
 @login_required

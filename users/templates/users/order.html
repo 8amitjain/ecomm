@@ -130,15 +130,20 @@
                                                     <h4 class="uk-text-small"><a href="{% url 'store:store-product-return' 'cancel' m_order.id %}">Cancel Return/Refund</a></h4>
                                                 {% endif %}
 
-                                              {% else %}
-                                                <h5 class="uk-h5">Order Status: {{ m_order.order_status }}</h5>
+                                        {% else %}
+
                                       </td>
                                         <td>
+                                          {% if m_order.cancel_requested %}
+                                            <h5 class="uk-h5">Cancel Status: {{ m_order.cancel_status }}</h5>
+                                          {% else %}
+                                        <h5 class="uk-h5">Order Status: {{ m_order.order_status }}</h5>
 
-                                                  <h3 class=" uk-text-small"><a href="{% url 'store:store-product-cancel' m_order.id %}">Cancel Item</a></h3>
-                                              {% endif %}
+                                            <h3 class=" uk-text-small"><a href="{% url 'store:store-product-cancel' m_order.id %}">Cancel Item</a></h3>
+                                          {% endif %}
                                         </td>
                                     </tr>
+                                        {% endif %}
 
 
                                         </tbody>
@@ -242,15 +247,18 @@
                                                     <h4 class="uk-text-small"><a href="{% url 'store:store-product-return' 'cancel' m_order.id %}">Cancel Return/Refund</a></h4>
                                                 {% endif %}
 
-                                              {% else %}
-                                                <h5 class="uk-h5">Order Status: {{ m_order.order_status }}</h5>
+                                        {% else %}
                                       </td>
                                         <td>
-
-                                                  <h3 class=" uk-text-small"><a href="{% url 'store:store-product-cancel' m_order.id %}">Cancel Item</a></h3>
-                                              {% endif %}
+                                          {% if m_order.cancel_requested %}
+                                            <h5 class="uk-h5">Cancel Status: {{ m_order.cancel_status }}</h5>
+                                          {% else %}
+                                            <h3 class=" uk-text-small"><a href="{% url 'store:store-product-cancel' m_order.id %}">Cancel Item</a></h3>
+                                          {% endif %}
                                         </td>
                                     </tr>
+                                        {% endif %}
+
 
 
                                         </tbody>

@@ -3,8 +3,8 @@ from django.db import models
 from mapwidgets.widgets import GooglePointFieldWidget
 from django.contrib.gis.db import models as geo_model
 
-from .models import OrderItem, FavoriteItem, CompareItem, Order, Payment, Coupon, Slide, UserProfile, Addresss,\
-                    Reviews, CustomerLocation, MiniOrder, Return, CouponCustomer, PrescriptionUpload, CustomerAddress
+from .models import OrderItem, FavoriteItem, CompareItem, Order, Payment, Coupon, Slide, UserProfile, Reviews, \
+                    CustomerLocation, MiniOrder, Return, CouponCustomer, PrescriptionUpload, CustomerAddress
 
 
 class CustomerLocationAdmin(admin.ModelAdmin):
@@ -69,7 +69,6 @@ admin.site.register(CompareItem)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Payment)
 admin.site.register(Coupon)
-admin.site.register(Addresss)
 admin.site.register(Reviews)
 admin.site.register(CustomerLocation, CustomerLocationAdmin)
 admin.site.register(MiniOrder)

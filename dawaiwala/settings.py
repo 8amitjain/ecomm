@@ -1,6 +1,8 @@
 import os
-
+from .data import  Secret_key, Email, STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, GOOGLE_MAP_API_KEY
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from pprint import pprint
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -8,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '20gn)u#^n#menvc&*4!=_quw-9#zneh_213z_cxa8r^0$p9-!m'
+SECRET_KEY = Secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -155,11 +157,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'visionboard.help@gmail.com'
-EMAIL_HOST_PASSWORD = 'edqvopggdzwivnlk'
+EMAIL_HOST_USER = Email
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
 # os.environ.get('EMAIL_HOST_USER')
 
-GOOGLE_MAP_API_KEY = "AIzaSyBwRaz6Qcmyquj2GG5g4RChfBecOg641Qg"
+GOOGLE_MAP_API_KEY = GOOGLE_MAP_API_KEY
 
 MAP_WIDGETS = {
     "GooglePointFieldWidget": (
@@ -170,7 +173,6 @@ MAP_WIDGETS = {
     ),
     "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY,
 }
-
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51GziiaEMM8ICDJpWkzDBSC4IRrZZiae23SdzYedj0uPaKdSYwf6jJui0VfF2RFgMa1looBaTq82qRrvsLe0wkFqm00llm82WLu'
-STRIPE_SECRET_KEY = 'sk_test_51GziiaEMM8ICDJpWgnWlUH3cBzh6IOrYqTPpB7SgD5ZCZWb4sHcoa6WWd5BU69IhngDN0igApImzgA9aiZZj9k0y006rsHOJiB'
+STRIPE_PUBLISHABLE_KEY = STRIPE_PUBLISHABLE_KEY
+STRIPE_SECRET_KEY = STRIPE_SECRET_KEY
 
