@@ -14,7 +14,7 @@ django-rest-knox==4.1.0
 django-rest-passwordreset==1.1.0
 django-templated-mail==1.1.1
 django-widget-tweaks==1.4.8
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 djangorestframework-simplejwt==4.4.0
 GDAL==3.1.2
 idna==2.9
